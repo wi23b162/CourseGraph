@@ -1,15 +1,23 @@
 import React, { useState } from 'react';
 
-const AddNodeDialog = ({ onAdd, onCancel }) => {
-  const [nodeType, setNodeType] = useState('leo');
-  const [label, setLabel] = useState('');
+const AddNodeDialog = ({ initialType, onAdd, onCancel }) => {
+  const [nodeType] = useState(initialType || 'leo');
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [level, setLevel] = useState('3');
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (label.trim()) {
-      onAdd({ type: nodeType, label: label.trim() });
-      setLabel('');
-      setNodeType('leo');
+    if (title.trim()) {
+      onAdd({ 
+        type: nodeType, 
+        label: title.trim(),
+        description: description.trim(),
+        level: parseInt(level)
+      });
+      setTitle('');
+      setDescription('');
+      setLevel('3');
     }
   };
 
@@ -20,7 +28,7 @@ const AddNodeDialog = ({ onAdd, onCancel }) => {
       left: 0,
       right: 0,
       bottom: 0,
-      background: 'rgba(0,0,0,0.5)',
+      background: 'rgba(0,0,0,0.3)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -30,113 +38,182 @@ const AddNodeDialog = ({ onAdd, onCancel }) => {
         background: 'white',
         padding: '30px',
         borderRadius: '12px',
-        minWidth: '400px',
-        boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)',
+        minWidth: '500px',
+        boxShadow: '0 20px 25px -5px rgba(0,0,0,0.2)',
       }}>
-        <h2 style={{ margin: '0 0 20px 0', color: '#1e293b' }}>Neuen Node hinzufügen</h2>
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center',
+          marginBottom: '24px'
+        }}>
+          <h2 style={{ 
+            margin: 0, 
+            color: '#1e293b',
+            fontSize: '24px',
+            fontWeight: '600'
+          }}>
+            Adding {nodeType === 'leo' ? 'Learning Outcome' : 'Assessment'}
+          </h2>
+          <button
+            onClick={onCancel}
+            style={{
+              background: '#3b82f6',
+              color: 'white',
+              border: 'none',
+              borderRadius: '50%',
+              width: '32px',
+              height: '32px',
+              cursor: 'pointer',
+              fontSize: '16px',
+              fontWeight: 'bold'
+            }}
+          >
+            ✕
+          </button>
+        </div>
         
         <form onSubmit={handleSubmit}>
-          {/* Node-Typ Auswahl */}
+          {/* Title */}
           <div style={{ marginBottom: '20px' }}>
-            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', color: '#475569' }}>
-              Node-Typ:
-            </label>
-            <div style={{ display: 'flex', gap: '12px' }}>
-              <label style={{
-                flex: 1,
-                padding: '12px',
-                border: nodeType === 'leo' ? '2px solid #3b82f6' : '2px solid #e2e8f0',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                background: nodeType === 'leo' ? '#eff6ff' : 'white',
-                textAlign: 'center',
-              }}>
-                <input
-                  type="radio"
-                  value="leo"
-                  checked={nodeType === 'leo'}
-                  onChange={(e) => setNodeType(e.target.value)}
-                  style={{ marginRight: '8px' }}
-                />
-                <span style={{ fontWeight: '500', color: '#3b82f6' }}>📘 Learning Outcome</span>
-              </label>
-              
-              <label style={{
-                flex: 1,
-                padding: '12px',
-                border: nodeType === 'assessment' ? '2px solid #10b981' : '2px solid #e2e8f0',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                background: nodeType === 'assessment' ? '#f0fdf4' : 'white',
-                textAlign: 'center',
-              }}>
-                <input
-                  type="radio"
-                  value="assessment"
-                  checked={nodeType === 'assessment'}
-                  onChange={(e) => setNodeType(e.target.value)}
-                  style={{ marginRight: '8px' }}
-                />
-                <span style={{ fontWeight: '500', color: '#10b981' }}>✅ Assessment</span>
-              </label>
-            </div>
-          </div>
-
-          {/* Label Input */}
-          <div style={{ marginBottom: '20px' }}>
-            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', color: '#475569' }}>
-              Bezeichnung:
+            <label style={{ 
+              display: 'block', 
+              marginBottom: '8px', 
+              fontWeight: '500', 
+              color: '#1e293b',
+              fontSize: '14px'
+            }}>
+              Title: <span style={{ color: '#ef4444' }}>*</span>
             </label>
             <input
               type="text"
-              value={label}
-              onChange={(e) => setLabel(e.target.value)}
-              placeholder="z.B. 'Grundlagen verstehen' oder 'Quiz 1'"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder={nodeType === 'leo' ? 'e.g., Apply Object Orientation' : 'e.g., Midterm Exam'}
               autoFocus
               style={{
                 width: '100%',
                 padding: '12px',
-                border: '2px solid #e2e8f0',
-                borderRadius: '8px',
+                border: '1px solid #e2e8f0',
+                borderRadius: '6px',
                 fontSize: '14px',
                 outline: 'none',
+                boxSizing: 'border-box'
               }}
               onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
               onBlur={(e) => e.target.style.borderColor = '#e2e8f0'}
             />
           </div>
 
+          {/* Description */}
+          <div style={{ marginBottom: '20px' }}>
+            <label style={{ 
+              display: 'block', 
+              marginBottom: '8px', 
+              fontWeight: '500', 
+              color: '#1e293b',
+              fontSize: '14px'
+            }}>
+              Description:
+            </label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder={nodeType === 'leo' 
+                ? 'Students can create classes and objects and apply the principles of OOP...' 
+                : 'Assessment description...'}
+              rows={4}
+              style={{
+                width: '100%',
+                padding: '12px',
+                border: '1px solid #e2e8f0',
+                borderRadius: '6px',
+                fontSize: '14px',
+                outline: 'none',
+                resize: 'vertical',
+                fontFamily: 'inherit',
+                boxSizing: 'border-box'
+              }}
+              onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
+              onBlur={(e) => e.target.style.borderColor = '#e2e8f0'}
+            />
+          </div>
+
+          {/* Level (only for LEO) */}
+          {nodeType === 'leo' && (
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{ 
+                display: 'block', 
+                marginBottom: '8px', 
+                fontWeight: '500', 
+                color: '#1e293b',
+                fontSize: '14px'
+              }}>
+                Level:
+              </label>
+              <select
+                value={level}
+                onChange={(e) => setLevel(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '6px',
+                  fontSize: '14px',
+                  outline: 'none',
+                  background: 'white',
+                  cursor: 'pointer',
+                  boxSizing: 'border-box'
+                }}
+              >
+                <option value="1">Level 1: Remember</option>
+                <option value="2">Level 2: Understand</option>
+                <option value="3">Level 3: Apply / Analyze</option>
+                <option value="4">Level 4: Evaluate</option>
+                <option value="5">Level 5: Create</option>
+                <option value="6">Level 6: Advanced</option>
+              </select>
+            </div>
+          )}
+
           {/* Buttons */}
-          <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+          <div style={{ 
+            display: 'flex', 
+            gap: '12px', 
+            justifyContent: 'flex-end',
+            marginTop: '30px'
+          }}>
             <button
               type="button"
               onClick={onCancel}
               style={{
-                padding: '10px 20px',
-                border: '2px solid #e2e8f0',
-                borderRadius: '8px',
+                padding: '10px 24px',
+                border: '1px solid #e2e8f0',
+                borderRadius: '6px',
                 background: 'white',
                 color: '#64748b',
                 cursor: 'pointer',
                 fontWeight: '500',
+                fontSize: '14px'
               }}
             >
-              Abbrechen
+              Cancel
             </button>
             <button
               type="submit"
-              disabled={!label.trim()}
+              disabled={!title.trim()}
               style={{
-                padding: '10px 20px',
+                padding: '10px 24px',
                 border: 'none',
-                borderRadius: '8px',
-                background: label.trim() ? '#3b82f6' : '#cbd5e1',
+                borderRadius: '6px',
+                background: title.trim() ? '#3b82f6' : '#cbd5e1',
                 color: 'white',
-                cursor: label.trim() ? 'pointer' : 'not-allowed',
+                cursor: title.trim() ? 'pointer' : 'not-allowed',
                 fontWeight: '500',
+                fontSize: '14px'
               }}
             >
-              ➕ Hinzufügen
+              Create
             </button>
           </div>
         </form>

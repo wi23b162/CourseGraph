@@ -1,135 +1,121 @@
-import React, { memo, useState } from 'react';
+import React, { memo } from 'react';
 import { Handle, Position } from 'reactflow';
 
 const CustomNode = ({ id, data, isConnectable }) => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [label, setLabel] = useState(data.label);
-
-  const handleDoubleClick = () => {
-    setIsEditing(true);
-  };
-
-  const handleBlur = () => {
-    setIsEditing(false);
-    if (data.onLabelChange) {
-      data.onLabelChange(id, label);
+  // Node colors based on type and level
+  const getNodeColor = () => {
+    if (data.nodeType === 'assessment') {
+      return {
+        background: '#ec4899', // pink
+        border: '#db2777',
+        text: '#ffffff'
+      };
+    }
+    
+    // LEO nodes - color by level
+    const level = data.level || 3;
+    if (level <= 2) {
+      return { background: '#3b82f6', border: '#2563eb', text: '#ffffff' }; // blue
+    } else if (level <= 4) {
+      return { background: '#10b981', border: '#059669', text: '#ffffff' }; // green
+    } else {
+      return { background: '#eab308', border: '#ca8a04', text: '#000000' }; // yellow
     }
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      handleBlur();
-    }
-  };
+  const colors = getNodeColor();
 
   const handleDelete = () => {
-    if (data.onDelete && window.confirm('Diesen Node wirklich löschen?')) {
+    if (data.onDelete && window.confirm('Delete this node?')) {
       data.onDelete(id);
     }
   };
 
-  // Styling basierend auf Node-Typ
   const nodeStyle = {
-    padding: '12px 20px',
+    padding: '16px',
     borderRadius: '8px',
-    border: '2px solid',
-    background: data.type === 'leo' ? '#3b82f6' : '#10b981',
-    borderColor: data.type === 'leo' ? '#2563eb' : '#059669',
-    color: 'white',
-    minWidth: '180px',
-    fontSize: '14px',
-    fontWeight: '500',
+    border: `3px solid ${colors.border}`,
+    background: colors.background,
+    color: colors.text,
+    minWidth: '200px',
+    maxWidth: '280px',
+    fontSize: '13px',
+    fontWeight: '600',
     position: 'relative',
+    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
   };
 
   return (
-    <div style={nodeStyle} onDoubleClick={handleDoubleClick}>
+    <div style={nodeStyle}>
       <Handle
         type="target"
         position={Position.Top}
         isConnectable={isConnectable}
-        style={{ background: '#64748b' }}
+        style={{ 
+          background: '#64748b',
+          width: '10px',
+          height: '10px',
+          border: '2px solid white'
+        }}
       />
       
-      {/* Node-Typ Badge */}
+      {/* Node ID Badge */}
       <div style={{
         position: 'absolute',
         top: '-8px',
         right: '-8px',
         background: 'white',
-        color: data.type === 'leo' ? '#2563eb' : '#059669',
-        padding: '2px 8px',
+        color: colors.border,
+        padding: '4px 10px',
         borderRadius: '12px',
-        fontSize: '10px',
+        fontSize: '11px',
         fontWeight: 'bold',
-        border: '1px solid currentColor'
+        border: `2px solid ${colors.border}`,
+        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
       }}>
-        {data.type === 'leo' ? 'LEO' : 'Assessment'}
+        {data.nodeId || `${id}`}
       </div>
 
-      {/* Label (editierbar) */}
-      {isEditing ? (
-        <input
-          type="text"
-          value={label}
-          onChange={(e) => setLabel(e.target.value)}
-          onBlur={handleBlur}
-          onKeyDown={handleKeyDown}
-          autoFocus
-          style={{
-            background: 'rgba(255,255,255,0.9)',
-            color: '#1e293b',
-            border: 'none',
-            padding: '4px 8px',
-            borderRadius: '4px',
-            width: '100%',
-            fontSize: '14px',
-          }}
-        />
-      ) : (
-        <div style={{ marginBottom: '8px', textAlign: 'center' }}>
-          {label}
+      {/* Level Badge (for LEOs) */}
+      {data.nodeType === 'leo' && (
+        <div style={{
+          position: 'absolute',
+          top: '-8px',
+          left: '-8px',
+          background: 'white',
+          color: colors.border,
+          padding: '4px 10px',
+          borderRadius: '12px',
+          fontSize: '11px',
+          fontWeight: 'bold',
+          border: `2px solid ${colors.border}`,
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+        }}>
+          {data.level || 3}
         </div>
       )}
 
-      {/* Action Buttons */}
-      {!isEditing && (
+      {/* Label - Uppercase */}
+      <div style={{ 
+        marginBottom: '8px', 
+        fontSize: '14px',
+        fontWeight: '700',
+        letterSpacing: '0.5px',
+        lineHeight: '1.3'
+      }}>
+        {data.label}
+      </div>
+
+      {/* Description */}
+      {data.description && (
         <div style={{
-          display: 'flex',
-          gap: '6px',
-          justifyContent: 'center',
+          fontSize: '12px',
+          fontWeight: '400',
+          opacity: 0.9,
+          lineHeight: '1.4',
           marginTop: '8px'
         }}>
-          <button
-            onClick={handleDoubleClick}
-            style={{
-              background: 'rgba(255,255,255,0.2)',
-              border: '1px solid rgba(255,255,255,0.3)',
-              color: 'white',
-              padding: '4px 10px',
-              borderRadius: '4px',
-              fontSize: '11px',
-              cursor: 'pointer',
-            }}
-            title="Bearbeiten"
-          >
-            ✏️ Edit
-          </button>
-          <button
-            onClick={handleDelete}
-            style={{
-              background: 'rgba(239, 68, 68, 0.8)',
-              border: '1px solid rgba(220, 38, 38, 0.8)',
-              color: 'white',
-              padding: '4px 10px',
-              borderRadius: '4px',
-              fontSize: '11px',
-              cursor: 'pointer',
-            }}
-            title="Löschen"
-          >
-            🗑️ Delete
-          </button>
+          {data.description}
         </div>
       )}
 
@@ -137,7 +123,12 @@ const CustomNode = ({ id, data, isConnectable }) => {
         type="source"
         position={Position.Bottom}
         isConnectable={isConnectable}
-        style={{ background: '#64748b' }}
+        style={{ 
+          background: '#64748b',
+          width: '10px',
+          height: '10px',
+          border: '2px solid white'
+        }}
       />
     </div>
   );
