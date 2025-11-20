@@ -2,6 +2,8 @@ import React, { memo } from 'react';
 import { Handle, Position } from 'reactflow';
 
 const CustomNode = ({ id, data, isConnectable }) => {
+  console.log("🔷 CustomNode render:", id, "isConnectable:", isConnectable);
+  
   // Node colors based on type and level
   const getNodeColor = () => {
     if (data.nodeType === 'assessment') {
@@ -25,12 +27,6 @@ const CustomNode = ({ id, data, isConnectable }) => {
 
   const colors = getNodeColor();
 
-  const handleDelete = () => {
-    if (data.onDelete && window.confirm('Delete this node?')) {
-      data.onDelete(id);
-    }
-  };
-
   const nodeStyle = {
     padding: '16px',
     borderRadius: '8px',
@@ -50,13 +46,15 @@ const CustomNode = ({ id, data, isConnectable }) => {
       <Handle
         type="target"
         position={Position.Top}
-        isConnectable={isConnectable}
+        isConnectable={true}
         style={{ 
           background: '#64748b',
-          width: '10px',
-          height: '10px',
-          border: '2px solid white'
+          width: '12px',
+          height: '12px',
+          border: '2px solid white',
+          cursor: 'crosshair'
         }}
+        onMouseEnter={() => console.log("🎯 Mouse enter TARGET handle of", id)}
       />
       
       {/* Node ID Badge */}
@@ -122,13 +120,15 @@ const CustomNode = ({ id, data, isConnectable }) => {
       <Handle
         type="source"
         position={Position.Bottom}
-        isConnectable={isConnectable}
+        isConnectable={true}
         style={{ 
           background: '#64748b',
-          width: '10px',
-          height: '10px',
-          border: '2px solid white'
+          width: '12px',
+          height: '12px',
+          border: '2px solid white',
+          cursor: 'crosshair'
         }}
+        onMouseEnter={() => console.log("🎯 Mouse enter SOURCE handle of", id)}
       />
     </div>
   );
