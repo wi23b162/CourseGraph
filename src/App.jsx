@@ -12,6 +12,10 @@ import './App.css';
 import CustomNode from './components/CustomNode';
 import AddNodeDialog from './components/AddNodeDialog';
 import NodeProperties from './components/NodeProperties';
+import EdgeTypeDialog from './components/EdgeTypeDialog';
+import EditNodeDialog from './components/EditNodeDialog';
+import { SaveLoadDialog, useSaveLoad, loadFromLocalStorage } from './components/SaveLoadManager';
+import { getEdgeStyle, getEdgeLabel } from './components/edgeUtils';
 
 const nodeTypes = {
   custom: CustomNode,
@@ -53,10 +57,11 @@ const initialEdges = [
     id: 'e1-2',
     source: '1',
     target: '2',
-    label: 'enables',
+    label: '→ enables',
     type: 'smoothstep',
     animated: true,
     style: { stroke: '#3b82f6', strokeWidth: 2 },
+    data: { edgeType: 'implies' }
   },
 ];
 
@@ -64,8 +69,30 @@ function App() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [showDialog, setShowDialog] = useState(false);
+  const [showSaveLoadDialog, setShowSaveLoadDialog] = useState(false);
+  const [showEdgeTypeDialog, setShowEdgeTypeDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [pendingConnection, setPendingConnection] = useState(null);
   const [nodeIdCounter, setNodeIdCounter] = useState(3);
   const [selectedNode, setSelectedNode] = useState(null);
+  const [selectedEdge, setSelectedEdge] = useState(null);
+  const [nodeToEdit, setNodeToEdit] = useState(null);
+
+  // Auto-save functionality
+  useSaveLoad(nodes, edges);
+
+  // Load from auto-save on mount
+  React.useEffect(() => {
+    const saved = loadFromLocalStorage();
+    if (saved && saved.nodes.length > 0) {
+      const confirmLoad = window.confirm('Found auto-saved data. Load it?');
+      if (confirmLoad) {
+        setNodes(saved.nodes);
+        setEdges(saved.edges);
+        setNodeIdCounter(saved.nodes.length + 1);
+      }
+    }
+  }, []);
 
   const deleteNode = useCallback((nodeId) => {
     setNodes((nds) => nds.filter((node) => node.id !== nodeId));
@@ -122,22 +149,119 @@ function App() {
     setShowDialog(false);
   };
 
-  const onConnect = useCallback(
-    (params) => setEdges((eds) => addEdge({ 
-      ...params, 
-      animated: true, 
-      type: 'smoothstep',
-      style: { stroke: '#3b82f6', strokeWidth: 2 }
-    }, eds)),
-    [setEdges]
-  );
+  // CRITICAL: onConnect callback
+  const onConnect = useCallback((params) => {
+    console.log("🔗 Connection attempt detected!", params);
+    
+    // Find source and target nodes
+    const sourceNode = nodes.find(n => n.id === params.source);
+    const targetNode = nodes.find(n => n.id === params.target);
+    
+    console.log("📍 Source node:", sourceNode);
+    console.log("📍 Target node:", targetNode);
+    
+    if (sourceNode && targetNode) {
+      console.log("✅ Both nodes found! Opening EdgeTypeDialog...");
+      setPendingConnection({ params, sourceNode, targetNode });
+      setShowEdgeTypeDialog(true);
+    } else {
+      console.error("❌ Could not find nodes!");
+    }
+  }, [nodes]);
+
+  const handleEdgeTypeConfirm = (edgeType) => {
+    console.log("✅ Edge type confirmed:", edgeType);
+    
+    if (pendingConnection) {
+      const style = getEdgeStyle(edgeType);
+      const label = getEdgeLabel(edgeType);
+      
+      const newEdge = {
+        ...pendingConnection.params,
+        animated: true,
+        type: 'smoothstep',
+        style,
+        label,
+        labelStyle: { fontWeight: 600, fontSize: 12 },
+        labelBgStyle: { fill: 'white', fillOpacity: 0.9 },
+        data: { edgeType }
+      };
+      
+      console.log("➕ Adding edge:", newEdge);
+      setEdges((eds) => addEdge(newEdge, eds));
+    }
+    
+    setShowEdgeTypeDialog(false);
+    setPendingConnection(null);
+  };
 
   const onNodeClick = useCallback((event, node) => {
+    console.log("🖱️ Node clicked:", node.id);
     setSelectedNode(node);
+    setSelectedEdge(null);
   }, []);
+
+  const onEdgeClick = useCallback((event, edge) => {
+    console.log("🖱️ Edge clicked:", edge.id);
+    setSelectedEdge(edge);
+    setSelectedNode(null);
+  }, []);
+
+  const handleChangeEdgeType = (edgeId, newType) => {
+    console.log("🔄 Changing edge type:", edgeId, "to", newType);
+    setEdges((eds) => 
+      eds.map((edge) => {
+        if (edge.id === edgeId) {
+          const style = getEdgeStyle(newType);
+          const label = getEdgeLabel(newType);
+          return {
+            ...edge,
+            style,
+            label,
+            data: { ...edge.data, edgeType: newType }
+          };
+        }
+        return edge;
+      })
+    );
+  };
+
+  const handleDeleteEdge = (edgeId) => {
+    if (window.confirm('Delete this connection?')) {
+      console.log("🗑️ Deleting edge:", edgeId);
+      setEdges((eds) => eds.filter((e) => e.id !== edgeId));
+      setSelectedEdge(null);
+    }
+  };
+
+  const handleEditNode = (node) => {
+    console.log("✏️ Opening edit dialog for:", node.id);
+    setNodeToEdit(node);
+    setShowEditDialog(true);
+  };
+
+  const handleSaveEdit = (updatedNode) => {
+    console.log("💾 Saving edited node:", updatedNode);
+    setNodes((nds) =>
+      nds.map((n) => (n.id === updatedNode.id ? updatedNode : n))
+    );
+    setShowEditDialog(false);
+    setNodeToEdit(null);
+  };
+
+  const handleLoadCourse = (loadedNodes, loadedEdges) => {
+    console.log("📂 Loading course:", loadedNodes.length, "nodes", loadedEdges.length, "edges");
+    setNodes(loadedNodes);
+    setEdges(loadedEdges);
+    setNodeIdCounter(loadedNodes.length + 1);
+    setSelectedNode(null);
+    setShowSaveLoadDialog(false);
+  };
 
   const leoNodes = nodes.filter(n => n.data.nodeType === 'leo');
   const assessmentNodes = nodes.filter(n => n.data.nodeType === 'assessment');
+
+  console.log("🔧 App render - showEdgeTypeDialog:", showEdgeTypeDialog, "showEditDialog:", showEditDialog);
 
   return (
     <div style={{ width: '100vw', height: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -193,6 +317,7 @@ function App() {
             + Assessment
           </button>
           <button
+            onClick={() => setShowSaveLoadDialog(true)}
             style={{
               background: 'white',
               color: '#64748b',
@@ -204,7 +329,7 @@ function App() {
               fontWeight: '500',
             }}
           >
-            Export
+            💾 Save / Load
           </button>
           <div style={{
             display: 'flex',
@@ -273,7 +398,11 @@ function App() {
                 {leoNodes.map((node, idx) => (
                   <div 
                     key={node.id}
-                    onClick={() => setSelectedNode(node)}
+                    onClick={() => {
+                      console.log("📋 Selected LEO from sidebar:", node.id);
+                      setSelectedNode(node);
+                      setSelectedEdge(null);
+                    }}
                     style={{
                       padding: '8px',
                       marginBottom: '4px',
@@ -307,7 +436,11 @@ function App() {
                 {assessmentNodes.map((node, idx) => (
                   <div 
                     key={node.id}
-                    onClick={() => setSelectedNode(node)}
+                    onClick={() => {
+                      console.log("📋 Selected Assessment from sidebar:", node.id);
+                      setSelectedNode(node);
+                      setSelectedEdge(null);
+                    }}
                     style={{
                       padding: '8px',
                       marginBottom: '4px',
@@ -379,6 +512,7 @@ function App() {
               onEdgesChange={onEdgesChange}
               onConnect={onConnect}
               onNodeClick={onNodeClick}
+              onEdgeClick={onEdgeClick}
               nodeTypes={nodeTypes}
               fitView
             >
@@ -395,7 +529,15 @@ function App() {
           borderLeft: '1px solid #e2e8f0',
           overflow: 'auto'
         }}>
-          <NodeProperties node={selectedNode} nodes={nodes} />
+          <NodeProperties 
+            node={selectedNode} 
+            edge={selectedEdge}
+            nodes={nodes}
+            edges={edges}
+            onChangeEdgeType={handleChangeEdgeType}
+            onDeleteEdge={handleDeleteEdge}
+            onEditNode={handleEditNode}
+          />
         </div>
       </div>
 
@@ -405,6 +547,43 @@ function App() {
           initialType={showDialog.type}
           onAdd={addNode}
           onCancel={() => setShowDialog(false)}
+        />
+      )}
+
+      {/* Save/Load Dialog */}
+      {showSaveLoadDialog && (
+        <SaveLoadDialog
+          nodes={nodes}
+          edges={edges}
+          onLoad={handleLoadCourse}
+          onClose={() => setShowSaveLoadDialog(false)}
+        />
+      )}
+
+      {/* Edge Type Dialog */}
+      {showEdgeTypeDialog && pendingConnection && (
+        <EdgeTypeDialog
+          sourceNode={pendingConnection.sourceNode}
+          targetNode={pendingConnection.targetNode}
+          onConfirm={handleEdgeTypeConfirm}
+          onCancel={() => {
+            console.log("❌ EdgeTypeDialog cancelled");
+            setShowEdgeTypeDialog(false);
+            setPendingConnection(null);
+          }}
+        />
+      )}
+
+      {/* Edit Node Dialog */}
+      {showEditDialog && nodeToEdit && (
+        <EditNodeDialog
+          node={nodeToEdit}
+          onSave={handleSaveEdit}
+          onCancel={() => {
+            console.log("❌ Edit cancelled");
+            setShowEditDialog(false);
+            setNodeToEdit(null);
+          }}
         />
       )}
     </div>
