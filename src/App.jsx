@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback } from "react";
 import ReactFlow, {
   MiniMap,
   Controls,
@@ -6,17 +6,22 @@ import ReactFlow, {
   useNodesState,
   useEdgesState,
   addEdge,
-} from 'reactflow';
-import 'reactflow/dist/style.css';
-import './App.css';
-import CustomNode from './components/CustomNode';
-import AddNodeDialog from './components/AddNodeDialog';
-import NodeProperties from './components/NodeProperties';
-import EdgeTypeDialog from './components/EdgeTypeDialog';
-import EditNodeDialog from './components/EditNodeDialog';
-import { SaveLoadDialog, useSaveLoad, loadFromLocalStorage } from './components/SaveLoadManager';
-import { getEdgeStyle, getEdgeLabel } from './components/edgeUtils';
-import { exportToPNG, exportToExcel } from './utils/exportUtils';
+} from "reactflow";
+import "reactflow/dist/style.css";
+import "./App.css";
+import CustomNode from "./components/CustomNode";
+import AddNodeDialog from "./components/AddNodeDialog";
+import NodeProperties from "./components/NodeProperties";
+import EdgeTypeDialog from "./components/EdgeTypeDialog";
+import EditNodeDialog from "./components/EditNodeDialog";
+import {
+  SaveLoadDialog,
+  useSaveLoad,
+  loadFromLocalStorage,
+} from "./components/SaveLoadManager";
+import { getEdgeStyle, getEdgeLabel } from "./components/edgeUtils";
+import { exportToPNG, exportToExcel } from "./utils/exportUtils";
+import { autoLayoutGraph } from "./utils/autoLayout";
 
 const nodeTypes = {
   custom: CustomNode,
@@ -24,13 +29,13 @@ const nodeTypes = {
 
 const initialNodes = [
   {
-    id: '1',
-    type: 'custom',
+    id: "1",
+    type: "custom",
     data: {
-      label: 'UNDERSTAND_OOP_BASICS',
-      description: 'understand basic OOP concepts and principles',
-      nodeType: 'leo',
-      nodeId: '01_01',
+      label: "UNDERSTAND_OOP_BASICS",
+      description: "understand basic OOP concepts and principles",
+      nodeType: "leo",
+      nodeId: "01_01",
       level: 3,
       onDelete: null,
       onLabelChange: null,
@@ -38,13 +43,13 @@ const initialNodes = [
     position: { x: 400, y: 100 },
   },
   {
-    id: '2',
-    type: 'custom',
+    id: "2",
+    type: "custom",
     data: {
-      label: 'USE_VARIABLES_DATATYPES',
-      description: 'declare and use different data types and variables',
-      nodeType: 'leo',
-      nodeId: '01_02',
+      label: "USE_VARIABLES_DATATYPES",
+      description: "declare and use different data types and variables",
+      nodeType: "leo",
+      nodeId: "01_02",
       level: 5,
       onDelete: null,
       onLabelChange: null,
@@ -55,14 +60,14 @@ const initialNodes = [
 
 const initialEdges = [
   {
-    id: 'e1-2',
-    source: '1',
-    target: '2',
-    label: '→ enables',
-    type: 'smoothstep',
+    id: "e1-2",
+    source: "1",
+    target: "2",
+    label: "→ enables",
+    type: "smoothstep",
     animated: true,
-    style: { stroke: '#3b82f6', strokeWidth: 2 },
-    data: { edgeType: 'implies' }
+    style: { stroke: "#3b82f6", strokeWidth: 2 },
+    data: { edgeType: "implies" },
   },
 ];
 
@@ -86,7 +91,7 @@ function App() {
   React.useEffect(() => {
     const saved = loadFromLocalStorage();
     if (saved && saved.nodes.length > 0) {
-      const confirmLoad = window.confirm('Found auto-saved data. Load it?');
+      const confirmLoad = window.confirm("Found auto-saved data. Load it?");
       if (confirmLoad) {
         setNodes(saved.nodes);
         setEdges(saved.edges);
@@ -95,23 +100,31 @@ function App() {
     }
   }, []);
 
-  const deleteNode = useCallback((nodeId) => {
-    setNodes((nds) => nds.filter((node) => node.id !== nodeId));
-    setEdges((eds) => eds.filter((edge) => edge.source !== nodeId && edge.target !== nodeId));
-    if (selectedNode?.id === nodeId) {
-      setSelectedNode(null);
-    }
-  }, [setNodes, setEdges, selectedNode]);
+  const deleteNode = useCallback(
+    (nodeId) => {
+      setNodes((nds) => nds.filter((node) => node.id !== nodeId));
+      setEdges((eds) =>
+        eds.filter((edge) => edge.source !== nodeId && edge.target !== nodeId)
+      );
+      if (selectedNode?.id === nodeId) {
+        setSelectedNode(null);
+      }
+    },
+    [setNodes, setEdges, selectedNode]
+  );
 
-  const changeLabelNode = useCallback((nodeId, newLabel) => {
-    setNodes((nds) =>
-      nds.map((node) =>
-        node.id === nodeId
-          ? { ...node, data: { ...node.data, label: newLabel } }
-          : node
-      )
-    );
-  }, [setNodes]);
+  const changeLabelNode = useCallback(
+    (nodeId, newLabel) => {
+      setNodes((nds) =>
+        nds.map((node) =>
+          node.id === nodeId
+            ? { ...node, data: { ...node.data, label: newLabel } }
+            : node
+        )
+      );
+    },
+    [setNodes]
+  );
 
   React.useEffect(() => {
     setNodes((nds) =>
@@ -127,12 +140,14 @@ function App() {
   }, [deleteNode, changeLabelNode, setNodes]);
 
   const addNode = ({ type, label, description, level }) => {
-    const nodeId = `0${Math.floor(nodeIdCounter / 10)}_${nodeIdCounter % 10 < 10 ? '0' : ''}${nodeIdCounter % 10}`;
+    const nodeId = `0${Math.floor(nodeIdCounter / 10)}_${
+      nodeIdCounter % 10 < 10 ? "0" : ""
+    }${nodeIdCounter % 10}`;
     const newNode = {
       id: `${nodeIdCounter}`,
-      type: 'custom',
+      type: "custom",
       data: {
-        label: label.toUpperCase().replace(/ /g, '_'),
+        label: label.toUpperCase().replace(/ /g, "_"),
         description,
         nodeType: type,
         nodeId,
@@ -151,47 +166,50 @@ function App() {
   };
 
   // CRITICAL: onConnect callback
-  const onConnect = useCallback((params) => {
-    console.log("🔗 Connection attempt detected!", params);
-    
-    // Find source and target nodes
-    const sourceNode = nodes.find(n => n.id === params.source);
-    const targetNode = nodes.find(n => n.id === params.target);
-    
-    console.log("📍 Source node:", sourceNode);
-    console.log("📍 Target node:", targetNode);
-    
-    if (sourceNode && targetNode) {
-      console.log("✅ Both nodes found! Opening EdgeTypeDialog...");
-      setPendingConnection({ params, sourceNode, targetNode });
-      setShowEdgeTypeDialog(true);
-    } else {
-      console.error("❌ Could not find nodes!");
-    }
-  }, [nodes]);
+  const onConnect = useCallback(
+    (params) => {
+      console.log("🔗 Connection attempt detected!", params);
+
+      // Find source and target nodes
+      const sourceNode = nodes.find((n) => n.id === params.source);
+      const targetNode = nodes.find((n) => n.id === params.target);
+
+      console.log("📍 Source node:", sourceNode);
+      console.log("📍 Target node:", targetNode);
+
+      if (sourceNode && targetNode) {
+        console.log("✅ Both nodes found! Opening EdgeTypeDialog...");
+        setPendingConnection({ params, sourceNode, targetNode });
+        setShowEdgeTypeDialog(true);
+      } else {
+        console.error("❌ Could not find nodes!");
+      }
+    },
+    [nodes]
+  );
 
   const handleEdgeTypeConfirm = (edgeType) => {
     console.log("✅ Edge type confirmed:", edgeType);
-    
+
     if (pendingConnection) {
       const style = getEdgeStyle(edgeType);
       const label = getEdgeLabel(edgeType);
-      
+
       const newEdge = {
         ...pendingConnection.params,
         animated: true,
-        type: 'smoothstep',
+        type: "smoothstep",
         style,
         label,
         labelStyle: { fontWeight: 600, fontSize: 12 },
-        labelBgStyle: { fill: 'white', fillOpacity: 0.9 },
-        data: { edgeType }
+        labelBgStyle: { fill: "white", fillOpacity: 0.9 },
+        data: { edgeType },
       };
-      
+
       console.log("➕ Adding edge:", newEdge);
       setEdges((eds) => addEdge(newEdge, eds));
     }
-    
+
     setShowEdgeTypeDialog(false);
     setPendingConnection(null);
   };
@@ -210,7 +228,7 @@ function App() {
 
   const handleChangeEdgeType = (edgeId, newType) => {
     console.log("🔄 Changing edge type:", edgeId, "to", newType);
-    setEdges((eds) => 
+    setEdges((eds) =>
       eds.map((edge) => {
         if (edge.id === edgeId) {
           const style = getEdgeStyle(newType);
@@ -219,7 +237,7 @@ function App() {
             ...edge,
             style,
             label,
-            data: { ...edge.data, edgeType: newType }
+            data: { ...edge.data, edgeType: newType },
           };
         }
         return edge;
@@ -228,7 +246,7 @@ function App() {
   };
 
   const handleDeleteEdge = (edgeId) => {
-    if (window.confirm('Delete this connection?')) {
+    if (window.confirm("Delete this connection?")) {
       console.log("🗑️ Deleting edge:", edgeId);
       setEdges((eds) => eds.filter((e) => e.id !== edgeId));
       setSelectedEdge(null);
@@ -251,84 +269,112 @@ function App() {
   };
 
   const handleLoadCourse = (loadedNodes, loadedEdges) => {
-    console.log("📂 Loading course:", loadedNodes.length, "nodes", loadedEdges.length, "edges");
+    console.log(
+      "📂 Loading course:",
+      loadedNodes.length,
+      "nodes",
+      loadedEdges.length,
+      "edges"
+    );
     setNodes(loadedNodes);
     setEdges(loadedEdges);
     setNodeIdCounter(loadedNodes.length + 1);
     setSelectedNode(null);
     setShowSaveLoadDialog(false);
   };
-   // Export handlers
+  // Export handlers
   const handleExportPNG = async () => {
-    console.log('🖼️ Exporting to PNG...');
+    console.log("🖼️ Exporting to PNG...");
     const success = await exportToPNG();
     if (success) {
-      alert('✅ PNG exported successfully! Check your Downloads folder.');
+      alert("✅ PNG exported successfully! Check your Downloads folder.");
     }
   };
 
   const handleExportExcel = () => {
-    console.log('📊 Exporting to Excel...');
+    console.log("📊 Exporting to Excel...");
     const success = exportToExcel(nodes, edges);
     if (success) {
-      alert('✅ Excel file exported successfully! Check your Downloads folder.');
+      alert(
+        "✅ Excel file exported successfully! Check your Downloads folder."
+      );
     }
   };
 
-  const leoNodes = nodes.filter(n => n.data.nodeType === 'leo');
-  const assessmentNodes = nodes.filter(n => n.data.nodeType === 'assessment');
+  const handleAutoLayout = () => {
+    setNodes((current) => autoLayoutGraph(current, edges));
+  };
 
-  console.log("🔧 App render - showEdgeTypeDialog:", showEdgeTypeDialog, "showEditDialog:", showEditDialog);
+  const leoNodes = nodes.filter((n) => n.data.nodeType === "leo");
+  const assessmentNodes = nodes.filter((n) => n.data.nodeType === "assessment");
+
+  console.log(
+    "🔧 App render - showEdgeTypeDialog:",
+    showEdgeTypeDialog,
+    "showEditDialog:",
+    showEditDialog
+  );
 
   return (
-    <div style={{ width: '100vw', height: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div
+      style={{
+        width: "100vw",
+        height: "100vh",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       {/* Top Toolbar */}
-      <div style={{
-        height: '60px',
-        background: '#ffffff',
-        borderBottom: '1px solid #e2e8f0',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '0 20px',
-        gap: '10px',
-      }}>
-        <h1 style={{ 
-          color: '#1e293b', 
-          margin: 0, 
-          fontSize: '20px',
-          fontWeight: '600'
-        }}>
+      <div
+        style={{
+          height: "60px",
+          background: "#ffffff",
+          borderBottom: "1px solid #e2e8f0",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "0 20px",
+          gap: "10px",
+        }}
+      >
+        <h1
+          style={{
+            color: "#1e293b",
+            margin: 0,
+            fontSize: "20px",
+            fontWeight: "600",
+          }}
+        >
           CourseGraph
         </h1>
-        
-        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+
+        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
           <button
-            onClick={() => setShowDialog({ type: 'leo' })}
+            onClick={() => setShowDialog({ type: "leo" })}
             style={{
-              background: '#3b82f6',
-              color: 'white',
-              border: 'none',
-              padding: '10px 20px',
-              borderRadius: '6px',
-              cursor: 'pointer',
-              fontSize: '14px',
-              fontWeight: '500',
+              background: "#3b82f6",
+              color: "white",
+              border: "none",
+              padding: "10px 20px",
+              borderRadius: "6px",
+              cursor: "pointer",
+              fontSize: "14px",
+              fontWeight: "500",
             }}
           >
             + Add LEO
           </button>
           <button
-            onClick={() => setShowDialog({ type: 'assessment' })}
+            onClick={() => setShowDialog({ type: "assessment" })}
             style={{
-              background: 'white',
-              color: '#3b82f6',
-              border: '2px solid #3b82f6',
-              padding: '10px 20px',
-              borderRadius: '6px',
-              cursor: 'pointer',
-              fontSize: '14px',
-              fontWeight: '500',
+              background: "white",
+              color: "#3b82f6",
+              border: "2px solid #3b82f6",
+              padding: "10px 20px",
+              borderRadius: "6px",
+              cursor: "pointer",
+              fontSize: "14px",
+              fontWeight: "500",
             }}
           >
             + Assessment
@@ -336,127 +382,162 @@ function App() {
           <button
             onClick={() => setShowSaveLoadDialog(true)}
             style={{
-              background: 'white',
-              color: '#64748b',
-              border: '2px solid #e2e8f0',
-              padding: '10px 20px',
-              borderRadius: '6px',
-              cursor: 'pointer',
-              fontSize: '14px',
-              fontWeight: '500',
+              background: "white",
+              color: "#64748b",
+              border: "2px solid #e2e8f0",
+              padding: "10px 20px",
+              borderRadius: "6px",
+              cursor: "pointer",
+              fontSize: "14px",
+              fontWeight: "500",
             }}
           >
             💾 Save / Load
           </button>
           <button
-              onClick={handleExportPNG}
+            onClick={handleExportPNG}
+            style={{
+              background: "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)",
+              color: "white",
+              border: "none",
+              padding: "8px 16px",
+              borderRadius: "6px",
+              cursor: "pointer",
+              fontSize: "14px",
+              fontWeight: "500",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              marginLeft: "8px",
+            }}
+            title="Export as PNG image"
+          >
+            <span>📸</span>
+            <span>PNG</span>
+          </button>
+
+          <button
+            onClick={handleExportExcel}
+            style={{
+              background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+              color: "white",
+              border: "none",
+              padding: "8px 16px",
+              borderRadius: "6px",
+              cursor: "pointer",
+              fontSize: "14px",
+              fontWeight: "500",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              marginLeft: "8px",
+            }}
+            title="Export as Excel spreadsheet"
+          >
+            <span>📊</span>
+            <span>Excel</span>
+          </button>
+          <div
+            style={{
+              display: "flex",
+              gap: "8px",
+              alignItems: "center",
+              marginLeft: "10px",
+            }}
+          >
+            <button
               style={{
-                background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
-                color: 'white',
-                border: 'none',
-                padding: '8px 16px',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                fontSize: '14px',
-                fontWeight: '500',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                marginLeft: '8px'
+                background: "white",
+                border: "1px solid #e2e8f0",
+                borderRadius: "4px",
+                width: "32px",
+                height: "32px",
+                cursor: "pointer",
+                fontSize: "16px",
               }}
-              title="Export as PNG image"
             >
-              <span>📸</span>
-              <span>PNG</span>
+              −
+            </button>
+            <span style={{ fontSize: "14px", color: "#64748b" }}>100 %</span>
+            <button
+              style={{
+                background: "white",
+                border: "1px solid #e2e8f0",
+                borderRadius: "4px",
+                width: "32px",
+                height: "32px",
+                cursor: "pointer",
+                fontSize: "16px",
+              }}
+            >
+              +
             </button>
 
             <button
-              onClick={handleExportExcel}
+              onClick={handleAutoLayout}
               style={{
-                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                color: 'white',
-                border: 'none',
-                padding: '8px 16px',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                fontSize: '14px',
-                fontWeight: '500',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                marginLeft: '8px'
+                background: "white",
+                color: "#0f172a",
+                border: "2px solid #e2e8f0",
+                padding: "10px 16px",
+                borderRadius: "6px",
+                cursor: "pointer",
+                fontSize: "14px",
+                fontWeight: "500",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
               }}
-              title="Export as Excel spreadsheet"
             >
-              <span>📊</span>
-              <span>Excel</span>
+              🔀 Auto Layout
             </button>
-          <div style={{
-            display: 'flex',
-            gap: '8px',
-            alignItems: 'center',
-            marginLeft: '10px'
-          }}>
-            <button style={{
-              background: 'white',
-              border: '1px solid #e2e8f0',
-              borderRadius: '4px',
-              width: '32px',
-              height: '32px',
-              cursor: 'pointer',
-              fontSize: '16px'
-            }}>−</button>
-            <span style={{ fontSize: '14px', color: '#64748b' }}>100 %</span>
-            <button style={{
-              background: 'white',
-              border: '1px solid #e2e8f0',
-              borderRadius: '4px',
-              width: '32px',
-              height: '32px',
-              cursor: 'pointer',
-              fontSize: '16px'
-            }}>+</button>
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div style={{ display: 'flex', flexGrow: 1, overflow: 'hidden' }}>
+      <div style={{ display: "flex", flexGrow: 1, overflow: "hidden" }}>
         {/* Left Sidebar - Course Structure */}
-        <div style={{
-          width: '280px',
-          background: '#ffffff',
-          borderRight: '1px solid #e2e8f0',
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'auto'
-        }}>
-          <div style={{ padding: '20px' }}>
-            <h2 style={{ 
-              fontSize: '18px', 
-              fontWeight: '600', 
-              margin: '0 0 20px 0',
-              color: '#1e293b'
-            }}>
+        <div
+          style={{
+            width: "280px",
+            background: "#ffffff",
+            borderRight: "1px solid #e2e8f0",
+            display: "flex",
+            flexDirection: "column",
+            overflow: "auto",
+          }}
+        >
+          <div style={{ padding: "20px" }}>
+            <h2
+              style={{
+                fontSize: "18px",
+                fontWeight: "600",
+                margin: "0 0 20px 0",
+                color: "#1e293b",
+              }}
+            >
               Course Structure
             </h2>
-            
+
             {/* Learning Outcomes */}
-            <div style={{ marginBottom: '20px' }}>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                marginBottom: '10px',
-                cursor: 'pointer'
-              }}>
-                <span style={{ marginRight: '8px' }}>▼</span>
-                <span style={{ fontWeight: '500', color: '#1e293b' }}>
+            <div style={{ marginBottom: "20px" }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  marginBottom: "10px",
+                  cursor: "pointer",
+                }}
+              >
+                <span style={{ marginRight: "8px" }}>▼</span>
+                <span style={{ fontWeight: "500", color: "#1e293b" }}>
                   Learning Outcomes ({leoNodes.length})
                 </span>
               </div>
-              <div style={{ paddingLeft: '24px' }}>
+              <div style={{ paddingLeft: "24px" }}>
                 {leoNodes.map((node, idx) => (
-                  <div 
+                  <div
                     key={node.id}
                     onClick={() => {
                       console.log("📋 Selected LEO from sidebar:", node.id);
@@ -464,16 +545,20 @@ function App() {
                       setSelectedEdge(null);
                     }}
                     style={{
-                      padding: '8px',
-                      marginBottom: '4px',
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                      background: selectedNode?.id === node.id ? '#eff6ff' : 'transparent',
-                      fontSize: '14px',
-                      color: '#64748b'
+                      padding: "8px",
+                      marginBottom: "4px",
+                      borderRadius: "4px",
+                      cursor: "pointer",
+                      background:
+                        selectedNode?.id === node.id
+                          ? "#eff6ff"
+                          : "transparent",
+                      fontSize: "14px",
+                      color: "#64748b",
                     }}
                   >
-                    ├─ LEO-{idx + 1}: {node.data.label.toLowerCase().replace(/_/g, ' ')}
+                    ├─ LEO-{idx + 1}:{" "}
+                    {node.data.label.toLowerCase().replace(/_/g, " ")}
                   </div>
                 ))}
               </div>
@@ -481,37 +566,45 @@ function App() {
 
             {/* Assessments */}
             <div>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                marginBottom: '10px',
-                cursor: 'pointer'
-              }}>
-                <span style={{ marginRight: '8px' }}>▼</span>
-                <span style={{ fontWeight: '500', color: '#1e293b' }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  marginBottom: "10px",
+                  cursor: "pointer",
+                }}
+              >
+                <span style={{ marginRight: "8px" }}>▼</span>
+                <span style={{ fontWeight: "500", color: "#1e293b" }}>
                   Assessments ({assessmentNodes.length})
                 </span>
               </div>
-              <div style={{ paddingLeft: '24px' }}>
+              <div style={{ paddingLeft: "24px" }}>
                 {assessmentNodes.map((node, idx) => (
-                  <div 
+                  <div
                     key={node.id}
                     onClick={() => {
-                      console.log("📋 Selected Assessment from sidebar:", node.id);
+                      console.log(
+                        "📋 Selected Assessment from sidebar:",
+                        node.id
+                      );
                       setSelectedNode(node);
                       setSelectedEdge(null);
                     }}
                     style={{
-                      padding: '8px',
-                      marginBottom: '4px',
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                      background: selectedNode?.id === node.id ? '#f0fdf4' : 'transparent',
-                      fontSize: '14px',
-                      color: '#64748b'
+                      padding: "8px",
+                      marginBottom: "4px",
+                      borderRadius: "4px",
+                      cursor: "pointer",
+                      background:
+                        selectedNode?.id === node.id
+                          ? "#f0fdf4"
+                          : "transparent",
+                      fontSize: "14px",
+                      color: "#64748b",
                     }}
                   >
-                    ├─ {node.data.label.toLowerCase().replace(/_/g, ' ')}
+                    ├─ {node.data.label.toLowerCase().replace(/_/g, " ")}
                   </div>
                 ))}
               </div>
@@ -520,45 +613,56 @@ function App() {
         </div>
 
         {/* Center - Graph */}
-        <div style={{ flexGrow: 1, background: '#f8fafc' }}>
+        <div style={{ flexGrow: 1, background: "#f8fafc" }}>
           {nodes.length === 0 ? (
-            <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              height: '100%',
-              color: '#94a3b8'
-            }}>
-              <div style={{
-                width: '200px',
-                height: '200px',
-                borderRadius: '50%',
-                background: '#3b82f6',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'white',
-                fontSize: '18px',
-                fontWeight: '500',
-                marginBottom: '30px'
-              }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                height: "100%",
+                color: "#94a3b8",
+              }}
+            >
+              <div
+                style={{
+                  width: "200px",
+                  height: "200px",
+                  borderRadius: "50%",
+                  background: "#3b82f6",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "white",
+                  fontSize: "18px",
+                  fontWeight: "500",
+                  marginBottom: "30px",
+                }}
+              >
                 Your course is empty
               </div>
-              <h3 style={{ fontSize: '20px', fontWeight: '500', margin: '0 0 20px 0', color: '#1e293b' }}>
+              <h3
+                style={{
+                  fontSize: "20px",
+                  fontWeight: "500",
+                  margin: "0 0 20px 0",
+                  color: "#1e293b",
+                }}
+              >
                 Start by adding Learning Outcomes
               </h3>
               <button
-                onClick={() => setShowDialog({ type: 'leo' })}
+                onClick={() => setShowDialog({ type: "leo" })}
                 style={{
-                  background: '#3b82f6',
-                  color: 'white',
-                  border: 'none',
-                  padding: '12px 24px',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  fontSize: '14px',
-                  fontWeight: '500',
+                  background: "#3b82f6",
+                  color: "white",
+                  border: "none",
+                  padding: "12px 24px",
+                  borderRadius: "6px",
+                  cursor: "pointer",
+                  fontSize: "14px",
+                  fontWeight: "500",
                 }}
               >
                 + Add LEO
@@ -583,14 +687,16 @@ function App() {
         </div>
 
         {/* Right Sidebar - Properties */}
-        <div style={{
-          width: '320px',
-          background: '#ffffff',
-          borderLeft: '1px solid #e2e8f0',
-          overflow: 'auto'
-        }}>
-          <NodeProperties 
-            node={selectedNode} 
+        <div
+          style={{
+            width: "320px",
+            background: "#ffffff",
+            borderLeft: "1px solid #e2e8f0",
+            overflow: "auto",
+          }}
+        >
+          <NodeProperties
+            node={selectedNode}
             edge={selectedEdge}
             nodes={nodes}
             edges={edges}
