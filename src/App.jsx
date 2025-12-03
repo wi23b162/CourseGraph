@@ -16,6 +16,7 @@ import EdgeTypeDialog from './components/EdgeTypeDialog';
 import EditNodeDialog from './components/EditNodeDialog';
 import { SaveLoadDialog, useSaveLoad, loadFromLocalStorage } from './components/SaveLoadManager';
 import { getEdgeStyle, getEdgeLabel } from './components/edgeUtils';
+import { exportToPNG, exportToExcel } from './utils/exportUtils';
 
 const nodeTypes = {
   custom: CustomNode,
@@ -257,6 +258,22 @@ function App() {
     setSelectedNode(null);
     setShowSaveLoadDialog(false);
   };
+   // Export handlers
+  const handleExportPNG = async () => {
+    console.log('🖼️ Exporting to PNG...');
+    const success = await exportToPNG();
+    if (success) {
+      alert('✅ PNG exported successfully! Check your Downloads folder.');
+    }
+  };
+
+  const handleExportExcel = () => {
+    console.log('📊 Exporting to Excel...');
+    const success = exportToExcel(nodes, edges);
+    if (success) {
+      alert('✅ Excel file exported successfully! Check your Downloads folder.');
+    }
+  };
 
   const leoNodes = nodes.filter(n => n.data.nodeType === 'leo');
   const assessmentNodes = nodes.filter(n => n.data.nodeType === 'assessment');
@@ -331,6 +348,49 @@ function App() {
           >
             💾 Save / Load
           </button>
+          <button
+              onClick={handleExportPNG}
+              style={{
+                background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
+                color: 'white',
+                border: 'none',
+                padding: '8px 16px',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontSize: '14px',
+                fontWeight: '500',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                marginLeft: '8px'
+              }}
+              title="Export as PNG image"
+            >
+              <span>📸</span>
+              <span>PNG</span>
+            </button>
+
+            <button
+              onClick={handleExportExcel}
+              style={{
+                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                color: 'white',
+                border: 'none',
+                padding: '8px 16px',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontSize: '14px',
+                fontWeight: '500',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                marginLeft: '8px'
+              }}
+              title="Export as Excel spreadsheet"
+            >
+              <span>📊</span>
+              <span>Excel</span>
+            </button>
           <div style={{
             display: 'flex',
             gap: '8px',
