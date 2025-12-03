@@ -67,7 +67,7 @@ export const loadFromLocalStorage = () => {
 };
 
 // Clear auto-save
-const clearAutoSave = () => {
+export const clearAutoSave = () => {
   localStorage.removeItem('coursegraph_autosave');
   console.log('🗑️ Auto-save cleared');
 };
