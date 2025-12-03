@@ -14,10 +14,12 @@ import AddNodeDialog from "./components/AddNodeDialog";
 import NodeProperties from "./components/NodeProperties";
 import EdgeTypeDialog from "./components/EdgeTypeDialog";
 import EditNodeDialog from "./components/EditNodeDialog";
+import NewProjectDialog from "./components/NewProjectDialog";
 import {
   SaveLoadDialog,
   useSaveLoad,
   loadFromLocalStorage,
+  clearAutoSave,
 } from "./components/SaveLoadManager";
 import { getEdgeStyle, getEdgeLabel } from "./components/edgeUtils";
 import { exportToPNG, exportToExcel } from "./utils/exportUtils";
@@ -78,6 +80,7 @@ function App() {
   const [showSaveLoadDialog, setShowSaveLoadDialog] = useState(false);
   const [showEdgeTypeDialog, setShowEdgeTypeDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showNewProjectDialog, setShowNewProjectDialog] = useState(false);
   const [pendingConnection, setPendingConnection] = useState(null);
   const [nodeIdCounter, setNodeIdCounter] = useState(3);
   const [selectedNode, setSelectedNode] = useState(null);
@@ -282,6 +285,26 @@ function App() {
     setSelectedNode(null);
     setShowSaveLoadDialog(false);
   };
+
+  // Reset everything and start with an empty project
+  const handleNewProject = () => {
+    // Clear all nodes and edges
+    setNodes([]);
+    setEdges([]);
+
+    // Reset internal state
+    setNodeIdCounter(1);
+    setSelectedNode(null);
+    setSelectedEdge(null);
+    setNodeToEdit(null);
+
+    // Clear auto-saved data so it does not come back on refresh
+    clearAutoSave();
+
+    // Close dialog
+    setShowNewProjectDialog(false);
+  };
+
   // Export handlers
   const handleExportPNG = async () => {
     console.log("🖼️ Exporting to PNG...");
@@ -472,28 +495,57 @@ function App() {
             >
               +
             </button>
-
-            <button
-              onClick={handleAutoLayout}
-              style={{
-                background: "white",
-                color: "#0f172a",
-                border: "2px solid #e2e8f0",
-                padding: "10px 16px",
-                borderRadius: "6px",
-                cursor: "pointer",
-                fontSize: "14px",
-                fontWeight: "500",
-                display: "flex",
-                alignItems: "center",
-                gap: "6px",
-              }}
-            >
-              🔀 Auto Layout
-            </button>
           </div>
         </div>
       </div>
+
+      {/* Auto Layout & New Project row */}
+<div
+  style={{
+    display: "flex",
+    gap: "10px",
+    margin: "10px 20px",
+  }}
+>
+  <button
+    onClick={handleAutoLayout}
+    style={{
+      background: "white",
+      color: "#0f172a",
+      border: "2px solid #e2e8f0",
+      padding: "10px 16px",
+      borderRadius: "6px",
+      cursor: "pointer",
+      fontSize: "14px",
+      fontWeight: "500",
+      display: "flex",
+      alignItems: "center",
+      gap: "6px",
+    }}
+  >
+    🔀 Auto Layout
+  </button>
+
+  <button
+    onClick={() => setShowNewProjectDialog(true)}
+    style={{
+      background: "white",
+      color: "#b91c1c",
+      border: "2px solid #fecaca",
+      padding: "10px 16px",
+      borderRadius: "6px",
+      cursor: "pointer",
+      fontSize: "14px",
+      fontWeight: "500",
+      display: "flex",
+      alignItems: "center",
+      gap: "6px",
+    }}
+  >
+    New Project
+  </button>
+</div>
+
 
       {/* Main Content */}
       <div style={{ display: "flex", flexGrow: 1, overflow: "hidden" }}>
@@ -750,6 +802,14 @@ function App() {
             setShowEditDialog(false);
             setNodeToEdit(null);
           }}
+        />
+      )}
+
+      {/* New Project Dialog */}
+      {showNewProjectDialog && (
+        <NewProjectDialog
+          onCancel={() => setShowNewProjectDialog(false)}
+          onConfirm={handleNewProject}
         />
       )}
     </div>
