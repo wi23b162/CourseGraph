@@ -2,8 +2,8 @@ import React, { memo } from 'react';
 import { Handle, Position } from 'reactflow';
 
 const CustomNode = ({ id, data, isConnectable }) => {
-  console.log("🔷 CustomNode render:", id, "isConnectable:", isConnectable);
-  
+  console.log("CustomNode render:", id, "isConnectable:", isConnectable);
+
   // Node colors based on type and level
   const getNodeColor = () => {
     if (data.nodeType === 'assessment') {
@@ -13,7 +13,7 @@ const CustomNode = ({ id, data, isConnectable }) => {
         text: '#ffffff'
       };
     }
-    
+
     // LEO nodes - color by level
     const level = data.level || 3;
     if (level <= 2) {
@@ -43,20 +43,24 @@ const CustomNode = ({ id, data, isConnectable }) => {
 
   return (
     <div style={nodeStyle}>
-      <Handle
-        type="target"
-        position={Position.Top}
-        isConnectable={true}
-        style={{ 
-          background: '#64748b',
-          width: '12px',
-          height: '12px',
-          border: '2px solid white',
-          cursor: 'crosshair'
-        }}
-        onMouseEnter={() => console.log("🎯 Mouse enter TARGET handle of", id)}
-      />
-      
+
+      {/* TOP: incoming + outgoing */}
+      <Handle type="target" position={Position.Top} id="t-in" isConnectable />
+      <Handle type="source" position={Position.Top} id="t-out" isConnectable />
+
+      {/* RIGHT: incoming + outgoing */}
+      <Handle type="target" position={Position.Right} id="r-in" isConnectable />
+      <Handle type="source" position={Position.Right} id="r-out" isConnectable />
+
+      {/* BOTTOM: incoming + outgoing */}
+      <Handle type="target" position={Position.Bottom} id="b-in" isConnectable />
+      <Handle type="source" position={Position.Bottom} id="b-out" isConnectable />
+
+      {/* LEFT: incoming + outgoing */}
+      <Handle type="target" position={Position.Left} id="l-in" isConnectable />
+      <Handle type="source" position={Position.Left} id="l-out" isConnectable />
+
+
       {/* Node ID Badge */}
       <div style={{
         position: 'absolute',
@@ -94,8 +98,8 @@ const CustomNode = ({ id, data, isConnectable }) => {
       )}
 
       {/* Label - Uppercase */}
-      <div style={{ 
-        marginBottom: '8px', 
+      <div style={{
+        marginBottom: '8px',
         fontSize: '14px',
         fontWeight: '700',
         letterSpacing: '0.5px',
@@ -117,19 +121,8 @@ const CustomNode = ({ id, data, isConnectable }) => {
         </div>
       )}
 
-      <Handle
-        type="source"
-        position={Position.Bottom}
-        isConnectable={true}
-        style={{ 
-          background: '#64748b',
-          width: '12px',
-          height: '12px',
-          border: '2px solid white',
-          cursor: 'crosshair'
-        }}
-        onMouseEnter={() => console.log("🎯 Mouse enter SOURCE handle of", id)}
-      />
+
+
     </div>
   );
 };
