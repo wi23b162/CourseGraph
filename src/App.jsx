@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback } from 'react';
 import ReactFlow, {
   MiniMap,
   Controls,
@@ -6,6 +6,7 @@ import ReactFlow, {
   useNodesState,
   useEdgesState,
   addEdge,
+  useReactFlow,
 } from "reactflow";
 import "reactflow/dist/style.css";
 import "./App.css";
@@ -21,9 +22,12 @@ import {
   loadFromLocalStorage,
   clearAutoSave,
 } from "./components/SaveLoadManager";
-import { getEdgeStyle, getEdgeLabel } from "./components/edgeUtils";
+import { getEdgeStyle, getEdgeLabel, getEdgeLabelStyle } from './components/edgeUtils';
 import { exportToPNG, exportToExcel } from "./utils/exportUtils";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { autoLayoutGraph } from "./utils/autoLayout";
+
 
 const nodeTypes = {
   custom: CustomNode,
@@ -86,6 +90,9 @@ function App() {
   const [selectedNode, setSelectedNode] = useState(null);
   const [selectedEdge, setSelectedEdge] = useState(null);
   const [nodeToEdit, setNodeToEdit] = useState(null);
+  const [isExportingPNG, setIsExportingPNG] = useState(false);
+  const [isExportingExcel, setIsExportingExcel] = useState(false);
+  const [zoomLevel, setZoomLevel] = useState(100);
 
   // Auto-save functionality
   useSaveLoad(nodes, edges);
@@ -191,23 +198,34 @@ function App() {
     [nodes]
   );
 
-  const handleEdgeTypeConfirm = (edgeType) => {
-    console.log("✅ Edge type confirmed:", edgeType);
+const handleEdgeTypeConfirm = (edgeType) => {
+  console.log("✅ Edge type confirmed:", edgeType);
 
-    if (pendingConnection) {
-      const style = getEdgeStyle(edgeType);
-      const label = getEdgeLabel(edgeType);
+  if (pendingConnection) {
+    const style = getEdgeStyle(edgeType);
+    const label = getEdgeLabel(edgeType);
+    const labelStyle = getEdgeLabelStyle(edgeType);
 
-      const newEdge = {
-        ...pendingConnection.params,
-        animated: true,
-        type: "smoothstep",
-        style,
-        label,
-        labelStyle: { fontWeight: 600, fontSize: 12 },
-        labelBgStyle: { fill: "white", fillOpacity: 0.9 },
-        data: { edgeType },
-      };
+    const newEdge = {
+      ...pendingConnection.params,
+      animated: true,
+      type: "smoothstep",
+      style,
+      label,
+      labelStyle: {
+        ...labelStyle,
+        fontSize: 13,
+        fontWeight: 600,
+      },
+      labelBgStyle: { 
+        fill: 'white', 
+        fillOpacity: 1,
+        stroke: '#e2e8f0',
+        strokeWidth: 1
+      },
+      labelBgPadding: [8, 4],
+      data: { edgeType },
+    };
 
       console.log("➕ Adding edge:", newEdge);
       setEdges((eds) => addEdge(newEdge, eds));
@@ -229,24 +247,37 @@ function App() {
     setSelectedNode(null);
   }, []);
 
-  const handleChangeEdgeType = (edgeId, newType) => {
-    console.log("🔄 Changing edge type:", edgeId, "to", newType);
-    setEdges((eds) =>
-      eds.map((edge) => {
-        if (edge.id === edgeId) {
-          const style = getEdgeStyle(newType);
-          const label = getEdgeLabel(newType);
-          return {
-            ...edge,
-            style,
-            label,
-            data: { ...edge.data, edgeType: newType },
-          };
-        }
-        return edge;
-      })
-    );
-  };
+ const handleChangeEdgeType = (edgeId, newType) => {
+  console.log("🔄 Changing edge type:", edgeId, "to", newType);
+  setEdges((eds) =>
+    eds.map((edge) => {
+      if (edge.id === edgeId) {
+        const style = getEdgeStyle(newType);
+        const label = getEdgeLabel(newType);
+        const labelStyle = getEdgeLabelStyle(newType);
+        return {
+          ...edge,
+          style,
+          label,
+          labelStyle: {
+            ...labelStyle,
+            fontSize: 13,
+            fontWeight: 600,
+          },
+          labelBgStyle: { 
+            fill: 'white', 
+            fillOpacity: 1,
+            stroke: '#e2e8f0',
+            strokeWidth: 1
+          },
+          labelBgPadding: [8, 4],
+          data: { ...edge.data, edgeType: newType },
+        };
+      }
+      return edge;
+    })
+  );
+};
 
   const handleDeleteEdge = (edgeId) => {
     if (window.confirm("Delete this connection?")) {
@@ -305,23 +336,15 @@ function App() {
     setShowNewProjectDialog(false);
   };
 
-  // Export handlers
+   // Export handlers
   const handleExportPNG = async () => {
-    console.log("🖼️ Exporting to PNG...");
-    const success = await exportToPNG();
-    if (success) {
-      alert("✅ PNG exported successfully! Check your Downloads folder.");
-    }
+    console.log('🖼️ Exporting to PNG...');
+    await exportToPNG();
   };
 
   const handleExportExcel = () => {
-    console.log("📊 Exporting to Excel...");
-    const success = exportToExcel(nodes, edges);
-    if (success) {
-      alert(
-        "✅ Excel file exported successfully! Check your Downloads folder."
-      );
-    }
+    console.log('📊 Exporting to Excel...');
+    exportToExcel(nodes, edges);
   };
 
   const handleAutoLayout = () => {
@@ -337,6 +360,36 @@ function App() {
     "showEditDialog:",
     showEditDialog
   );
+  // Zoom controls
+const handleZoomIn = () => {
+  const rfElement = document.querySelector('.react-flow');
+  if (rfElement) {
+    const zoomInButton = document.querySelector('.react-flow__controls-zoomin');
+    if (zoomInButton) {
+      zoomInButton.click();
+    }
+  }
+};
+
+const handleZoomOut = () => {
+  const rfElement = document.querySelector('.react-flow');
+  if (rfElement) {
+    const zoomOutButton = document.querySelector('.react-flow__controls-zoomout');
+    if (zoomOutButton) {
+      zoomOutButton.click();
+    }
+  }
+};
+
+const handleFitView = () => {
+  const rfElement = document.querySelector('.react-flow');
+  if (rfElement) {
+    const fitViewButton = document.querySelector('.react-flow__controls-fitview');
+    if (fitViewButton) {
+      fitViewButton.click();
+    }
+  }
+};
 
   return (
     <div
@@ -418,84 +471,138 @@ function App() {
             💾 Save / Load
           </button>
           <button
-            onClick={handleExportPNG}
-            style={{
-              background: "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)",
-              color: "white",
-              border: "none",
-              padding: "8px 16px",
-              borderRadius: "6px",
-              cursor: "pointer",
-              fontSize: "14px",
-              fontWeight: "500",
-              display: "flex",
-              alignItems: "center",
-              gap: "6px",
-              marginLeft: "8px",
-            }}
-            title="Export as PNG image"
-          >
-            <span>📸</span>
-            <span>PNG</span>
-          </button>
-
+  onClick={handleExportPNG}
+  disabled={isExportingPNG}
+  style={{
+    background: isExportingPNG
+      ? "linear-gradient(135deg, #9333ea 0%, #7e22ce 100%)"
+      : "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)",
+    color: "white",
+    border: "none",
+    padding: "8px 16px",
+    borderRadius: "6px",
+    cursor: isExportingPNG ? "not-allowed" : "pointer",
+    fontSize: "14px",
+    fontWeight: "500",
+    display: "flex",
+    alignItems: "center",
+    gap: "6px",
+    marginLeft: "8px",
+    opacity: isExportingPNG ? 0.7 : 1,
+  }}
+  title="Export as PNG image"
+>
+  {isExportingPNG ? (
+    <>
+      <span>⏳</span>
+      <span>Exporting...</span>
+    </>
+  ) : (
+    <>
+      <span>📸</span>
+      <span>PNG</span>
+    </>
+  )}
+</button>
+         
           <button
-            onClick={handleExportExcel}
-            style={{
-              background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
-              color: "white",
-              border: "none",
-              padding: "8px 16px",
-              borderRadius: "6px",
-              cursor: "pointer",
-              fontSize: "14px",
-              fontWeight: "500",
-              display: "flex",
-              alignItems: "center",
-              gap: "6px",
-              marginLeft: "8px",
-            }}
-            title="Export as Excel spreadsheet"
-          >
-            <span>📊</span>
-            <span>Excel</span>
-          </button>
-          <div
-            style={{
-              display: "flex",
-              gap: "8px",
-              alignItems: "center",
-              marginLeft: "10px",
-            }}
-          >
-            <button
-              style={{
-                background: "white",
-                border: "1px solid #e2e8f0",
-                borderRadius: "4px",
-                width: "32px",
-                height: "32px",
-                cursor: "pointer",
-                fontSize: "16px",
-              }}
-            >
-              −
-            </button>
-            <span style={{ fontSize: "14px", color: "#64748b" }}>100 %</span>
-            <button
-              style={{
-                background: "white",
-                border: "1px solid #e2e8f0",
-                borderRadius: "4px",
-                width: "32px",
-                height: "32px",
-                cursor: "pointer",
-                fontSize: "16px",
-              }}
-            >
-              +
-            </button>
-          </div>
+  onClick={handleExportExcel}
+  disabled={isExportingExcel}
+  style={{
+    background: isExportingExcel
+      ? "linear-gradient(135deg, #059669 0%, #047857 100%)"
+      : "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+    color: "white",
+    border: "none",
+    padding: "8px 16px",
+    borderRadius: "6px",
+    cursor: isExportingExcel ? "not-allowed" : "pointer",
+    fontSize: "14px",
+    fontWeight: "500",
+    display: "flex",
+    alignItems: "center",
+    gap: "6px",
+    marginLeft: "8px",
+    opacity: isExportingExcel ? 0.7 : 1,
+  }}
+  title="Export as Excel spreadsheet"
+>
+  {isExportingExcel ? (
+    <>
+      <span>⏳</span>
+      <span>Exporting...</span>
+    </>
+  ) : (
+    <>
+      <span>📊</span>
+      <span>Excel</span>
+    </>
+  )}
+</button>
+         <div
+  style={{
+    display: "flex",
+    gap: "8px",
+    alignItems: "center",
+    marginLeft: "10px",
+  }}
+>
+  <button
+    onClick={handleZoomOut}
+    style={{
+      background: "white",
+      border: "1px solid #e2e8f0",
+      borderRadius: "4px",
+      width: "32px",
+      height: "32px",
+      cursor: "pointer",
+      fontSize: "16px",
+      transition: "all 0.2s",
+    }}
+    onMouseEnter={(e) => (e.target.style.background = "#f8fafc")}
+    onMouseLeave={(e) => (e.target.style.background = "white")}
+    title="Zoom out"
+  >
+    −
+  </button>
+  <button
+    onClick={handleFitView}
+    style={{
+      fontSize: "14px",
+      color: "#64748b",
+      background: "white",
+      border: "1px solid #e2e8f0",
+      borderRadius: "4px",
+      padding: "4px 12px",
+      cursor: "pointer",
+      fontWeight: "500",
+      transition: "all 0.2s",
+    }}
+    onMouseEnter={(e) => (e.target.style.background = "#f8fafc")}
+    onMouseLeave={(e) => (e.target.style.background = "white")}
+    title="Fit view"
+  >
+    {zoomLevel} %
+  </button>
+  <button
+    onClick={handleZoomIn}
+    style={{
+      background: "white",
+      border: "1px solid #e2e8f0",
+      borderRadius: "4px",
+      width: "32px",
+      height: "32px",
+      cursor: "pointer",
+      fontSize: "16px",
+      transition: "all 0.2s",
+    }}
+    onMouseEnter={(e) => (e.target.style.background = "#f8fafc")}
+    onMouseLeave={(e) => (e.target.style.background = "white")}
+    title="Zoom in"
+  >
+    +
+  </button>
+</div>
         </div>
       </div>
 
@@ -721,17 +828,23 @@ function App() {
               </button>
             </div>
           ) : (
-            <ReactFlow
-              nodes={nodes}
-              edges={edges}
-              onNodesChange={onNodesChange}
-              onEdgesChange={onEdgesChange}
-              onConnect={onConnect}
-              onNodeClick={onNodeClick}
-              onEdgeClick={onEdgeClick}
-              nodeTypes={nodeTypes}
-              fitView
-            >
+           <ReactFlow
+  nodes={nodes}
+  edges={edges}
+  onNodesChange={onNodesChange}
+  onEdgesChange={onEdgesChange}
+  onConnect={onConnect}
+  onNodeClick={onNodeClick}
+  onEdgeClick={onEdgeClick}
+  nodeTypes={nodeTypes}
+  fitView
+  proOptions={{ hideAttribution: true }}
+  onMove={(event, viewport) => {
+    const zoom = Math.round(viewport.zoom * 100);
+    const roundedZoom = Math.round(zoom / 25) * 25;
+    setZoomLevel(roundedZoom);
+  }}
+>
               <Controls />
               <Background variant="dots" gap={12} size={1} color="#cbd5e1" />
             </ReactFlow>
@@ -812,6 +925,19 @@ function App() {
           onConfirm={handleNewProject}
         />
       )}
+      {/* Toast Notifications */}
+      <ToastContainer
+        position="bottom-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </div>
   );
 }

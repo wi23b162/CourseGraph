@@ -1,47 +1,71 @@
 // src/utils/exportUtils.js
-// Complete export utilities for CourseGraph
-
 import { toPng } from 'html-to-image';
 import * as XLSX from 'xlsx';
 
 /**
- * Export graph as PNG image
+ * Export graph as PNG image (Mac & Windows compatible)
  */
 export const exportToPNG = async () => {
-  const element = document.querySelector('.react-flow');
+  const element = document.querySelector('.react-flow__viewport');
   
   if (!element) {
     alert('Canvas not found. Please try again.');
-    return;
+    return false;
   }
 
   try {
     console.log('📸 Starting PNG export...');
     
+    // Hide controls temporarily
+    const controls = document.querySelector('.react-flow__controls');
+    const attribution = document.querySelector('.react-flow__attribution');
+    const minimap = document.querySelector('.react-flow__minimap');
+    
+    if (controls) controls.style.display = 'none';
+    if (attribution) attribution.style.display = 'none';
+    if (minimap) minimap.style.display = 'none';
+    
     const dataUrl = await toPng(element, {
       backgroundColor: '#f8fafc',
-      width: 1920,
-      height: 1080,
       pixelRatio: 2,
-      cacheBust: true
+      cacheBust: true,
     });
+    
+    // Show controls again
+    if (controls) controls.style.display = '';
+    if (attribution) attribution.style.display = '';
+    if (minimap) minimap.style.display = '';
     
     const link = document.createElement('a');
     link.download = `coursegraph-${new Date().toISOString().slice(0, 10)}.png`;
     link.href = dataUrl;
+    
+    document.body.appendChild(link);
     link.click();
+    
+    setTimeout(() => {
+      document.body.removeChild(link);
+    }, 100);
     
     console.log('✅ PNG export successful');
     return true;
   } catch (error) {
     console.error('❌ PNG export failed:', error);
+    
+    // Show controls again even on error
+    const controls = document.querySelector('.react-flow__controls');
+    const attribution = document.querySelector('.react-flow__attribution');
+    const minimap = document.querySelector('.react-flow__minimap');
+    if (controls) controls.style.display = '';
+    if (attribution) attribution.style.display = '';
+    if (minimap) minimap.style.display = '';
+    
     alert('PNG export failed. Please try again.');
     return false;
   }
 };
-
 /**
- * Export graph data as Excel file
+ * Export graph data as Excel file (Mac & Windows compatible)
  */
 export const exportToExcel = (nodes, edges) => {
   try {
@@ -55,8 +79,6 @@ export const exportToExcel = (nodes, edges) => {
       'Description': node.data.description || '',
       'Type': node.data.nodeType === 'leo' ? 'Learning Outcome' : 'Assessment',
       'Level': node.data.level || 'N/A',
-      'Position X': Math.round(node.position.x),
-      'Position Y': Math.round(node.position.y)
     }));
     
     // Sheet 2: Connections
@@ -71,7 +93,6 @@ export const exportToExcel = (nodes, edges) => {
         'Connection Type': edge.data?.edgeType || edge.label || 'undefined',
         'To ID': targetNode?.data.nodeId || edge.target,
         'To Label': targetNode?.data.label || 'Unknown',
-        'Animated': edge.animated ? 'Yes' : 'No'
       };
     });
     
@@ -102,38 +123,39 @@ export const exportToExcel = (nodes, edges) => {
     
     // Set column widths
     ws1['!cols'] = [
-      { wch: 5 },
-      { wch: 12 },
-      { wch: 30 },
-      { wch: 40 },
-      { wch: 18 },
-      { wch: 8 },
-      { wch: 10 },
-      { wch: 10 }
+      { wch: 5 }, { wch: 12 }, { wch: 30 }, { wch: 40 },
+      { wch: 18 }, { wch: 8 }, { wch: 10 }, { wch: 10 }
     ];
     
     ws2['!cols'] = [
-      { wch: 5 },
-      { wch: 12 },
-      { wch: 25 },
-      { wch: 15 },
-      { wch: 12 },
-      { wch: 25 },
-      { wch: 10 }
+      { wch: 5 }, { wch: 12 }, { wch: 25 },
+      { wch: 15 }, { wch: 12 }, { wch: 25 }, { wch: 10 }
     ];
     
-    ws3['!cols'] = [
-      { wch: 25 },
-      { wch: 15 }
-    ];
+    ws3['!cols'] = [{ wch: 25 }, { wch: 15 }];
     
     XLSX.utils.book_append_sheet(wb, ws1, "Learning Outcomes");
     XLSX.utils.book_append_sheet(wb, ws2, "Connections");
     XLSX.utils.book_append_sheet(wb, ws3, "Statistics");
     
-    const filename = `coursegraph-${new Date().toISOString().slice(0, 10)}.xlsx`;
+    // Mac-compatible export
+    const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([wbout], { type: 'application/octet-stream' });
     
-    XLSX.writeFile(wb, filename);
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `coursegraph-${new Date().toISOString().slice(0, 10)}.xlsx`;
+    
+    // Important for Mac compatibility
+    document.body.appendChild(link);
+    link.click();
+    
+    // Cleanup
+    setTimeout(() => {
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }, 100);
     
     console.log('✅ Excel export successful');
     return true;
