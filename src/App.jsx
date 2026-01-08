@@ -104,6 +104,8 @@ function App() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
 
+  const [history, setHistory] = useState([{ nodes: initialNodes, edges: initialEdges }]);
+  const [currentHistoryIndex, setCurrentHistoryIndex] = useState(0);
 
   // Auto-save functionality
   useSaveLoad(nodes, edges);
@@ -120,6 +122,25 @@ function App() {
       }
     }
   }, []);
+  // Save to history when nodes or edges change
+React.useEffect(() => {
+  const currentState = history[currentHistoryIndex];
+  const hasNodesChanged = JSON.stringify(currentState.nodes) !== JSON.stringify(nodes);
+  const hasEdgesChanged = JSON.stringify(currentState.edges) !== JSON.stringify(edges);
+  
+  if (hasNodesChanged || hasEdgesChanged) {
+    const newHistory = history.slice(0, currentHistoryIndex + 1);
+    newHistory.push({ nodes, edges });
+  
+    if (newHistory.length > 50) {
+      newHistory.shift();
+    } else {
+      setCurrentHistoryIndex(currentHistoryIndex + 1);
+    }
+    
+    setHistory(newHistory);
+  }
+}, [nodes, edges, history, currentHistoryIndex]);
 
   const deleteNode = useCallback(
     (nodeId) => {
@@ -361,6 +382,51 @@ function App() {
   const handleAutoLayout = () => {
     setNodes((current) => autoLayoutGraph(current, edges));
   };
+// Undo/Redo functionality
+const handleUndo = () => {
+  if (currentHistoryIndex > 0) {
+    const newIndex = currentHistoryIndex - 1;
+    const previousState = history[newIndex];
+    
+    setNodes(previousState.nodes);
+    setEdges(previousState.edges);
+    setCurrentHistoryIndex(newIndex);
+    
+    console.log('⏪ Undo to step', newIndex);
+  }
+};
+
+const handleRedo = () => {
+  if (currentHistoryIndex < history.length - 1) {
+    const newIndex = currentHistoryIndex + 1;
+    const nextState = history[newIndex];
+    
+    setNodes(nextState.nodes);
+    setEdges(nextState.edges);
+    setCurrentHistoryIndex(newIndex);
+    
+    console.log('⏩ Redo to step', newIndex);
+  }
+};
+
+// Keyboard shortcuts für Undo/Redo
+React.useEffect(() => {
+  const handleKeyDown = (e) => {
+    // Ctrl+Z oder Cmd+Z für Undo
+    if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+      e.preventDefault();
+      handleUndo();
+    }
+    // Ctrl+Y oder Cmd+Shift+Z für Redo
+    if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
+      e.preventDefault();
+      handleRedo();
+    }
+  };
+  
+  window.addEventListener('keydown', handleKeyDown);
+  return () => window.removeEventListener('keydown', handleKeyDown);
+}, [currentHistoryIndex, history]);
 
   const leoNodes = nodes.filter((n) => n.data.nodeType === "leo");
   const assessmentNodes = nodes.filter((n) => n.data.nodeType === "assessment");
@@ -883,6 +949,166 @@ function App() {
               +
             </button>
           </div>
+  onClick={handleExportExcel}
+  disabled={isExportingExcel}
+  style={{
+    background: isExportingExcel
+      ? "linear-gradient(135deg, #059669 0%, #047857 100%)"
+      : "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+    color: "white",
+    border: "none",
+    padding: "8px 16px",
+    borderRadius: "6px",
+    cursor: isExportingExcel ? "not-allowed" : "pointer",
+    fontSize: "14px",
+    fontWeight: "500",
+    display: "flex",
+    alignItems: "center",
+    gap: "6px",
+    marginLeft: "8px",
+    opacity: isExportingExcel ? 0.7 : 1,
+  }}
+  title="Export as Excel spreadsheet"
+>
+  {isExportingExcel ? (
+    <>
+      <span>⏳</span>
+      <span>Exporting...</span>
+    </>
+  ) : (
+    <>
+      <span>📊</span>
+      <span>Excel</span>
+    </>
+  )}
+</button>
+         <div
+  style={{
+    display: "flex",
+    gap: "8px",
+    alignItems: "center",
+    marginLeft: "10px",
+  }}
+>
+  <button
+    onClick={handleZoomOut}
+    style={{
+      background: "white",
+      border: "1px solid #e2e8f0",
+      borderRadius: "4px",
+      width: "32px",
+      height: "32px",
+      cursor: "pointer",
+      fontSize: "16px",
+      transition: "all 0.2s",
+    }}
+    onMouseEnter={(e) => (e.target.style.background = "#f8fafc")}
+    onMouseLeave={(e) => (e.target.style.background = "white")}
+    title="Zoom out"
+  >
+    −
+  </button>
+  <button
+    onClick={handleFitView}
+    style={{
+      fontSize: "14px",
+      color: "#64748b",
+      background: "white",
+      border: "1px solid #e2e8f0",
+      borderRadius: "4px",
+      padding: "4px 12px",
+      cursor: "pointer",
+      fontWeight: "500",
+      transition: "all 0.2s",
+    }}
+    onMouseEnter={(e) => (e.target.style.background = "#f8fafc")}
+    onMouseLeave={(e) => (e.target.style.background = "white")}
+    title="Fit view"
+  >
+    {zoomLevel} %
+  </button>
+  <button
+    onClick={handleZoomIn}
+    style={{
+      background: "white",
+      border: "1px solid #e2e8f0",
+      borderRadius: "4px",
+      width: "32px",
+      height: "32px",
+      cursor: "pointer",
+      fontSize: "16px",
+      transition: "all 0.2s",
+    }}
+    onMouseEnter={(e) => (e.target.style.background = "#f8fafc")}
+    onMouseLeave={(e) => (e.target.style.background = "white")}
+    title="Zoom in"
+  >
+    +
+  </button>
+</div>
+
+{/* Undo/Redo Buttons */}
+<div
+  style={{
+    display: "flex",
+    gap: "6px",
+    alignItems: "center",
+    marginLeft: "15px",
+    borderLeft: "1px solid #e2e8f0",
+    paddingLeft: "15px",
+  }}
+>
+  <button
+    onClick={handleUndo}
+    disabled={currentHistoryIndex === 0}
+    style={{
+      background: "white",
+      border: "1px solid #e2e8f0",
+      borderRadius: "6px",
+      width: "36px",
+      height: "36px",
+      cursor: currentHistoryIndex === 0 ? "not-allowed" : "pointer",
+      fontSize: "18px",
+      transition: "all 0.2s",
+      opacity: currentHistoryIndex === 0 ? 0.4 : 1,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    }}
+    onMouseEnter={(e) => {
+      if (currentHistoryIndex > 0) e.target.style.background = "#f8fafc";
+    }}
+    onMouseLeave={(e) => (e.target.style.background = "white")}
+    title="Undo (Ctrl+Z)"
+  >
+    ↶
+  </button>
+  <button
+    onClick={handleRedo}
+    disabled={currentHistoryIndex >= history.length - 1}
+    style={{
+      background: "white",
+      border: "1px solid #e2e8f0",
+      borderRadius: "6px",
+      width: "36px",
+      height: "36px",
+      cursor: currentHistoryIndex >= history.length - 1 ? "not-allowed" : "pointer",
+      fontSize: "18px",
+      transition: "all 0.2s",
+      opacity: currentHistoryIndex >= history.length - 1 ? 0.4 : 1,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    }}
+    onMouseEnter={(e) => {
+      if (currentHistoryIndex < history.length - 1) e.target.style.background = "#f8fafc";
+    }}
+    onMouseLeave={(e) => (e.target.style.background = "white")}
+    title="Redo (Ctrl+Y)"
+  >
+    ↷
+  </button>
+</div>
         </div>
       </div>
 
