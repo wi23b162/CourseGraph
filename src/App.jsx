@@ -43,6 +43,7 @@ const initialNodes = [
       nodeType: "leo",
       nodeId: "01_01",
       level: 3,
+      tags: [],
       onDelete: null,
       onLabelChange: null,
     },
@@ -57,6 +58,7 @@ const initialNodes = [
       nodeType: "leo",
       nodeId: "01_02",
       level: 5,
+      tags: [],
       onDelete: null,
       onLabelChange: null,
     },
@@ -93,6 +95,15 @@ function App() {
   const [isExportingPNG, setIsExportingPNG] = useState(false);
   const [isExportingExcel, setIsExportingExcel] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(100);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterType, setFilterType] = useState("all");
+  const [filterLevel, setFilterLevel] = useState("all");
+  const [tagSearch, setTagSearch] = useState("");
+  const [filterTag, setFilterTag] = useState("all");
+  const [connFilter, setConnFilter] = useState("all");
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+
   const [history, setHistory] = useState([{ nodes: initialNodes, edges: initialEdges }]);
   const [currentHistoryIndex, setCurrentHistoryIndex] = useState(0);
 
@@ -171,9 +182,8 @@ React.useEffect(() => {
   }, [deleteNode, changeLabelNode, setNodes]);
 
   const addNode = ({ type, label, description, level }) => {
-    const nodeId = `0${Math.floor(nodeIdCounter / 10)}_${
-      nodeIdCounter % 10 < 10 ? "0" : ""
-    }${nodeIdCounter % 10}`;
+    const nodeId = `0${Math.floor(nodeIdCounter / 10)}_${nodeIdCounter % 10 < 10 ? "0" : ""
+      }${nodeIdCounter % 10}`;
     const newNode = {
       id: `${nodeIdCounter}`,
       type: "custom",
@@ -183,6 +193,7 @@ React.useEffect(() => {
         nodeType: type,
         nodeId,
         level: level || 3,
+        tags: [],
         onDelete: deleteNode,
         onLabelChange: changeLabelNode,
       },
@@ -219,34 +230,34 @@ React.useEffect(() => {
     [nodes]
   );
 
-const handleEdgeTypeConfirm = (edgeType) => {
-  console.log("✅ Edge type confirmed:", edgeType);
+  const handleEdgeTypeConfirm = (edgeType) => {
+    console.log("✅ Edge type confirmed:", edgeType);
 
-  if (pendingConnection) {
-    const style = getEdgeStyle(edgeType);
-    const label = getEdgeLabel(edgeType);
-    const labelStyle = getEdgeLabelStyle(edgeType);
+    if (pendingConnection) {
+      const style = getEdgeStyle(edgeType);
+      const label = getEdgeLabel(edgeType);
+      const labelStyle = getEdgeLabelStyle(edgeType);
 
-    const newEdge = {
-      ...pendingConnection.params,
-      animated: true,
-      type: "smoothstep",
-      style,
-      label,
-      labelStyle: {
-        ...labelStyle,
-        fontSize: 13,
-        fontWeight: 600,
-      },
-      labelBgStyle: { 
-        fill: 'white', 
-        fillOpacity: 1,
-        stroke: '#e2e8f0',
-        strokeWidth: 1
-      },
-      labelBgPadding: [8, 4],
-      data: { edgeType },
-    };
+      const newEdge = {
+        ...pendingConnection.params,
+        animated: true,
+        type: "smoothstep",
+        style,
+        label,
+        labelStyle: {
+          ...labelStyle,
+          fontSize: 13,
+          fontWeight: 600,
+        },
+        labelBgStyle: {
+          fill: 'white',
+          fillOpacity: 1,
+          stroke: '#e2e8f0',
+          strokeWidth: 1
+        },
+        labelBgPadding: [8, 4],
+        data: { edgeType },
+      };
 
       console.log("➕ Adding edge:", newEdge);
       setEdges((eds) => addEdge(newEdge, eds));
@@ -268,37 +279,37 @@ const handleEdgeTypeConfirm = (edgeType) => {
     setSelectedNode(null);
   }, []);
 
- const handleChangeEdgeType = (edgeId, newType) => {
-  console.log("🔄 Changing edge type:", edgeId, "to", newType);
-  setEdges((eds) =>
-    eds.map((edge) => {
-      if (edge.id === edgeId) {
-        const style = getEdgeStyle(newType);
-        const label = getEdgeLabel(newType);
-        const labelStyle = getEdgeLabelStyle(newType);
-        return {
-          ...edge,
-          style,
-          label,
-          labelStyle: {
-            ...labelStyle,
-            fontSize: 13,
-            fontWeight: 600,
-          },
-          labelBgStyle: { 
-            fill: 'white', 
-            fillOpacity: 1,
-            stroke: '#e2e8f0',
-            strokeWidth: 1
-          },
-          labelBgPadding: [8, 4],
-          data: { ...edge.data, edgeType: newType },
-        };
-      }
-      return edge;
-    })
-  );
-};
+  const handleChangeEdgeType = (edgeId, newType) => {
+    console.log("🔄 Changing edge type:", edgeId, "to", newType);
+    setEdges((eds) =>
+      eds.map((edge) => {
+        if (edge.id === edgeId) {
+          const style = getEdgeStyle(newType);
+          const label = getEdgeLabel(newType);
+          const labelStyle = getEdgeLabelStyle(newType);
+          return {
+            ...edge,
+            style,
+            label,
+            labelStyle: {
+              ...labelStyle,
+              fontSize: 13,
+              fontWeight: 600,
+            },
+            labelBgStyle: {
+              fill: 'white',
+              fillOpacity: 1,
+              stroke: '#e2e8f0',
+              strokeWidth: 1
+            },
+            labelBgPadding: [8, 4],
+            data: { ...edge.data, edgeType: newType },
+          };
+        }
+        return edge;
+      })
+    );
+  };
 
   const handleDeleteEdge = (edgeId) => {
     if (window.confirm("Delete this connection?")) {
@@ -357,7 +368,7 @@ const handleEdgeTypeConfirm = (edgeType) => {
     setShowNewProjectDialog(false);
   };
 
-   // Export handlers
+  // Export handlers
   const handleExportPNG = async () => {
     console.log('🖼️ Exporting to PNG...');
     await exportToPNG();
@@ -420,6 +431,94 @@ React.useEffect(() => {
   const leoNodes = nodes.filter((n) => n.data.nodeType === "leo");
   const assessmentNodes = nodes.filter((n) => n.data.nodeType === "assessment");
 
+  const degreeMap = React.useMemo(() => {
+    const map = {}; // nodeId -> { in: 0, out: 0 }
+    nodes.forEach(n => (map[n.id] = { in: 0, out: 0 }));
+
+    edges.forEach(e => {
+      if (!map[e.source]) map[e.source] = { in: 0, out: 0 };
+      if (!map[e.target]) map[e.target] = { in: 0, out: 0 };
+      map[e.source].out += 1;
+      map[e.target].in += 1;
+    });
+
+    return map;
+  }, [nodes, edges]);
+
+  const allTags = React.useMemo(() => {
+    const s = new Set();
+    nodes.forEach(n => {
+      (n.data.tags || []).forEach(t => s.add(String(t).toLowerCase().trim()));
+    });
+    return Array.from(s).sort();
+  }, [nodes]);
+
+
+  // Apply search & filters to nodes
+  // ===== FILTERLOGIK (Text + Typ + Level + Tags + Verbindungen) =====
+  const filteredNodes = React.useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    const tq = tagSearch.trim().toLowerCase();
+
+    return nodes.filter((n) => {
+      const inDeg = degreeMap[n.id]?.in ?? 0;
+      const outDeg = degreeMap[n.id]?.out ?? 0;
+
+      const tags = (n.data.tags || []).map((t) => String(t).toLowerCase().trim());
+
+      // 1) Textsuche (Label + Description + NodeId + Tags)
+      const searchableText = `
+      ${n.data.label ?? ""}
+      ${n.data.description ?? ""}
+      ${n.data.nodeId ?? ""}
+      ${tags.join(" ")}
+    `.toLowerCase();
+
+      const matchesSearch = q === "" ? true : searchableText.includes(q);
+
+      // 2) Typ-Filter
+      const matchesType = filterType === "all" ? true : n.data.nodeType === filterType;
+
+      // 3) Level-Filter
+      const matchesLevel =
+        filterLevel === "all" ? true : String(n.data.level ?? "") === filterLevel;
+
+      // 4) Tag Dropdown Filter
+      const matchesFilterTag =
+        filterTag === "all" ? true : tags.includes(String(filterTag).toLowerCase().trim());
+
+      // 5) Tag Suche
+      const matchesTagSearch =
+        tq === "" ? true : tags.some((t) => t.includes(tq));
+
+      // 6) Verbindungs-Filter
+      // all | connected | isolated | hasIncoming | hasOutgoing
+      const matchesConn =
+        connFilter === "all"
+          ? true
+          : connFilter === "connected"
+            ? inDeg + outDeg > 0
+            : connFilter === "isolated"
+              ? inDeg + outDeg === 0
+              : connFilter === "hasIncoming"
+                ? inDeg > 0
+                : connFilter === "hasOutgoing"
+                  ? outDeg > 0
+                  : true;
+
+      return (
+        matchesSearch &&
+        matchesType &&
+        matchesLevel &&
+        matchesFilterTag &&
+        matchesTagSearch &&
+        matchesConn
+      );
+    });
+  }, [nodes, degreeMap, searchQuery, filterType, filterLevel, filterTag, tagSearch, connFilter]);
+
+
+
   console.log(
     "🔧 App render - showEdgeTypeDialog:",
     showEdgeTypeDialog,
@@ -427,35 +526,35 @@ React.useEffect(() => {
     showEditDialog
   );
   // Zoom controls
-const handleZoomIn = () => {
-  const rfElement = document.querySelector('.react-flow');
-  if (rfElement) {
-    const zoomInButton = document.querySelector('.react-flow__controls-zoomin');
-    if (zoomInButton) {
-      zoomInButton.click();
+  const handleZoomIn = () => {
+    const rfElement = document.querySelector('.react-flow');
+    if (rfElement) {
+      const zoomInButton = document.querySelector('.react-flow__controls-zoomin');
+      if (zoomInButton) {
+        zoomInButton.click();
+      }
     }
-  }
-};
+  };
 
-const handleZoomOut = () => {
-  const rfElement = document.querySelector('.react-flow');
-  if (rfElement) {
-    const zoomOutButton = document.querySelector('.react-flow__controls-zoomout');
-    if (zoomOutButton) {
-      zoomOutButton.click();
+  const handleZoomOut = () => {
+    const rfElement = document.querySelector('.react-flow');
+    if (rfElement) {
+      const zoomOutButton = document.querySelector('.react-flow__controls-zoomout');
+      if (zoomOutButton) {
+        zoomOutButton.click();
+      }
     }
-  }
-};
+  };
 
-const handleFitView = () => {
-  const rfElement = document.querySelector('.react-flow');
-  if (rfElement) {
-    const fitViewButton = document.querySelector('.react-flow__controls-fitview');
-    if (fitViewButton) {
-      fitViewButton.click();
+  const handleFitView = () => {
+    const rfElement = document.querySelector('.react-flow');
+    if (rfElement) {
+      const fitViewButton = document.querySelector('.react-flow__controls-fitview');
+      if (fitViewButton) {
+        fitViewButton.click();
+      }
     }
-  }
-};
+  };
 
   return (
     <div
@@ -491,6 +590,187 @@ const handleFitView = () => {
         </h1>
 
         <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+
+          <input
+            type="text"
+            placeholder="Search nodes..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={{
+              padding: "8px 12px",
+              borderRadius: "6px",
+              border: "1px solid #e2e8f0",
+              fontSize: "14px",
+              width: "200px",
+            }}
+          />
+
+          <div style={{ position: "relative" }}>
+            <button
+              onClick={() => setIsFilterOpen((v) => !v)}
+              style={{
+                background: "white",
+                color: "#0f172a",
+                border: "1px solid #e2e8f0",
+                padding: "8px 12px",
+                borderRadius: "6px",
+                cursor: "pointer",
+                fontSize: "14px",
+                fontWeight: "500",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                whiteSpace: "nowrap",
+              }}
+            >
+              Filter by… <span style={{ fontSize: 12, color: "#64748b" }}>{isFilterOpen ? "▲" : "▼"}</span>
+            </button>
+
+            {isFilterOpen && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: "44px",
+                  right: 0,
+                  width: "320px",
+                  background: "white",
+                  border: "1px solid #e2e8f0",
+                  borderRadius: "10px",
+                  boxShadow: "0 10px 20px rgba(0,0,0,0.08)",
+                  padding: "12px",
+                  zIndex: 9999,
+                }}
+              >
+                {/* TYPES */}
+                <div style={{ marginBottom: 12 }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: "#334155", marginBottom: 6 }}>
+                    Types
+                  </div>
+                  <select
+                    value={filterType}
+                    onChange={(e) => setFilterType(e.target.value)}
+                    style={{ width: "100%", padding: "8px", borderRadius: "8px", border: "1px solid #e2e8f0" }}
+                  >
+                    <option value="all">All types</option>
+                    <option value="leo">LEO</option>
+                    <option value="assessment">Assessment</option>
+                  </select>
+                </div>
+
+                {/* LEVELS */}
+                <div style={{ marginBottom: 12 }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: "#334155", marginBottom: 6 }}>
+                    Levels
+                  </div>
+                  <select
+                    value={filterLevel}
+                    onChange={(e) => setFilterLevel(e.target.value)}
+                    style={{ width: "100%", padding: "8px", borderRadius: "8px", border: "1px solid #e2e8f0" }}
+                  >
+                    <option value="all">All levels</option>
+                    <option value="1">Level 1</option>
+                    <option value="2">Level 2</option>
+                    <option value="3">Level 3</option>
+                    <option value="4">Level 4</option>
+                    <option value="5">Level 5</option>
+                  </select>
+                </div>
+
+                {/* TAGS */}
+                <div style={{ marginBottom: 12 }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: "#334155", marginBottom: 6 }}>
+                    Tags
+                  </div>
+
+                  <input
+                    type="text"
+                    placeholder="Search tags..."
+                    value={tagSearch}
+                    onChange={(e) => setTagSearch(e.target.value)}
+                    style={{
+                      width: "100%",
+                      padding: "8px 10px",
+                      borderRadius: "8px",
+                      border: "1px solid #e2e8f0",
+                      marginBottom: 8,
+                    }}
+                  />
+
+                  <select
+                    value={filterTag}
+                    onChange={(e) => setFilterTag(e.target.value)}
+                    style={{ width: "100%", padding: "8px", borderRadius: "8px", border: "1px solid #e2e8f0" }}
+                  >
+                    <option value="all">All tags</option>
+                    {allTags.map((t) => (
+                      <option key={t} value={t}>
+                        {t}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* CONNECTIONS */}
+                <div style={{ marginBottom: 12 }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: "#334155", marginBottom: 6 }}>
+                    Connections
+                  </div>
+                  <select
+                    value={connFilter}
+                    onChange={(e) => setConnFilter(e.target.value)}
+                    style={{ width: "100%", padding: "8px", borderRadius: "8px", border: "1px solid #e2e8f0" }}
+                  >
+                    <option value="all">All connections</option>
+                    <option value="connected">Connected</option>
+                    <option value="isolated">Isolated</option>
+                    <option value="hasIncoming">Has incoming</option>
+                    <option value="hasOutgoing">Has outgoing</option>
+                  </select>
+                </div>
+
+                {/* ACTIONS */}
+                <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+                  <button
+                    onClick={() => {
+                      setFilterType("all");
+                      setFilterLevel("all");
+                      setFilterTag("all");
+                      setTagSearch("");
+                      setConnFilter("all");
+                    }}
+                    style={{
+                      background: "white",
+                      border: "1px solid #e2e8f0",
+                      padding: "8px 10px",
+                      borderRadius: "8px",
+                      cursor: "pointer",
+                      fontWeight: 600,
+                    }}
+                  >
+                    Reset
+                  </button>
+
+                  <button
+                    onClick={() => setIsFilterOpen(false)}
+                    style={{
+                      background: "#0f172a",
+                      color: "white",
+                      border: "none",
+                      padding: "8px 10px",
+                      borderRadius: "8px",
+                      cursor: "pointer",
+                      fontWeight: 600,
+                    }}
+                  >
+                    Done
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+
+
           <button
             onClick={() => setShowDialog({ type: "leo" })}
             style={{
@@ -537,41 +817,138 @@ const handleFitView = () => {
             💾 Save / Load
           </button>
           <button
-  onClick={handleExportPNG}
-  disabled={isExportingPNG}
-  style={{
-    background: isExportingPNG
-      ? "linear-gradient(135deg, #9333ea 0%, #7e22ce 100%)"
-      : "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)",
-    color: "white",
-    border: "none",
-    padding: "8px 16px",
-    borderRadius: "6px",
-    cursor: isExportingPNG ? "not-allowed" : "pointer",
-    fontSize: "14px",
-    fontWeight: "500",
-    display: "flex",
-    alignItems: "center",
-    gap: "6px",
-    marginLeft: "8px",
-    opacity: isExportingPNG ? 0.7 : 1,
-  }}
-  title="Export as PNG image"
->
-  {isExportingPNG ? (
-    <>
-      <span>⏳</span>
-      <span>Exporting...</span>
-    </>
-  ) : (
-    <>
-      <span>📸</span>
-      <span>PNG</span>
-    </>
-  )}
-</button>
-         
+            onClick={handleExportPNG}
+            disabled={isExportingPNG}
+            style={{
+              background: isExportingPNG
+                ? "linear-gradient(135deg, #9333ea 0%, #7e22ce 100%)"
+                : "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)",
+              color: "white",
+              border: "none",
+              padding: "8px 16px",
+              borderRadius: "6px",
+              cursor: isExportingPNG ? "not-allowed" : "pointer",
+              fontSize: "14px",
+              fontWeight: "500",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              marginLeft: "8px",
+              opacity: isExportingPNG ? 0.7 : 1,
+            }}
+            title="Export as PNG image"
+          >
+            {isExportingPNG ? (
+              <>
+                <span>⏳</span>
+                <span>Exporting...</span>
+              </>
+            ) : (
+              <>
+                <span>📸</span>
+                <span>PNG</span>
+              </>
+            )}
+          </button>
+
           <button
+            onClick={handleExportExcel}
+            disabled={isExportingExcel}
+            style={{
+              background: isExportingExcel
+                ? "linear-gradient(135deg, #059669 0%, #047857 100%)"
+                : "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+              color: "white",
+              border: "none",
+              padding: "8px 16px",
+              borderRadius: "6px",
+              cursor: isExportingExcel ? "not-allowed" : "pointer",
+              fontSize: "14px",
+              fontWeight: "500",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              marginLeft: "8px",
+              opacity: isExportingExcel ? 0.7 : 1,
+            }}
+            title="Export as Excel spreadsheet"
+          >
+            {isExportingExcel ? (
+              <>
+                <span>⏳</span>
+                <span>Exporting...</span>
+              </>
+            ) : (
+              <>
+                <span>📊</span>
+                <span>Excel</span>
+              </>
+            )}
+          </button>
+          <div
+            style={{
+              display: "flex",
+              gap: "8px",
+              alignItems: "center",
+              marginLeft: "10px",
+            }}
+          >
+            <button
+              onClick={handleZoomOut}
+              style={{
+                background: "white",
+                border: "1px solid #e2e8f0",
+                borderRadius: "4px",
+                width: "32px",
+                height: "32px",
+                cursor: "pointer",
+                fontSize: "16px",
+                transition: "all 0.2s",
+              }}
+              onMouseEnter={(e) => (e.target.style.background = "#f8fafc")}
+              onMouseLeave={(e) => (e.target.style.background = "white")}
+              title="Zoom out"
+            >
+              −
+            </button>
+            <button
+              onClick={handleFitView}
+              style={{
+                fontSize: "14px",
+                color: "#64748b",
+                background: "white",
+                border: "1px solid #e2e8f0",
+                borderRadius: "4px",
+                padding: "4px 12px",
+                cursor: "pointer",
+                fontWeight: "500",
+                transition: "all 0.2s",
+              }}
+              onMouseEnter={(e) => (e.target.style.background = "#f8fafc")}
+              onMouseLeave={(e) => (e.target.style.background = "white")}
+              title="Fit view"
+            >
+              {zoomLevel} %
+            </button>
+            <button
+              onClick={handleZoomIn}
+              style={{
+                background: "white",
+                border: "1px solid #e2e8f0",
+                borderRadius: "4px",
+                width: "32px",
+                height: "32px",
+                cursor: "pointer",
+                fontSize: "16px",
+                transition: "all 0.2s",
+              }}
+              onMouseEnter={(e) => (e.target.style.background = "#f8fafc")}
+              onMouseLeave={(e) => (e.target.style.background = "white")}
+              title="Zoom in"
+            >
+              +
+            </button>
+          </div>
   onClick={handleExportExcel}
   disabled={isExportingExcel}
   style={{
@@ -736,51 +1113,51 @@ const handleFitView = () => {
       </div>
 
       {/* Auto Layout & New Project row */}
-<div
-  style={{
-    display: "flex",
-    gap: "10px",
-    margin: "10px 20px",
-  }}
->
-  <button
-    onClick={handleAutoLayout}
-    style={{
-      background: "white",
-      color: "#0f172a",
-      border: "2px solid #e2e8f0",
-      padding: "10px 16px",
-      borderRadius: "6px",
-      cursor: "pointer",
-      fontSize: "14px",
-      fontWeight: "500",
-      display: "flex",
-      alignItems: "center",
-      gap: "6px",
-    }}
-  >
-    🔀 Auto Layout
-  </button>
+      <div
+        style={{
+          display: "flex",
+          gap: "10px",
+          margin: "10px 20px",
+        }}
+      >
+        <button
+          onClick={handleAutoLayout}
+          style={{
+            background: "white",
+            color: "#0f172a",
+            border: "2px solid #e2e8f0",
+            padding: "10px 16px",
+            borderRadius: "6px",
+            cursor: "pointer",
+            fontSize: "14px",
+            fontWeight: "500",
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+          }}
+        >
+          🔀 Auto Layout
+        </button>
 
-  <button
-    onClick={() => setShowNewProjectDialog(true)}
-    style={{
-      background: "white",
-      color: "#b91c1c",
-      border: "2px solid #fecaca",
-      padding: "10px 16px",
-      borderRadius: "6px",
-      cursor: "pointer",
-      fontSize: "14px",
-      fontWeight: "500",
-      display: "flex",
-      alignItems: "center",
-      gap: "6px",
-    }}
-  >
-    New Project
-  </button>
-</div>
+        <button
+          onClick={() => setShowNewProjectDialog(true)}
+          style={{
+            background: "white",
+            color: "#b91c1c",
+            border: "2px solid #fecaca",
+            padding: "10px 16px",
+            borderRadius: "6px",
+            cursor: "pointer",
+            fontSize: "14px",
+            fontWeight: "500",
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+          }}
+        >
+          New Project
+        </button>
+      </div>
 
 
       {/* Main Content */}
@@ -957,23 +1334,23 @@ const handleFitView = () => {
               </button>
             </div>
           ) : (
-           <ReactFlow
-  nodes={nodes}
-  edges={edges}
-  onNodesChange={onNodesChange}
-  onEdgesChange={onEdgesChange}
-  onConnect={onConnect}
-  onNodeClick={onNodeClick}
-  onEdgeClick={onEdgeClick}
-  nodeTypes={nodeTypes}
-  fitView
-  proOptions={{ hideAttribution: true }}
-  onMove={(event, viewport) => {
-    const zoom = Math.round(viewport.zoom * 100);
-    const roundedZoom = Math.round(zoom / 25) * 25;
-    setZoomLevel(roundedZoom);
-  }}
->
+            <ReactFlow
+              nodes={filteredNodes}
+              edges={edges}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              onConnect={onConnect}
+              onNodeClick={onNodeClick}
+              onEdgeClick={onEdgeClick}
+              nodeTypes={nodeTypes}
+              fitView
+              proOptions={{ hideAttribution: true }}
+              onMove={(event, viewport) => {
+                const zoom = Math.round(viewport.zoom * 100);
+                const roundedZoom = Math.round(zoom / 25) * 25;
+                setZoomLevel(roundedZoom);
+              }}
+            >
               <Controls />
               <Background variant="dots" gap={12} size={1} color="#cbd5e1" />
             </ReactFlow>
