@@ -106,7 +106,7 @@ function App() {
   const [connFilter, setConnFilter] = useState("all");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [leoExpanded, setLeoExpanded] = useState(true);        
-const [assessmentExpanded, setAssessmentExpanded] = useState(true);
+  const [assessmentExpanded, setAssessmentExpanded] = useState(true);
   const [lastSaved, setLastSaved] = useState(null);
 
   const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState(true);
@@ -1160,7 +1160,7 @@ const [assessmentExpanded, setAssessmentExpanded] = useState(true);
             {isLeftSidebarOpen && (
               <span
                 style={{
-                  fontSize: "17px",
+                  fontSize: "18px",
                   fontWeight: "600",
                   color: "#64748b",
                 }}
@@ -1428,7 +1428,7 @@ const [assessmentExpanded, setAssessmentExpanded] = useState(true);
               <span
                 style={{
                   marginLeft: "10px",
-                  fontSize: "20px",
+                  fontSize: "18px",
                   fontWeight: "600",
                   color: "#64748b",
                 }}
