@@ -1,24 +1,26 @@
 import React, { useEffect } from 'react';
 
 // Save/Load Manager Hook
-export const useSaveLoad = (nodes, edges) => {
-  // Auto-save every 30 seconds
+export const useSaveLoad = (nodes, edges, onSave) => {
+  // Initial save on mount 
+  useEffect(() => {
+    saveToLocalStorage(nodes, edges, onSave);
+  }, []);
   useEffect(() => {
     const autoSaveInterval = setInterval(() => {
-      saveToLocalStorage(nodes, edges);
-    }, 30000); // 30 seconds
-
+      saveToLocalStorage(nodes, edges, onSave);
+    }, 30000);
     return () => clearInterval(autoSaveInterval);
-  }, [nodes, edges]);
+  }, [nodes, edges, onSave]);
 
   // Save on page unload
   useEffect(() => {
     const handleBeforeUnload = () => {
-      saveToLocalStorage(nodes, edges);
+      saveToLocalStorage(nodes, edges,onSave);
     };
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [nodes, edges]);
+  }, [nodes, edges,onSave]);
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -37,7 +39,7 @@ export const useSaveLoad = (nodes, edges) => {
 };
 
 // Save to localStorage (auto-save)
-const saveToLocalStorage = (nodes, edges) => {
+const saveToLocalStorage = (nodes, edges, onSaveCallback) => {
   try {
     const data = {
       nodes,
@@ -47,6 +49,10 @@ const saveToLocalStorage = (nodes, edges) => {
     };
     localStorage.setItem('coursegraph_autosave', JSON.stringify(data));
     console.log('💾 Auto-saved:', nodes.length, 'nodes');
+    
+    if (onSaveCallback) {
+      onSaveCallback(new Date());
+    }
   } catch (error) {
     console.error('❌ Auto-save failed:', error);
   }
@@ -147,15 +153,10 @@ export const SaveLoadDialog = ({ nodes, edges, onLoad, onClose }) => {
   const [filename, setFilename] = React.useState('my-course');
   const [message, setMessage] = React.useState('');
 
-  const handleSave = () => {
-    const success = saveToFile(nodes, edges, filename);
-    if (success) {
-      setMessage('✅ Course saved successfully!');
-      setTimeout(() => onClose(), 1500);
-    } else {
-      setMessage('❌ Failed to save course');
-    }
-  };
+ const handleSave = () => {
+  saveToFile(nodes, edges, filename);
+  onClose();  // Dialog direkt schließen
+};
 
   const handleFileSelect = async (e) => {
     const file = e.target.files[0];
@@ -358,19 +359,30 @@ export const SaveLoadDialog = ({ nodes, edges, onLoad, onClose }) => {
                 Load from file:
               </label>
               <input
-                type="file"
-                accept=".json"
-                onChange={handleFileSelect}
-                style={{
-                  width: '100%',
-                  padding: '12px',
-                  border: '1px solid #e2e8f0',
-                  borderRadius: '6px',
-                  fontSize: '14px',
-                  cursor: 'pointer',
-                  boxSizing: 'border-box'
-                }}
-              />
+  id="file-upload"
+  type="file"
+  accept=".json"
+  onChange={handleFileSelect}
+  style={{ display: 'none' }}
+/>
+<label
+  htmlFor="file-upload"
+  style={{
+    display: 'block',
+    width: '100%',
+    padding: '12px',
+    background: 'white',
+    color: '#1e293b',
+    border: '2px dashed #e2e8f0',
+    borderRadius: '6px',
+    fontSize: '14px',
+    cursor: 'pointer',
+    textAlign: 'center',
+    boxSizing: 'border-box'
+  }}
+          >
+          📄 Choose File 
+            </label>
             </div>
 
             <div style={{

@@ -102,13 +102,14 @@ function App() {
   const [filterTag, setFilterTag] = useState("all");
   const [connFilter, setConnFilter] = useState("all");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [lastSaved, setLastSaved] = useState(null);
 
 
   const [history, setHistory] = useState([{ nodes: initialNodes, edges: initialEdges }]);
   const [currentHistoryIndex, setCurrentHistoryIndex] = useState(0);
 
   // Auto-save functionality
-  useSaveLoad(nodes, edges);
+ useSaveLoad(nodes, edges, setLastSaved);
 
   // Load from auto-save on mount
   React.useEffect(() => {
@@ -1368,7 +1369,25 @@ function App() {
         pauseOnHover
         theme="light"
       />
-    </div >
+      {/* Auto-Save Indicator */}
+      {lastSaved && (
+        <div style={{
+          position: 'fixed',
+          bottom: '20px',
+          right: '20px',
+          background: 'white',
+          padding: '8px 16px',
+          borderRadius: '20px',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+          fontSize: '13px',
+          color: '#64748b',
+          border: '1px solid #e2e8f0',
+          zIndex: 999
+        }}>
+          💾 Auto-saved at {lastSaved.toLocaleTimeString()}
+        </div>
+      )}
+    </div>
   );
 }
 
