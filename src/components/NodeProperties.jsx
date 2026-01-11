@@ -173,7 +173,7 @@ const NodeProperties = ({ node, edge, nodes, edges, onDeleteEdge, onEditNode, on
   if (!node) {
     return (
       <div style={{
-        padding: '20px',
+        padding: '16px',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -183,7 +183,7 @@ const NodeProperties = ({ node, edge, nodes, edges, onDeleteEdge, onEditNode, on
         textAlign: 'center'
       }}>
         <h2 style={{ 
-          fontSize: '18px', 
+          fontSize: '14px', 
           fontWeight: '600', 
           margin: '0 0 10px 0',
           color: '#1e293b'
