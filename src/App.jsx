@@ -655,7 +655,6 @@ const [assessmentExpanded, setAssessmentExpanded] = useState(true);
               width: "200px",
             }}
           />
-
           <div style={{ position: "relative" }}>
             <button
               onClick={() => setIsFilterOpen((v) => !v)}
@@ -821,7 +820,7 @@ const [assessmentExpanded, setAssessmentExpanded] = useState(true);
             )}
           </div>
 
-
+<div style={{ width: "1px", height: "32px", background: "#e2e8f0", marginLeft: "10px", marginRight: "10px" }} />
 
           <button
             onClick={() => setShowDialog({ type: "leo" })}
@@ -868,6 +867,8 @@ const [assessmentExpanded, setAssessmentExpanded] = useState(true);
           >
             💾 Save / Load
           </button>
+
+          <div style={{ width: "1px", height: "32px", background: "#e2e8f0", marginLeft: "10px", marginRight: "10px" }} />
           <button
             onClick={handleExportPNG}
             disabled={isExportingPNG}
@@ -937,6 +938,8 @@ const [assessmentExpanded, setAssessmentExpanded] = useState(true);
               </>
             )}
           </button>
+
+          <div style={{ width: "1px", height: "32px", background: "#e2e8f0", marginLeft: "10px", marginRight: "10px" }} />
           <div
             style={{
               display: "flex",
@@ -1077,7 +1080,7 @@ const [assessmentExpanded, setAssessmentExpanded] = useState(true);
         </div>
       </div>
 
-      {/* Auto Layout & New Project row */}
+    {/* Auto Layout & New Project row */}
       <div
         style={{
           display: "flex",
@@ -1157,7 +1160,7 @@ const [assessmentExpanded, setAssessmentExpanded] = useState(true);
             {isLeftSidebarOpen && (
               <span
                 style={{
-                  fontSize: "14px",
+                  fontSize: "17px",
                   fontWeight: "600",
                   color: "#64748b",
                 }}
@@ -1425,7 +1428,7 @@ const [assessmentExpanded, setAssessmentExpanded] = useState(true);
               <span
                 style={{
                   marginLeft: "10px",
-                  fontSize: "14px",
+                  fontSize: "20px",
                   fontWeight: "600",
                   color: "#64748b",
                 }}
