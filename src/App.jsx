@@ -102,6 +102,8 @@ function App() {
   const [filterTag, setFilterTag] = useState("all");
   const [connFilter, setConnFilter] = useState("all");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [leoExpanded, setLeoExpanded] = useState(true);        
+const [assessmentExpanded, setAssessmentExpanded] = useState(true);
   const [lastSaved, setLastSaved] = useState(null);
 
 
@@ -410,15 +412,15 @@ function App() {
     }
   };
 
-  // Keyboard shortcuts für Undo/Redo
+  // Keyboard shortcuts for Undo/Redo
   React.useEffect(() => {
     const handleKeyDown = (e) => {
-      // Ctrl+Z oder Cmd+Z für Undo
+      // Ctrl+Z oder Cmd+Z for Undo
       if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
         e.preventDefault();
         handleUndo();
       }
-      // Ctrl+Y oder Cmd+Shift+Z für Redo
+      // Ctrl+Y or Cmd+Shift+Z for Redo
       if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
         e.preventDefault();
         handleRedo();
@@ -1103,6 +1105,7 @@ function App() {
             {/* Learning Outcomes */}
             <div style={{ marginBottom: "20px" }}>
               <div
+              onClick={() => setLeoExpanded(!leoExpanded)}
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -1110,11 +1113,14 @@ function App() {
                   cursor: "pointer",
                 }}
               >
-                <span style={{ marginRight: "8px" }}>▼</span>
+                <span style={{ marginRight: "8px" }}>
+                {leoExpanded ? "▼" : "▶"} 
+                </span>
                 <span style={{ fontWeight: "500", color: "#1e293b" }}>
                   Learning Outcomes ({leoNodes.length})
                 </span>
               </div>
+              {leoExpanded && (
               <div style={{ paddingLeft: "24px" }}>
                 {leoNodes.map((node, idx) => (
                   <div
@@ -1142,11 +1148,13 @@ function App() {
                   </div>
                 ))}
               </div>
+            )}
             </div>
 
             {/* Assessments */}
             <div>
               <div
+               onClick={() => setAssessmentExpanded(!assessmentExpanded)}
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -1154,11 +1162,14 @@ function App() {
                   cursor: "pointer",
                 }}
               >
-                <span style={{ marginRight: "8px" }}>▼</span>
+                <span style={{ marginRight: "8px" }}>
+                 {assessmentExpanded ? "▼" : "▶"}
+                </span>
                 <span style={{ fontWeight: "500", color: "#1e293b" }}>
                   Assessments ({assessmentNodes.length})
                 </span>
               </div>
+              {assessmentExpanded && (
               <div style={{ paddingLeft: "24px" }}>
                 {assessmentNodes.map((node, idx) => (
                   <div
@@ -1188,6 +1199,7 @@ function App() {
                   </div>
                 ))}
               </div>
+            )}
             </div>
           </div>
         </div>
