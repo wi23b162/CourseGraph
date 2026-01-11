@@ -1,6 +1,6 @@
 import React from 'react';
 
-const NodeProperties = ({ node, edge, nodes, edges, onChangeEdgeType, onDeleteEdge, onEditNode }) => {
+const NodeProperties = ({ node, edge, nodes, edges, onDeleteEdge, onEditNode, onEditConnection }) => {
   // Show Edge Properties
   if (edge) {
     const edgeType = edge.data?.edgeType || 'implies';
@@ -95,7 +95,7 @@ const NodeProperties = ({ node, edge, nodes, edges, onChangeEdgeType, onDeleteEd
           </div>
         </div>
 
-        {/* Change Type */}
+        {/* Current Type Display */}
         <div style={{ marginBottom: '24px' }}>
           <h3 style={{
             fontSize: '14px',
@@ -105,54 +105,54 @@ const NodeProperties = ({ node, edge, nodes, edges, onChangeEdgeType, onDeleteEd
           }}>
             Connection Type
           </h3>
-          
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            {['requires', 'implies', 'tests'].map(type => (
-              <label
-                key={type}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  padding: '10px',
-                  border: edgeType === type ? `2px solid ${edgeTypeColors[type]}` : '1px solid #e2e8f0',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  background: edgeType === type ? `${edgeTypeColors[type]}10` : 'white'
-                }}
-              >
-                <input
-                  type="radio"
-                  value={type}
-                  checked={edgeType === type}
-                  onChange={() => onChangeEdgeType(edge.id, type)}
-                  style={{ marginRight: '10px', cursor: 'pointer' }}
-                />
-                <div style={{ 
-                  fontWeight: '500', 
-                  color: edgeType === type ? edgeTypeColors[type] : '#64748b',
-                  fontSize: '14px'
-                }}>
-                  {type === 'requires' && '↑ requires'}
-                  {type === 'implies' && '→ enables'}
-                  {type === 'tests' && '✓ tested by'}
-                </div>
-              </label>
-            ))}
+
+          <div style={{
+            padding: '12px 16px',
+            background: `${edgeTypeColors[edgeType]}15`,
+            border: `2px solid ${edgeTypeColors[edgeType]}`,
+            borderRadius: '8px',
+            fontSize: '15px',
+            fontWeight: '600',
+            color: edgeTypeColors[edgeType]
+          }}>
+            {edgeType === 'requires' && '↑ requires'}
+            {edgeType === 'implies' && '→ enables'}
+            {edgeType === 'tests' && '✓ tested by'}
           </div>
         </div>
 
         {/* Actions */}
-        <div style={{ 
-          display: 'flex', 
+        <div style={{
+          display: 'flex',
           gap: '8px',
           paddingTop: '20px',
           borderTop: '1px solid #e2e8f0'
         }}>
           <button
-            onClick={() => onDeleteEdge(edge.id)}
+            onClick={() => {
+              console.log("✏️ Edit connection button clicked");
+              if (onEditConnection) {
+                onEditConnection(edge, sourceNode, targetNode);
+              }
+            }}
             style={{
               flex: 1,
               padding: '10px',
+              background: '#3b82f6',
+              color: 'white',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              fontWeight: '500',
+              fontSize: '14px'
+            }}
+          >
+            ✏️ Edit
+          </button>
+          <button
+            onClick={() => onDeleteEdge(edge.id)}
+            style={{
+              padding: '10px 16px',
               background: '#fef2f2',
               color: '#dc2626',
               border: '1px solid #fecaca',
@@ -162,7 +162,7 @@ const NodeProperties = ({ node, edge, nodes, edges, onChangeEdgeType, onDeleteEd
               fontSize: '14px'
             }}
           >
-            🗑️ Delete Connection
+            🗑️
           </button>
         </div>
       </div>
