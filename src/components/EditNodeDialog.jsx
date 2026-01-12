@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
 
-const EditNodeDialog = ({ node, onSave, onCancel }) => {
+const EditNodeDialog = ({ node, onSave, onCancel, allTags }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [level, setLevel] = useState('3');
+  const [tags, setTags] = useState([]);
+  const [tagInput, setTagInput] = useState('');
+  const [selectedExistingTag, setSelectedExistingTag] = useState("");
+
 
   useEffect(() => {
     if (node) {
@@ -12,8 +16,33 @@ const EditNodeDialog = ({ node, onSave, onCancel }) => {
       setTitle(normalTitle);
       setDescription(node.data.description || '');
       setLevel(node.data.level?.toString() || '3');
+      setTags(Array.isArray(node.data.tags) ? node.data.tags : []);
+      setTagInput('');
+      setSelectedExistingTag("");
     }
   }, [node]);
+
+  const normalizeTag = (t) => t.trim();
+
+  const addTag = () => {
+    const t = normalizeTag(tagInput);
+    if (!t) return;
+
+    // Duplikate verhindern (case-insensitive)
+    const exists = tags.some(x => String(x).toLowerCase() === t.toLowerCase());
+    if (exists) {
+      setTagInput('');
+      return;
+    }
+
+    setTags(prev => [...prev, t]);
+    setTagInput('');
+  };
+
+  const removeTag = (t) => {
+    setTags(prev => prev.filter(x => x !== t));
+  };
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -24,7 +53,8 @@ const EditNodeDialog = ({ node, onSave, onCancel }) => {
           ...node.data,
           label: title.toUpperCase().replace(/ /g, '_'),
           description: description.trim(),
-          level: parseInt(level)
+          level: parseInt(level),
+          tags: tags.map(t => String(t).trim()).filter(Boolean),
         }
       });
     }
@@ -54,14 +84,14 @@ const EditNodeDialog = ({ node, onSave, onCancel }) => {
         minWidth: '500px',
         boxShadow: '0 20px 25px -5px rgba(0,0,0,0.2)',
       }}>
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
           alignItems: 'center',
           marginBottom: '24px'
         }}>
-          <h2 style={{ 
-            margin: 0, 
+          <h2 style={{
+            margin: 0,
             color: '#1e293b',
             fontSize: '24px',
             fontWeight: '600'
@@ -85,14 +115,14 @@ const EditNodeDialog = ({ node, onSave, onCancel }) => {
             ✕
           </button>
         </div>
-        
+
         <form onSubmit={handleSubmit}>
           {/* Title */}
           <div style={{ marginBottom: '20px' }}>
-            <label style={{ 
-              display: 'block', 
-              marginBottom: '8px', 
-              fontWeight: '500', 
+            <label style={{
+              display: 'block',
+              marginBottom: '8px',
+              fontWeight: '500',
               color: '#1e293b',
               fontSize: '14px'
             }}>
@@ -119,10 +149,10 @@ const EditNodeDialog = ({ node, onSave, onCancel }) => {
 
           {/* Description */}
           <div style={{ marginBottom: '20px' }}>
-            <label style={{ 
-              display: 'block', 
-              marginBottom: '8px', 
-              fontWeight: '500', 
+            <label style={{
+              display: 'block',
+              marginBottom: '8px',
+              fontWeight: '500',
               color: '#1e293b',
               fontSize: '14px'
             }}>
@@ -151,10 +181,10 @@ const EditNodeDialog = ({ node, onSave, onCancel }) => {
           {/* Level (only for LEO) */}
           {isLEO && (
             <div style={{ marginBottom: '20px' }}>
-              <label style={{ 
-                display: 'block', 
-                marginBottom: '8px', 
-                fontWeight: '500', 
+              <label style={{
+                display: 'block',
+                marginBottom: '8px',
+                fontWeight: '500',
                 color: '#1e293b',
                 fontSize: '14px'
               }}>
@@ -185,10 +215,161 @@ const EditNodeDialog = ({ node, onSave, onCancel }) => {
             </div>
           )}
 
+          {/* Tags */}
+          <div style={{ marginBottom: '20px' }}>
+            <label style={{
+              display: 'block',
+              marginBottom: '8px',
+              fontWeight: '500',
+              color: '#1e293b',
+              fontSize: '14px'
+            }}>
+              Tags:
+            </label>
+
+            <div style={{ display: "flex", gap: "10px" }}>
+              <input
+                type="text"
+                value={tagInput}
+                onChange={(e) => setTagInput(e.target.value)}
+                placeholder="Add tag..."
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '6px',
+                  fontSize: '14px',
+                  outline: 'none',
+                  boxSizing: 'border-box'
+                }}
+                onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
+                onBlur={(e) => e.target.style.borderColor = '#e2e8f0'}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    addTag();
+                  }
+                }}
+              />
+
+              <button
+                type="button"
+                onClick={addTag}
+                style={{
+                  padding: '10px 18px',
+                  border: 'none',
+                  borderRadius: '6px',
+                  background: '#0f172a',
+                  color: 'white',
+                  cursor: 'pointer',
+                  fontWeight: '500',
+                  fontSize: '14px',
+                  whiteSpace: "nowrap"
+                }}
+              >
+                Add
+              </button>
+            </div>
+
+            {/* Existing tags dropdown */}
+            <div style={{ marginTop: 10, display: "flex", gap: 10 }}>
+              <select
+                value={selectedExistingTag}
+                onChange={(e) => setSelectedExistingTag(e.target.value)}
+                style={{
+                  flex: 1,
+                  padding: "12px",
+                  border: "1px solid #e2e8f0",
+                  borderRadius: "6px",
+                  fontSize: "14px",
+                  background: "white",
+                  cursor: "pointer",
+                  boxSizing: "border-box",
+                }}
+              >
+                <option value="">Select existing tag…</option>
+                {(allTags || []).map((t) => (
+                  <option key={t} value={t}>{t}</option>
+                ))}
+              </select>
+
+              <button
+                type="button"
+                disabled={!selectedExistingTag}
+                onClick={() => {
+                  const t = selectedExistingTag.trim();
+                  if (!t) return;
+
+                  const exists = tags.some(x => String(x).toLowerCase() === t.toLowerCase());
+                  if (!exists) setTags(prev => [...prev, t]);
+
+                  setSelectedExistingTag("");
+                }}
+                style={{
+                  padding: "10px 18px",
+                  border: "none",
+                  borderRadius: "6px",
+                  background: "#0f172a",
+                  color: "white",
+                  cursor: selectedExistingTag ? "pointer" : "not-allowed",
+                  fontWeight: "500",
+                  fontSize: "14px",
+                  whiteSpace: "nowrap",
+                  opacity: selectedExistingTag ? 1 : 0.5,
+                }}
+              >
+                Add selected
+              </button>
+            </div>
+
+
+            {/* Tag chips */}
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "10px" }}>
+              {tags.length === 0 ? (
+                <span style={{ color: "#94a3b8", fontSize: 13 }}>No tags yet</span>
+              ) : (
+                tags.map((t) => (
+                  <span
+                    key={t}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      border: "1px solid #e2e8f0",
+                      borderRadius: "999px",
+                      padding: "6px 10px",
+                      background: "white",
+                      color: "#334155",
+                      fontSize: "13px",
+                      fontWeight: 600,
+                    }}
+                  >
+                    {t}
+                    <button
+                      type="button"
+                      onClick={() => removeTag(t)}
+                      style={{
+                        border: "none",
+                        background: "transparent",
+                        cursor: "pointer",
+                        fontWeight: 900,
+                        color: "#94a3b8"
+                      }}
+                      title="Remove tag"
+                    >
+                      ✕
+                    </button>
+                  </span>
+                ))
+              )}
+            </div>
+          </div>
+
+
           {/* Buttons */}
-          <div style={{ 
-            display: 'flex', 
-            gap: '12px', 
+          <div style={{
+            display: 'flex',
+            gap: '12px',
             justifyContent: 'flex-end',
             marginTop: '30px'
           }}>

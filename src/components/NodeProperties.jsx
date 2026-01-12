@@ -28,10 +28,10 @@ const NodeProperties = ({ node, edge, nodes, edges, onChangeEdgeType, onDeleteEd
           }}>
             Connection
           </div>
-          
-          <h2 style={{ 
-            fontSize: '20px', 
-            fontWeight: '600', 
+
+          <h2 style={{
+            fontSize: '20px',
+            fontWeight: '600',
             margin: '0 0 4px 0',
             color: '#1e293b'
           }}>
@@ -49,7 +49,7 @@ const NodeProperties = ({ node, edge, nodes, edges, onChangeEdgeType, onDeleteEd
           }}>
             Connection Details
           </h3>
-          
+
           <div style={{ marginBottom: '12px' }}>
             <div style={{
               fontSize: '13px',
@@ -105,7 +105,7 @@ const NodeProperties = ({ node, edge, nodes, edges, onChangeEdgeType, onDeleteEd
           }}>
             Connection Type
           </h3>
-          
+
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {['requires', 'implies', 'tests'].map(type => (
               <label
@@ -127,8 +127,8 @@ const NodeProperties = ({ node, edge, nodes, edges, onChangeEdgeType, onDeleteEd
                   onChange={() => onChangeEdgeType(edge.id, type)}
                   style={{ marginRight: '10px', cursor: 'pointer' }}
                 />
-                <div style={{ 
-                  fontWeight: '500', 
+                <div style={{
+                  fontWeight: '500',
                   color: edgeType === type ? edgeTypeColors[type] : '#64748b',
                   fontSize: '14px'
                 }}>
@@ -142,8 +142,8 @@ const NodeProperties = ({ node, edge, nodes, edges, onChangeEdgeType, onDeleteEd
         </div>
 
         {/* Actions */}
-        <div style={{ 
-          display: 'flex', 
+        <div style={{
+          display: 'flex',
           gap: '8px',
           paddingTop: '20px',
           borderTop: '1px solid #e2e8f0'
@@ -182,9 +182,9 @@ const NodeProperties = ({ node, edge, nodes, edges, onChangeEdgeType, onDeleteEd
         color: '#94a3b8',
         textAlign: 'center'
       }}>
-        <h2 style={{ 
-          fontSize: '18px', 
-          fontWeight: '600', 
+        <h2 style={{
+          fontSize: '18px',
+          fontWeight: '600',
           margin: '0 0 10px 0',
           color: '#1e293b'
         }}>
@@ -220,10 +220,10 @@ const NodeProperties = ({ node, edge, nodes, edges, onChangeEdgeType, onDeleteEd
         }}>
           {data.nodeId || node.id}
         </div>
-        
-        <h2 style={{ 
-          fontSize: '20px', 
-          fontWeight: '600', 
+
+        <h2 style={{
+          fontSize: '20px',
+          fontWeight: '600',
           margin: '0 0 4px 0',
           color: '#1e293b'
         }}>
@@ -277,33 +277,31 @@ const NodeProperties = ({ node, edge, nodes, edges, onChangeEdgeType, onDeleteEd
         }}>
           Tags:
         </h3>
+
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-          {isLEO && (
-            <>
-              <span style={{
-                background: '#e0e7ff',
-                color: '#3730a3',
-                padding: '4px 12px',
-                borderRadius: '12px',
-                fontSize: '12px',
-                fontWeight: '500'
-              }}>
-                Programming
+          {(data.tags && data.tags.length > 0) ? (
+            data.tags.map((t) => (
+              <span
+                key={t}
+                style={{
+                  background: '#f1f5f9',
+                  color: '#334155',
+                  padding: '4px 12px',
+                  borderRadius: '999px',
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  border: '1px solid #e2e8f0'
+                }}
+              >
+                {t}
               </span>
-              <span style={{
-                background: '#fef3c7',
-                color: '#78350f',
-                padding: '4px 12px',
-                borderRadius: '12px',
-                fontSize: '12px',
-                fontWeight: '500'
-              }}>
-                Core
-              </span>
-            </>
+            ))
+          ) : (
+            <span style={{ color: '#94a3b8', fontSize: '13px' }}>No tags</span>
           )}
         </div>
       </div>
+
 
       {/* Dependencies */}
       <div style={{ marginBottom: '24px' }}>
@@ -315,7 +313,7 @@ const NodeProperties = ({ node, edge, nodes, edges, onChangeEdgeType, onDeleteEd
         }}>
           Connections
         </h3>
-        
+
         {/* Incoming */}
         <div style={{ marginBottom: '16px' }}>
           <div style={{
@@ -370,8 +368,8 @@ const NodeProperties = ({ node, edge, nodes, edges, onChangeEdgeType, onDeleteEd
       </div>
 
       {/* Actions */}
-      <div style={{ 
-        display: 'flex', 
+      <div style={{
+        display: 'flex',
         gap: '8px',
         paddingTop: '20px',
         borderTop: '1px solid #e2e8f0'
