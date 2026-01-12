@@ -197,9 +197,13 @@ function App() {
     );
   }, [deleteNode, changeLabelNode, setNodes]);
 
-  const addNode = ({ type, label, description, level }) => {
-    const nodeId = `0${Math.floor(nodeIdCounter / 10)}_${nodeIdCounter % 10 < 10 ? "0" : ""
-      }${nodeIdCounter % 10}`;
+  const addNode = ({ type, label, description, level, tags = [] }) => {
+    const cleanTags = Array.isArray(tags)
+      ? tags.map((t) => String(t).trim()).filter(Boolean)
+      : [];
+
+    const nodeId = `0${Math.floor(nodeIdCounter / 10)}_${nodeIdCounter % 10 < 10 ? "0" : ""}${nodeIdCounter % 10}`;
+
     const newNode = {
       id: `${nodeIdCounter}`,
       type: "custom",
@@ -209,7 +213,7 @@ function App() {
         nodeType: type,
         nodeId,
         level: level || 3,
-        tags: [],
+        tags: cleanTags, // ✅ HIER
         onDelete: deleteNode,
         onLabelChange: changeLabelNode,
       },
@@ -218,10 +222,12 @@ function App() {
         y: Math.random() * 300 + 100,
       },
     };
+
     setNodes((nds) => [...nds, newNode]);
     setNodeIdCounter((id) => id + 1);
     setShowDialog(false);
   };
+
 
   // CRITICAL: onConnect callback
   const onConnect = useCallback(
@@ -247,7 +253,7 @@ function App() {
   );
 
   const handleEdgeTypeConfirm = (edgeType) => {
-    console.log("✅ Edge type confirmed:", edgeType);
+    console.log("Edge type confirmed:", edgeType);
 
     if (pendingConnection) {
       const style = getEdgeStyle(edgeType);
@@ -1459,6 +1465,7 @@ function App() {
             initialType={showDialog.type}
             onAdd={addNode}
             onCancel={() => setShowDialog(false)}
+            allTags={allTags}
           />
         )
       }
@@ -1483,7 +1490,7 @@ function App() {
             targetNode={pendingConnection.targetNode}
             onConfirm={handleEdgeTypeConfirm}
             onCancel={() => {
-              console.log("❌ EdgeTypeDialog cancelled");
+              console.log("EdgeTypeDialog cancelled");
               setShowEdgeTypeDialog(false);
               setPendingConnection(null);
             }}
@@ -1492,19 +1499,20 @@ function App() {
       }
 
       {/* Edit Node Dialog */}
-      {
-        showEditDialog && nodeToEdit && (
-          <EditNodeDialog
-            node={nodeToEdit}
-            onSave={handleSaveEdit}
-            onCancel={() => {
-              console.log("❌ Edit cancelled");
-              setShowEditDialog(false);
-              setNodeToEdit(null);
-            }}
-          />
-        )
-      }
+      {showEditDialog && nodeToEdit && (
+        <EditNodeDialog
+          node={nodeToEdit}
+          onSave={handleSaveEdit}
+          onCancel={() => {
+            console.log("Edit cancelled");
+            setShowEditDialog(false);
+            setNodeToEdit(null);
+          }}
+          allTags={allTags}
+        />
+      )}
+
+
 
       {/* Edit Connection Dialog */}
       {
