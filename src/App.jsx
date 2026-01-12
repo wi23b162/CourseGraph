@@ -16,6 +16,7 @@ import NodeProperties from "./components/NodeProperties";
 import EdgeTypeDialog from "./components/EdgeTypeDialog";
 import EditNodeDialog from "./components/EditNodeDialog";
 import NewProjectDialog from "./components/NewProjectDialog";
+import EditConnectionDialog from "./components/EditConnectionDialog";
 import {
   SaveLoadDialog,
   useSaveLoad,
@@ -87,11 +88,13 @@ function App() {
   const [showEdgeTypeDialog, setShowEdgeTypeDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showNewProjectDialog, setShowNewProjectDialog] = useState(false);
+  const [showEditConnectionDialog, setShowEditConnectionDialog] = useState(false);
   const [pendingConnection, setPendingConnection] = useState(null);
   const [nodeIdCounter, setNodeIdCounter] = useState(3);
   const [selectedNode, setSelectedNode] = useState(null);
   const [selectedEdge, setSelectedEdge] = useState(null);
   const [nodeToEdit, setNodeToEdit] = useState(null);
+  const [connectionToEdit, setConnectionToEdit] = useState(null);
   const [isExportingPNG, setIsExportingPNG] = useState(false);
   const [isExportingExcel, setIsExportingExcel] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(100);
@@ -102,13 +105,26 @@ function App() {
   const [filterTag, setFilterTag] = useState("all");
   const [connFilter, setConnFilter] = useState("all");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [leoExpanded, setLeoExpanded] = useState(true);        
+  const [assessmentExpanded, setAssessmentExpanded] = useState(true);
+  const [lastSaved, setLastSaved] = useState(null);
 
+  const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState(true);
+  const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true);
 
   const [history, setHistory] = useState([{ nodes: initialNodes, edges: initialEdges }]);
   const [currentHistoryIndex, setCurrentHistoryIndex] = useState(0);
 
   // Auto-save functionality
-  useSaveLoad(nodes, edges);
+ useSaveLoad(nodes, edges, setLastSaved);
+
+  // Trigger window resize when sidebars toggle to help ReactFlow adjust
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+    }, 350); // Wait for transition to complete
+    return () => clearTimeout(timer);
+  }, [isLeftSidebarOpen, isRightSidebarOpen]);
 
   // Load from auto-save on mount
   React.useEffect(() => {
@@ -281,9 +297,19 @@ function App() {
 
   const onEdgeClick = useCallback((event, edge) => {
     console.log("🖱️ Edge clicked:", edge.id);
+
+    // Find source and target nodes
+    const sourceNode = nodes.find((n) => n.id === edge.source);
+    const targetNode = nodes.find((n) => n.id === edge.target);
+
+    if (sourceNode && targetNode) {
+      setConnectionToEdit({ edge, sourceNode, targetNode });
+      setShowEditConnectionDialog(true);
+    }
+
     setSelectedEdge(edge);
     setSelectedNode(null);
-  }, []);
+  }, [nodes]);
 
   const handleChangeEdgeType = (edgeId, newType) => {
     console.log("🔄 Changing edge type:", edgeId, "to", newType);
@@ -323,6 +349,31 @@ function App() {
       setEdges((eds) => eds.filter((e) => e.id !== edgeId));
       setSelectedEdge(null);
     }
+  };
+
+  const handleSaveConnection = (newEdgeType) => {
+    if (connectionToEdit) {
+      console.log("💾 Saving connection with type:", newEdgeType);
+      handleChangeEdgeType(connectionToEdit.edge.id, newEdgeType);
+      setShowEditConnectionDialog(false);
+      setConnectionToEdit(null);
+    }
+  };
+
+  const handleDeleteConnection = () => {
+    if (connectionToEdit) {
+      console.log("🗑️ Deleting connection:", connectionToEdit.edge.id);
+      setEdges((eds) => eds.filter((e) => e.id !== connectionToEdit.edge.id));
+      setSelectedEdge(null);
+      setShowEditConnectionDialog(false);
+      setConnectionToEdit(null);
+    }
+  };
+
+  const handleEditConnection = (edge, sourceNode, targetNode) => {
+    console.log("✏️ Opening edit connection dialog for:", edge.id);
+    setConnectionToEdit({ edge, sourceNode, targetNode });
+    setShowEditConnectionDialog(true);
   };
 
   const handleEditNode = (node) => {
@@ -415,15 +466,15 @@ function App() {
     }
   };
 
-  // Keyboard shortcuts für Undo/Redo
+  // Keyboard shortcuts for Undo/Redo
   React.useEffect(() => {
     const handleKeyDown = (e) => {
-      // Ctrl+Z oder Cmd+Z für Undo
+      // Ctrl+Z oder Cmd+Z for Undo
       if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
         e.preventDefault();
         handleUndo();
       }
-      // Ctrl+Y oder Cmd+Shift+Z für Redo
+      // Ctrl+Y or Cmd+Shift+Z for Redo
       if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
         e.preventDefault();
         handleRedo();
@@ -610,7 +661,6 @@ function App() {
               width: "200px",
             }}
           />
-
           <div style={{ position: "relative" }}>
             <button
               onClick={() => setIsFilterOpen((v) => !v)}
@@ -776,7 +826,7 @@ function App() {
             )}
           </div>
 
-
+<div style={{ width: "1px", height: "32px", background: "#e2e8f0", marginLeft: "10px", marginRight: "10px" }} />
 
           <button
             onClick={() => setShowDialog({ type: "leo" })}
@@ -823,6 +873,8 @@ function App() {
           >
             💾 Save / Load
           </button>
+
+          <div style={{ width: "1px", height: "32px", background: "#e2e8f0", marginLeft: "10px", marginRight: "10px" }} />
           <button
             onClick={handleExportPNG}
             disabled={isExportingPNG}
@@ -892,6 +944,8 @@ function App() {
               </>
             )}
           </button>
+
+          <div style={{ width: "1px", height: "32px", background: "#e2e8f0", marginLeft: "10px", marginRight: "10px" }} />
           <div
             style={{
               display: "flex",
@@ -1032,7 +1086,7 @@ function App() {
         </div>
       </div>
 
-      {/* Auto Layout & New Project row */}
+    {/* Auto Layout & New Project row */}
       <div
         style={{
           display: "flex",
@@ -1085,29 +1139,68 @@ function App() {
         {/* Left Sidebar - Course Structure */}
         <div
           style={{
-            width: "280px",
+            width: isLeftSidebarOpen ? "280px" : "40px",
+            minWidth: isLeftSidebarOpen ? "280px" : "40px",
+            maxWidth: isLeftSidebarOpen ? "280px" : "40px",
             background: "#ffffff",
             borderRight: "1px solid #e2e8f0",
             display: "flex",
             flexDirection: "column",
-            overflow: "auto",
+            overflow: "hidden",
+            transition: "width 0.3s ease, min-width 0.3s ease, max-width 0.3s ease",
+            flexShrink: 0,
           }}
         >
-          <div style={{ padding: "20px" }}>
-            <h2
+          {/* Header with Toggle Button */}
+          <div
+            style={{
+              height: "48px",
+              borderBottom: isLeftSidebarOpen ? "1px solid #e2e8f0" : "none",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: isLeftSidebarOpen ? "space-between" : "center",
+              padding: isLeftSidebarOpen ? "0 10px" : "0",
+              flexShrink: 0,
+            }}
+          >
+            {isLeftSidebarOpen && (
+              <span
+                style={{
+                  fontSize: "18px",
+                  fontWeight: "600",
+                  color: "#64748b",
+                }}
+              >
+                Course Structure
+              </span>
+            )}
+            <button
+              onClick={() => setIsLeftSidebarOpen(!isLeftSidebarOpen)}
               style={{
-                fontSize: "18px",
-                fontWeight: "600",
-                margin: "0 0 20px 0",
-                color: "#1e293b",
+                background: "white",
+                border: "1px solid #e2e8f0",
+                borderRadius: "4px",
+                width: "28px",
+                height: "28px",
+                cursor: "pointer",
+                fontSize: "14px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                transition: "all 0.2s ease",
               }}
+              title={isLeftSidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
             >
-              Course Structure
-            </h2>
+              {isLeftSidebarOpen ? "◀" : "▶"}
+            </button>
+          </div>
+
+          <div style={{ padding: "20px", overflow: "auto", flexGrow: 1, display: isLeftSidebarOpen ? "block" : "none" }}>
 
             {/* Learning Outcomes */}
             <div style={{ marginBottom: "20px" }}>
               <div
+              onClick={() => setLeoExpanded(!leoExpanded)}
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -1115,11 +1208,14 @@ function App() {
                   cursor: "pointer",
                 }}
               >
-                <span style={{ marginRight: "8px" }}>▼</span>
+                <span style={{ marginRight: "8px" }}>
+                {leoExpanded ? "▼" : "▶"} 
+                </span>
                 <span style={{ fontWeight: "500", color: "#1e293b" }}>
                   Learning Outcomes ({leoNodes.length})
                 </span>
               </div>
+              {leoExpanded && (
               <div style={{ paddingLeft: "24px" }}>
                 {leoNodes.map((node, idx) => (
                   <div
@@ -1147,11 +1243,13 @@ function App() {
                   </div>
                 ))}
               </div>
+            )}
             </div>
 
             {/* Assessments */}
             <div>
               <div
+               onClick={() => setAssessmentExpanded(!assessmentExpanded)}
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -1159,11 +1257,14 @@ function App() {
                   cursor: "pointer",
                 }}
               >
-                <span style={{ marginRight: "8px" }}>▼</span>
+                <span style={{ marginRight: "8px" }}>
+                 {assessmentExpanded ? "▼" : "▶"}
+                </span>
                 <span style={{ fontWeight: "500", color: "#1e293b" }}>
                   Assessments ({assessmentNodes.length})
                 </span>
               </div>
+              {assessmentExpanded && (
               <div style={{ paddingLeft: "24px" }}>
                 {assessmentNodes.map((node, idx) => (
                   <div
@@ -1193,12 +1294,18 @@ function App() {
                   </div>
                 ))}
               </div>
+            )}
             </div>
           </div>
         </div>
 
         {/* Center - Graph */}
-        <div style={{ flexGrow: 1, background: "#f8fafc" }}>
+        <div style={{
+          flexGrow: 1,
+          background: "#f8fafc",
+          transition: "all 0.3s ease",
+          minWidth: 0
+        }}>
           {nodes.length === 0 ? (
             <div
               style={{
@@ -1280,21 +1387,74 @@ function App() {
         {/* Right Sidebar - Properties */}
         <div
           style={{
-            width: "320px",
+            width: isRightSidebarOpen ? "320px" : "40px",
+            minWidth: isRightSidebarOpen ? "320px" : "40px",
+            maxWidth: isRightSidebarOpen ? "320px" : "40px",
             background: "#ffffff",
             borderLeft: "1px solid #e2e8f0",
-            overflow: "auto",
+            overflow: "hidden",
+            transition: "width 0.3s ease, min-width 0.3s ease, max-width 0.3s ease",
+            display: "flex",
+            flexDirection: "column",
+            flexShrink: 0,
           }}
         >
-          <NodeProperties
-            node={selectedNode}
-            edge={selectedEdge}
-            nodes={nodes}
-            edges={edges}
-            onChangeEdgeType={handleChangeEdgeType}
-            onDeleteEdge={handleDeleteEdge}
-            onEditNode={handleEditNode}
-          />
+          {/* Header with Toggle Button */}
+          <div
+            style={{
+              height: "48px",
+              borderBottom: isRightSidebarOpen ? "1px solid #e2e8f0" : "none",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: isRightSidebarOpen ? "flex-start" : "center",
+              padding: isRightSidebarOpen ? "0 10px" : "0",
+              flexShrink: 0,
+            }}
+          >
+            <button
+              onClick={() => setIsRightSidebarOpen(!isRightSidebarOpen)}
+              style={{
+                background: "white",
+                border: "1px solid #e2e8f0",
+                borderRadius: "4px",
+                width: "28px",
+                height: "28px",
+                cursor: "pointer",
+                fontSize: "14px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                transition: "all 0.2s ease",
+              }}
+              title={isRightSidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
+            >
+              {isRightSidebarOpen ? "▶" : "◀"}
+            </button>
+            {isRightSidebarOpen && (
+              <span
+                style={{
+                  marginLeft: "10px",
+                  fontSize: "18px",
+                  fontWeight: "600",
+                  color: "#64748b",
+                }}
+              >
+                Properties
+              </span>
+            )}
+          </div>
+
+          <div style={{ overflow: "auto", flexGrow: 1, display: isRightSidebarOpen ? "block" : "none" }}>
+            <NodeProperties
+              node={selectedNode}
+              edge={selectedEdge}
+              nodes={nodes}
+              edges={edges}
+              onDeleteEdge={handleDeleteEdge}
+              onEditNode={handleEditNode}
+              onEditConnection={handleEditConnection}
+            />
+          </div>
         </div>
       </div>
 
@@ -1354,6 +1514,24 @@ function App() {
 
 
 
+      {/* Edit Connection Dialog */}
+      {
+        showEditConnectionDialog && connectionToEdit && (
+          <EditConnectionDialog
+            edge={connectionToEdit.edge}
+            sourceNode={connectionToEdit.sourceNode}
+            targetNode={connectionToEdit.targetNode}
+            onSave={handleSaveConnection}
+            onDelete={handleDeleteConnection}
+            onCancel={() => {
+              console.log("❌ Edit connection cancelled");
+              setShowEditConnectionDialog(false);
+              setConnectionToEdit(null);
+            }}
+          />
+        )
+      }
+
       {/* New Project Dialog */}
       {
         showNewProjectDialog && (
@@ -1376,7 +1554,25 @@ function App() {
         pauseOnHover
         theme="light"
       />
-    </div >
+      {/* Auto-Save Indicator */}
+      {lastSaved && (
+        <div style={{
+          position: 'fixed',
+          bottom: '20px',
+          right: '20px',
+          background: 'white',
+          padding: '8px 16px',
+          borderRadius: '20px',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+          fontSize: '13px',
+          color: '#64748b',
+          border: '1px solid #e2e8f0',
+          zIndex: 999
+        }}>
+          💾 Auto-saved at {lastSaved.toLocaleTimeString()}
+        </div>
+      )}
+    </div>
   );
 }
 

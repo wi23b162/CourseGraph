@@ -1,6 +1,6 @@
 import React from 'react';
 
-const NodeProperties = ({ node, edge, nodes, edges, onChangeEdgeType, onDeleteEdge, onEditNode }) => {
+const NodeProperties = ({ node, edge, nodes, edges, onDeleteEdge, onEditNode, onEditConnection }) => {
   // Show Edge Properties
   if (edge) {
     const edgeType = edge.data?.edgeType || 'implies';
@@ -95,7 +95,7 @@ const NodeProperties = ({ node, edge, nodes, edges, onChangeEdgeType, onDeleteEd
           </div>
         </div>
 
-        {/* Change Type */}
+        {/* Current Type Display */}
         <div style={{ marginBottom: '24px' }}>
           <h3 style={{
             fontSize: '14px',
@@ -138,6 +138,18 @@ const NodeProperties = ({ node, edge, nodes, edges, onChangeEdgeType, onDeleteEd
                 </div>
               </label>
             ))}
+          <div style={{
+            padding: '12px 16px',
+            background: `${edgeTypeColors[edgeType]}15`,
+            border: `2px solid ${edgeTypeColors[edgeType]}`,
+            borderRadius: '8px',
+            fontSize: '15px',
+            fontWeight: '600',
+            color: edgeTypeColors[edgeType]
+          }}>
+            {edgeType === 'requires' && '↑ requires'}
+            {edgeType === 'implies' && '→ enables'}
+            {edgeType === 'tests' && '✓ tested by'}
           </div>
         </div>
 
@@ -149,10 +161,30 @@ const NodeProperties = ({ node, edge, nodes, edges, onChangeEdgeType, onDeleteEd
           borderTop: '1px solid #e2e8f0'
         }}>
           <button
-            onClick={() => onDeleteEdge(edge.id)}
+            onClick={() => {
+              console.log("✏️ Edit connection button clicked");
+              if (onEditConnection) {
+                onEditConnection(edge, sourceNode, targetNode);
+              }
+            }}
             style={{
               flex: 1,
               padding: '10px',
+              background: '#3b82f6',
+              color: 'white',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              fontWeight: '500',
+              fontSize: '14px'
+            }}
+          >
+            ✏️ Edit
+          </button>
+          <button
+            onClick={() => onDeleteEdge(edge.id)}
+            style={{
+              padding: '10px 16px',
               background: '#fef2f2',
               color: '#dc2626',
               border: '1px solid #fecaca',
@@ -162,7 +194,7 @@ const NodeProperties = ({ node, edge, nodes, edges, onChangeEdgeType, onDeleteEd
               fontSize: '14px'
             }}
           >
-            🗑️ Delete Connection
+            🗑️
           </button>
         </div>
       </div>
@@ -173,7 +205,7 @@ const NodeProperties = ({ node, edge, nodes, edges, onChangeEdgeType, onDeleteEd
   if (!node) {
     return (
       <div style={{
-        padding: '20px',
+        padding: '16px',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -182,9 +214,9 @@ const NodeProperties = ({ node, edge, nodes, edges, onChangeEdgeType, onDeleteEd
         color: '#94a3b8',
         textAlign: 'center'
       }}>
-        <h2 style={{
-          fontSize: '18px',
-          fontWeight: '600',
+        <h2 style={{ 
+          fontSize: '14px', 
+          fontWeight: '600', 
           margin: '0 0 10px 0',
           color: '#1e293b'
         }}>
