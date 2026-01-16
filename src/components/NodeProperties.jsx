@@ -106,38 +106,6 @@ const NodeProperties = ({ node, edge, nodes, edges, onDeleteEdge, onEditNode, on
             Connection Type
           </h3>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            {['requires', 'implies', 'tests'].map(type => (
-              <label
-                key={type}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  padding: '10px',
-                  border: edgeType === type ? `2px solid ${edgeTypeColors[type]}` : '1px solid #e2e8f0',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  background: edgeType === type ? `${edgeTypeColors[type]}10` : 'white'
-                }}
-              >
-                <input
-                  type="radio"
-                  value={type}
-                  checked={edgeType === type}
-                  onChange={() => onChangeEdgeType(edge.id, type)}
-                  style={{ marginRight: '10px', cursor: 'pointer' }}
-                />
-                <div style={{
-                  fontWeight: '500',
-                  color: edgeType === type ? edgeTypeColors[type] : '#64748b',
-                  fontSize: '14px'
-                }}>
-                  {type === 'requires' && '↑ requires'}
-                  {type === 'implies' && '→ enables'}
-                  {type === 'tests' && '✓ tested by'}
-                </div>
-              </label>
-            ))}
           <div style={{
             padding: '12px 16px',
             background: `${edgeTypeColors[edgeType]}15`,
