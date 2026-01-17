@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 const EditNodeDialog = ({ node, onSave, onCancel, allTags }) => {
   const [title, setTitle] = useState('');
@@ -7,7 +7,18 @@ const EditNodeDialog = ({ node, onSave, onCancel, allTags }) => {
   const [tags, setTags] = useState([]);
   const [tagInput, setTagInput] = useState('');
   const [selectedExistingTag, setSelectedExistingTag] = useState("");
+  const dialogRef = useRef(null);
 
+  // Handle ESC key to close dialog
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        onCancel();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onCancel]);
 
   useEffect(() => {
     if (node) {
@@ -65,37 +76,48 @@ const EditNodeDialog = ({ node, onSave, onCancel, allTags }) => {
   const isLEO = node.data.nodeType === 'leo';
 
   return (
-    <div style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      background: 'rgba(0,0,0,0.3)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: 1000,
-    }}>
-      <div style={{
-        background: 'white',
-        padding: '30px',
-        borderRadius: '12px',
-        minWidth: '500px',
-        boxShadow: '0 20px 25px -5px rgba(0,0,0,0.2)',
-      }}>
+    <div
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: 'rgba(0,0,0,0.3)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 1000,
+      }}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="edit-node-dialog-title"
+    >
+      <div
+        ref={dialogRef}
+        style={{
+          background: 'white',
+          padding: '30px',
+          borderRadius: '12px',
+          minWidth: '500px',
+          boxShadow: '0 20px 25px -5px rgba(0,0,0,0.2)',
+        }}
+      >
         <div style={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           marginBottom: '24px'
         }}>
-          <h2 style={{
-            margin: 0,
-            color: '#1e293b',
-            fontSize: '24px',
-            fontWeight: '600'
-          }}>
+          <h2
+            id="edit-node-dialog-title"
+            style={{
+              margin: 0,
+              color: '#1e293b',
+              fontSize: '24px',
+              fontWeight: '600'
+            }}
+          >
             Editing {isLEO ? 'Learning Outcome' : 'Assessment'}
           </h2>
           <button
@@ -111,6 +133,7 @@ const EditNodeDialog = ({ node, onSave, onCancel, allTags }) => {
               fontSize: '16px',
               fontWeight: 'bold'
             }}
+            aria-label="Close dialog"
           >
             ✕
           </button>
@@ -326,7 +349,7 @@ const EditNodeDialog = ({ node, onSave, onCancel, allTags }) => {
             {/* Tag chips */}
             <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "10px" }}>
               {tags.length === 0 ? (
-                <span style={{ color: "#94a3b8", fontSize: 13 }}>No tags yet</span>
+                <span style={{ color: "#64748b", fontSize: 13 }}>No tags yet</span>
               ) : (
                 tags.map((t) => (
                   <span
@@ -353,7 +376,7 @@ const EditNodeDialog = ({ node, onSave, onCancel, allTags }) => {
                         background: "transparent",
                         cursor: "pointer",
                         fontWeight: 900,
-                        color: "#94a3b8"
+                        color: "#64748b"
                       }}
                       title="Remove tag"
                     >

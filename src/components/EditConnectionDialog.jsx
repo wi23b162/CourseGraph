@@ -1,7 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 const EditConnectionDialog = ({ edge, sourceNode, targetNode, onSave, onDelete, onCancel }) => {
   const [selectedType, setSelectedType] = useState(edge.data?.edgeType || 'implies');
+  const dialogRef = useRef(null);
+
+  // Handle ESC key to close dialog and ENTER to save
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        onCancel();
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        onSave(selectedType);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onCancel, onSave, selectedType]);
 
   const edgeTypes = [
     { value: 'requires', label: '↑ requires', color: '#f97316', description: 'Source requires target' },
@@ -34,8 +49,12 @@ const EditConnectionDialog = ({ edge, sourceNode, targetNode, onSave, onDelete, 
         zIndex: 1000,
       }}
       onClick={onCancel}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="edit-connection-dialog-title"
     >
       <div
+        ref={dialogRef}
         style={{
           background: 'white',
           borderRadius: '12px',
@@ -47,6 +66,7 @@ const EditConnectionDialog = ({ edge, sourceNode, targetNode, onSave, onDelete, 
         onClick={(e) => e.stopPropagation()}
       >
         <h2
+          id="edit-connection-dialog-title"
           style={{
             fontSize: '22px',
             fontWeight: '700',
@@ -81,7 +101,7 @@ const EditConnectionDialog = ({ edge, sourceNode, targetNode, onSave, onDelete, 
           <div style={{
             textAlign: 'center',
             fontSize: '20px',
-            color: '#94a3b8',
+            color: '#64748b',
             margin: '8px 0'
           }}>
             ↓

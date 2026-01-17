@@ -26,11 +26,14 @@ const CustomNode = ({ id, data, isConnectable }) => {
   };
 
   const colors = getNodeColor();
+  const isAssessment = data.nodeType === 'assessment';
 
   const nodeStyle = {
     padding: '16px',
-    borderRadius: '8px',
-    border: `3px solid ${colors.border}`,
+    borderRadius: isAssessment ? '4px' : '16px', // Assessment: eckig, LEO: abgerundet
+    border: isAssessment
+      ? `4px dashed ${colors.border}` // Assessment: gestrichelte Linie
+      : `3px solid ${colors.border}`, // LEO: durchgehende Linie
     background: colors.background,
     color: colors.text,
     minWidth: '200px',
@@ -38,7 +41,9 @@ const CustomNode = ({ id, data, isConnectable }) => {
     fontSize: '13px',
     fontWeight: '600',
     position: 'relative',
-    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+    boxShadow: isAssessment
+      ? '0 4px 12px -1px rgba(236, 72, 153, 0.4)' // Assessment: pink shadow
+      : '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
   };
 
   return (
@@ -78,24 +83,34 @@ const CustomNode = ({ id, data, isConnectable }) => {
         {data.nodeId || `${id}`}
       </div>
 
-      {/* Level Badge (for LEOs) */}
-      {data.nodeType === 'leo' && (
-        <div style={{
-          position: 'absolute',
-          top: '-8px',
-          left: '-8px',
-          background: 'white',
-          color: colors.border,
-          padding: '4px 10px',
-          borderRadius: '12px',
-          fontSize: '11px',
-          fontWeight: 'bold',
-          border: `2px solid ${colors.border}`,
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-        }}>
-          {data.level || 3}
-        </div>
-      )}
+      {/* Type Badge - for accessibility (not just color) */}
+      <div style={{
+        position: 'absolute',
+        top: '-10px',
+        left: '-10px',
+        background: isAssessment ? colors.background : 'white',
+        color: isAssessment ? 'white' : colors.border,
+        padding: '4px 10px',
+        borderRadius: isAssessment ? '4px' : '12px',
+        fontSize: '11px',
+        fontWeight: 'bold',
+        border: isAssessment
+          ? 'none'
+          : `2px solid ${colors.border}`,
+        boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '4px'
+      }}>
+        {isAssessment ? (
+          <span>A</span>
+        ) : (
+          <>
+            <span style={{ fontSize: '12px' }}>&#9679;</span>
+            <span>L{data.level || 3}</span>
+          </>
+        )}
+      </div>
 
       {/* Label - Uppercase */}
       <div style={{
