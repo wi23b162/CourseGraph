@@ -1,7 +1,22 @@
-import React, { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 const EdgeTypeDialog = ({ sourceNode, targetNode, onConfirm, onCancel }) => {
   const [edgeType, setEdgeType] = useState('implies');
+  const dialogRef = useRef(null);
+
+  // Handle ESC key to close dialog and ENTER to confirm
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        onCancel();
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        onConfirm(edgeType);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onCancel, onConfirm, edgeType]);
 
   const handleConfirm = () => {
     onConfirm(edgeType);
@@ -32,37 +47,48 @@ const EdgeTypeDialog = ({ sourceNode, targetNode, onConfirm, onCancel }) => {
   ];
 
   return (
-    <div style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      background: 'rgba(0,0,0,0.3)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: 1000,
-    }}>
-      <div style={{
-        background: 'white',
-        padding: '30px',
-        borderRadius: '12px',
-        minWidth: '500px',
-        boxShadow: '0 20px 25px -5px rgba(0,0,0,0.2)',
-      }}>
+    <div
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: 'rgba(0,0,0,0.3)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 1000,
+      }}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="edge-type-dialog-title"
+    >
+      <div
+        ref={dialogRef}
+        style={{
+          background: 'white',
+          padding: '30px',
+          borderRadius: '12px',
+          minWidth: '500px',
+          boxShadow: '0 20px 25px -5px rgba(0,0,0,0.2)',
+        }}
+      >
         <div style={{ 
           display: 'flex', 
           justifyContent: 'space-between', 
           alignItems: 'center',
           marginBottom: '24px'
         }}>
-          <h2 style={{ 
-            margin: 0, 
-            color: '#1e293b',
-            fontSize: '24px',
-            fontWeight: '600'
-          }}>
+          <h2
+            id="edge-type-dialog-title"
+            style={{
+              margin: 0,
+              color: '#1e293b',
+              fontSize: '24px',
+              fontWeight: '600'
+            }}
+          >
             Connection Type
           </h2>
           <button
@@ -78,6 +104,7 @@ const EdgeTypeDialog = ({ sourceNode, targetNode, onConfirm, onCancel }) => {
               fontSize: '16px',
               fontWeight: 'bold'
             }}
+            aria-label="Close dialog"
           >
             ✕
           </button>
@@ -107,7 +134,7 @@ const EdgeTypeDialog = ({ sourceNode, targetNode, onConfirm, onCancel }) => {
             {sourceNode.data.label.substring(0, 20)}...
           </div>
           
-          <div style={{ fontSize: '24px', color: '#94a3b8' }}>
+          <div style={{ fontSize: '24px', color: '#64748b' }}>
             →
           </div>
           

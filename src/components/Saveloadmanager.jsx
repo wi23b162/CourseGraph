@@ -75,10 +75,45 @@ export const loadFromLocalStorage = () => {
 // Clear auto-save
 export const clearAutoSave = () => {
   localStorage.removeItem('coursegraph_autosave');
-  console.log('🗑️ Auto-save cleared');
+  localStorage.removeItem('coursegraph_manual_save');
+  console.log('🗑️ Auto-save and manual save cleared');
 };
 
-// Save to file (download)
+// Save to localStorage as manual save (when user clicks "Save")
+export const saveManualToLocalStorage = (nodes, edges) => {
+  try {
+    const data = {
+      nodes,
+      edges,
+      timestamp: new Date().toISOString(),
+      version: '1.0',
+      isManualSave: true
+    };
+    localStorage.setItem('coursegraph_manual_save', JSON.stringify(data));
+    console.log('💾 Manual save:', nodes.length, 'nodes');
+    return true;
+  } catch (error) {
+    console.error('❌ Manual save failed:', error);
+    return false;
+  }
+};
+
+// Load manual save from localStorage (priority over auto-save)
+export const loadManualFromLocalStorage = () => {
+  try {
+    const saved = localStorage.getItem('coursegraph_manual_save');
+    if (saved) {
+      const data = JSON.parse(saved);
+      console.log('📂 Found manual save from:', data.timestamp);
+      return data;
+    }
+  } catch (error) {
+    console.error('❌ Load manual save failed:', error);
+  }
+  return null;
+};
+
+// Save to file (download) - also saves to localStorage as manual save
 const saveToFile = (nodes, edges, filename = 'course-graph') => {
   try {
     const data = {
@@ -103,6 +138,9 @@ const saveToFile = (nodes, edges, filename = 'course-graph') => {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+
+    // Also save to localStorage as manual save (will be loaded on app restart)
+    saveManualToLocalStorage(nodes, edges);
 
     console.log('💾 Saved to file:', filename);
     return true;
@@ -152,11 +190,27 @@ export const SaveLoadDialog = ({ nodes, edges, onLoad, onClose }) => {
   const [activeTab, setActiveTab] = React.useState('save');
   const [filename, setFilename] = React.useState('my-course');
   const [message, setMessage] = React.useState('');
+  const dialogRef = React.useRef(null);
 
- const handleSave = () => {
-  saveToFile(nodes, edges, filename);
-  onClose();  // Dialog direkt schließen
-};
+  const handleSave = () => {
+    saveToFile(nodes, edges, filename);
+    onClose();
+  };
+
+  // Handle keyboard shortcuts (ESC to close, Enter to save)
+  React.useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+      if (e.key === 'Enter' && activeTab === 'save') {
+        e.preventDefault();
+        handleSave();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose, activeTab, nodes, edges, filename]);
 
   const handleFileSelect = async (e) => {
     const file = e.target.files[0];
@@ -184,38 +238,49 @@ export const SaveLoadDialog = ({ nodes, edges, onLoad, onClose }) => {
   };
 
   return (
-    <div style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      background: 'rgba(0,0,0,0.3)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: 1000,
-    }}>
-      <div style={{
-        background: 'white',
-        padding: '30px',
-        borderRadius: '12px',
-        minWidth: '500px',
-        maxWidth: '600px',
-        boxShadow: '0 20px 25px -5px rgba(0,0,0,0.2)',
-      }}>
+    <div
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: 'rgba(0,0,0,0.3)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 1000,
+      }}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="save-load-dialog-title"
+    >
+      <div
+        ref={dialogRef}
+        style={{
+          background: 'white',
+          padding: '30px',
+          borderRadius: '12px',
+          minWidth: '500px',
+          maxWidth: '600px',
+          boxShadow: '0 20px 25px -5px rgba(0,0,0,0.2)',
+        }}
+      >
         <div style={{ 
           display: 'flex', 
           justifyContent: 'space-between', 
           alignItems: 'center',
           marginBottom: '24px'
         }}>
-          <h2 style={{ 
-            margin: 0, 
-            color: '#1e293b',
-            fontSize: '24px',
-            fontWeight: '600'
-          }}>
+          <h2
+            id="save-load-dialog-title"
+            style={{
+              margin: 0,
+              color: '#1e293b',
+              fontSize: '24px',
+              fontWeight: '600'
+            }}
+          >
             Save / Load Course
           </h2>
           <button
@@ -231,6 +296,7 @@ export const SaveLoadDialog = ({ nodes, edges, onLoad, onClose }) => {
               fontSize: '16px',
               fontWeight: 'bold'
             }}
+            aria-label="Close dialog"
           >
             ✕
           </button>
@@ -388,7 +454,7 @@ export const SaveLoadDialog = ({ nodes, edges, onLoad, onClose }) => {
             <div style={{
               textAlign: 'center',
               margin: '20px 0',
-              color: '#94a3b8',
+              color: '#64748b',
               fontSize: '14px'
             }}>
               — OR —

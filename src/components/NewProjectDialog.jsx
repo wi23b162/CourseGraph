@@ -1,11 +1,27 @@
 // src/components/NewProjectDialog.jsx
-import React from "react";
+import React, { useEffect, useRef } from "react";
 
 /**
  * Simple confirmation dialog to start a new project.
  * It warns the user that all nodes/edges (and auto-save) will be cleared.
  */
 function NewProjectDialog({ onConfirm, onCancel }) {
+  const dialogRef = useRef(null);
+
+  // Handle ESC key to close dialog and ENTER to confirm
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        onCancel();
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        onConfirm();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onCancel, onConfirm]);
+
   return (
     <div
       style={{
@@ -17,8 +33,12 @@ function NewProjectDialog({ onConfirm, onCancel }) {
         justifyContent: "center",
         zIndex: 1000,
       }}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="new-project-dialog-title"
     >
       <div
+        ref={dialogRef}
         style={{
           background: "white",
           borderRadius: "12px",
@@ -28,6 +48,7 @@ function NewProjectDialog({ onConfirm, onCancel }) {
         }}
       >
         <h2
+          id="new-project-dialog-title"
           style={{
             margin: 0,
             marginBottom: "12px",

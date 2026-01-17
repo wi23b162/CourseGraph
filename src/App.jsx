@@ -20,9 +20,8 @@ import EditConnectionDialog from "./components/EditConnectionDialog";
 import {
   SaveLoadDialog,
   useSaveLoad,
-  loadFromLocalStorage,
   clearAutoSave,
-} from "./components/SaveLoadManager";
+} from "./components/Saveloadmanager";
 import { getEdgeStyle, getEdgeLabel, getEdgeLabelStyle } from './components/edgeUtils';
 import { exportToPNG, exportToExcel } from "./utils/exportUtils";
 import { ToastContainer, toast } from 'react-toastify';
@@ -34,7 +33,8 @@ const nodeTypes = {
   custom: CustomNode,
 };
 
-const initialNodes = [
+// Default nodes only used when no saved data exists
+const defaultNodes = [
   {
     id: "1",
     type: "custom",
@@ -67,7 +67,7 @@ const initialNodes = [
   },
 ];
 
-const initialEdges = [
+const defaultEdges = [
   {
     id: "e1-2",
     source: "1",
@@ -80,9 +80,42 @@ const initialEdges = [
   },
 ];
 
+// Load saved data BEFORE component renders
+const getInitialState = () => {
+  try {
+    // First try manual save
+    const manualSave = localStorage.getItem('coursegraph_manual_save');
+    if (manualSave) {
+      const data = JSON.parse(manualSave);
+      if (data.nodes && data.nodes.length > 0) {
+        console.log('📂 Initial load from manual save');
+        return { nodes: data.nodes, edges: data.edges, counter: data.nodes.length + 1 };
+      }
+    }
+
+    // Then try auto-save
+    const autoSave = localStorage.getItem('coursegraph_autosave');
+    if (autoSave) {
+      const data = JSON.parse(autoSave);
+      if (data.nodes && data.nodes.length > 0) {
+        console.log('📂 Initial load from auto-save');
+        return { nodes: data.nodes, edges: data.edges, counter: data.nodes.length + 1 };
+      }
+    }
+  } catch (error) {
+    console.error('Failed to load initial state:', error);
+  }
+
+  // Fall back to defaults
+  console.log('📂 Using default nodes');
+  return { nodes: defaultNodes, edges: defaultEdges, counter: 3 };
+};
+
+const initialState = getInitialState();
+
 function App() {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialState.nodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialState.edges);
   const [showDialog, setShowDialog] = useState(false);
   const [showSaveLoadDialog, setShowSaveLoadDialog] = useState(false);
   const [showEdgeTypeDialog, setShowEdgeTypeDialog] = useState(false);
@@ -90,7 +123,7 @@ function App() {
   const [showNewProjectDialog, setShowNewProjectDialog] = useState(false);
   const [showEditConnectionDialog, setShowEditConnectionDialog] = useState(false);
   const [pendingConnection, setPendingConnection] = useState(null);
-  const [nodeIdCounter, setNodeIdCounter] = useState(3);
+  const [nodeIdCounter, setNodeIdCounter] = useState(initialState.counter);
   const [selectedNode, setSelectedNode] = useState(null);
   const [selectedEdge, setSelectedEdge] = useState(null);
   const [nodeToEdit, setNodeToEdit] = useState(null);
@@ -112,7 +145,7 @@ function App() {
   const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState(true);
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true);
 
-  const [history, setHistory] = useState([{ nodes: initialNodes, edges: initialEdges }]);
+  const [history, setHistory] = useState([{ nodes: initialState.nodes, edges: initialState.edges }]);
   const [currentHistoryIndex, setCurrentHistoryIndex] = useState(0);
 
   // Auto-save functionality
@@ -126,18 +159,6 @@ function App() {
     return () => clearTimeout(timer);
   }, [isLeftSidebarOpen, isRightSidebarOpen]);
 
-  // Load from auto-save on mount
-  React.useEffect(() => {
-    const saved = loadFromLocalStorage();
-    if (saved && saved.nodes.length > 0) {
-      const confirmLoad = window.confirm("Found auto-saved data. Load it?");
-      if (confirmLoad) {
-        setNodes(saved.nodes);
-        setEdges(saved.edges);
-        setNodeIdCounter(saved.nodes.length + 1);
-      }
-    }
-  }, []);
   // Save to history when nodes or edges change
   React.useEffect(() => {
     const currentState = history[currentHistoryIndex];
@@ -170,6 +191,14 @@ function App() {
     },
     [setNodes, setEdges, selectedNode]
   );
+
+  // Reset nodeIdCounter when all nodes are deleted
+  React.useEffect(() => {
+    if (nodes.length === 0) {
+      setNodeIdCounter(1);
+      console.log('🔄 Node counter reset to 1');
+    }
+  }, [nodes.length]);
 
   const changeLabelNode = useCallback(
     (nodeId, newLabel) => {
@@ -969,6 +998,7 @@ function App() {
               onMouseEnter={(e) => (e.target.style.background = "#f8fafc")}
               onMouseLeave={(e) => (e.target.style.background = "white")}
               title="Zoom out"
+              aria-label="Zoom out"
             >
               −
             </button>
@@ -1006,6 +1036,7 @@ function App() {
               onMouseEnter={(e) => (e.target.style.background = "#f8fafc")}
               onMouseLeave={(e) => (e.target.style.background = "white")}
               title="Zoom in"
+              aria-label="Zoom in"
             >
               +
             </button>
@@ -1054,6 +1085,7 @@ function App() {
               }}
               onMouseLeave={(e) => (e.target.style.background = "white")}
               title="Undo (Ctrl+Z)"
+              aria-label="Undo (Ctrl+Z)"
             >
               ↶
             </button>
@@ -1079,6 +1111,7 @@ function App() {
               }}
               onMouseLeave={(e) => (e.target.style.background = "white")}
               title="Redo (Ctrl+Y)"
+              aria-label="Redo (Ctrl+Y)"
             >
               ↷
             </button>
@@ -1190,6 +1223,8 @@ function App() {
                 transition: "all 0.2s ease",
               }}
               title={isLeftSidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
+              aria-label={isLeftSidebarOpen ? "Collapse course structure sidebar" : "Expand course structure sidebar"}
+              aria-expanded={isLeftSidebarOpen}
             >
               {isLeftSidebarOpen ? "◀" : "▶"}
             </button>
@@ -1314,7 +1349,7 @@ function App() {
                 alignItems: "center",
                 justifyContent: "center",
                 height: "100%",
-                color: "#94a3b8",
+                color: "#64748b",
               }}
             >
               <div
@@ -1573,7 +1608,8 @@ function App() {
         </div>
       )}
     </div>
-  );
+
+);
 }
 
 export default App;

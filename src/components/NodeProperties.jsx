@@ -179,7 +179,7 @@ const NodeProperties = ({ node, edge, nodes, edges, onDeleteEdge, onEditNode, on
         alignItems: 'center',
         justifyContent: 'center',
         height: '100%',
-        color: '#94a3b8',
+        color: '#64748b',
         textAlign: 'center'
       }}>
         <h2 style={{ 
@@ -297,7 +297,7 @@ const NodeProperties = ({ node, edge, nodes, edges, onDeleteEdge, onEditNode, on
               </span>
             ))
           ) : (
-            <span style={{ color: '#94a3b8', fontSize: '13px' }}>No tags</span>
+            <span style={{ color: '#64748b', fontSize: '13px' }}>No tags</span>
           )}
         </div>
       </div>
@@ -330,7 +330,7 @@ const NodeProperties = ({ node, edge, nodes, edges, onDeleteEdge, onEditNode, on
             borderRadius: '6px',
             padding: '8px 12px',
             fontSize: '13px',
-            color: '#94a3b8'
+            color: '#64748b'
           }}>
             {incomingEdges.length > 0 ? (
               incomingEdges.map(e => e.label || 'connection').join(', ')
@@ -356,7 +356,7 @@ const NodeProperties = ({ node, edge, nodes, edges, onDeleteEdge, onEditNode, on
             borderRadius: '6px',
             padding: '8px 12px',
             fontSize: '13px',
-            color: '#94a3b8'
+            color: '#64748b'
           }}>
             {outgoingEdges.length > 0 ? (
               outgoingEdges.map(e => e.label || 'connection').join(', ')
