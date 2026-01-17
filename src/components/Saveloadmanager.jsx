@@ -2,15 +2,15 @@ import React, { useEffect } from 'react';
 
 // Save/Load Manager Hook
 export const useSaveLoad = (nodes, edges, onSave) => {
-  // Initial save on mount 
+  // Save immediately when nodes or edges change (debounced to avoid too many writes)
   useEffect(() => {
-    saveToLocalStorage(nodes, edges, onSave);
-  }, []);
-  useEffect(() => {
-    const autoSaveInterval = setInterval(() => {
-      saveToLocalStorage(nodes, edges, onSave);
-    }, 30000);
-    return () => clearInterval(autoSaveInterval);
+    // Only save if there are actual nodes (avoid overwriting with defaults)
+    if (nodes.length > 0) {
+      const timeoutId = setTimeout(() => {
+        saveToLocalStorage(nodes, edges, onSave);
+      }, 500); // 500ms debounce
+      return () => clearTimeout(timeoutId);
+    }
   }, [nodes, edges, onSave]);
 
   // Save on page unload
