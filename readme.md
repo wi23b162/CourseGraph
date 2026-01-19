@@ -1,42 +1,55 @@
-# 📊 CourseGraph
+# CourseGraph
 
 A desktop application for course designers to visualize and manage learning outcomes and assessments using interactive graph visualization.
 
-## 🎯 Vision
+## Vision
 
 CourseGraph supports course designers in developing courses following the **Constructive Alignment** approach. The tool enables the definition of Learning Outcomes (LEOs) and their relationships, linking them to assessments, and visualizing the entire course structure as an interactive graph.
 
-## ✨ Features
+## Features
 
-### ✅ Implemented
+### Core Features
 - **Interactive Graph Canvas** - Drag, zoom, and pan to explore course structures
 - **Node Management** - Create, edit, and delete Learning Outcome and Assessment nodes
-- **Visual Differentiation** - Blue nodes for Learning Outcomes, green for Assessments
+- **Visual Differentiation** - Color-coded nodes (blue for LEOs, green/yellow for Assessments) with 5 complexity levels
 - **Node Connections** - Create relationships between nodes with drag & drop
-- **Custom Node Types** - Distinguish between LEO and Assessment nodes
-- **Edit Mode** - Double-click or use Edit button to rename nodes
-- **Delete Functionality** - Remove nodes with confirmation dialog
-- **Responsive UI** - Modern toolbar with node counter
-- **MiniMap** - Overview of large graphs
-- **Zoom Controls** - Easy navigation for complex course structures
+- **Edge Types** - Three relationship types: requires (orange), implies (blue), tests (green)
+- **Tags** - Organize nodes with custom tags for better categorization
 
-### 🚧 Coming Soon
-- **Save/Load** - Export and import course structures as JSON
-- **Export Options** - Save as PNG, Excel, or JSON
-- **Edge Types** - Different relationship types (requires, implies, tested by)
-- **Auto-Layout** - Automatic graph organization
-- **Undo/Redo** - Revert changes
-- **Templates** - Pre-built course structures
+### Data Management
+- **Auto-Save** - Automatic saving to localStorage with debouncing
+- **Manual Save** - Explicit save checkpoints
+- **Undo/Redo** - Revert and restore changes (up to 50 states)
+- **New Project** - Start fresh with confirmation dialog
 
-## 🛠️ Technology Stack
+### Export Options
+- **PNG Export** - High-resolution graph snapshots
+- **Excel Export** - Multi-sheet workbook with Learning Outcomes, Connections, and Statistics
 
-- **Electron** - Cross-platform desktop application framework
-- **React** - UI library for interactive components
-- **ReactFlow** - Graph visualization and interaction
-- **Vite** - Fast build tool with hot-reload
-- **Node.js** v24.11.1
+### Navigation & UI
+- **MiniMap** - Overview widget for large graphs
+- **Zoom Controls** - Easy navigation with +/- buttons
+- **Collapsible Sidebars** - Left sidebar for node list, right sidebar for properties
+- **Search & Filter** - Find nodes by name, type, level, or tags
+- **Auto-Layout** - Automatic hierarchical graph organization
+- **Toast Notifications** - User feedback for all actions
 
-## 📦 Installation
+## Technology Stack
+
+| Technology | Version | Purpose |
+|------------|---------|---------|
+| **Electron** | 39.2.2 | Cross-platform desktop framework |
+| **React** | 19.2.0 | UI component library |
+| **ReactFlow** | 11.11.4 | Graph visualization |
+| **Vite** | 7.2.6 | Build tool with HMR |
+| **Node.js** | 24.x | Runtime environment |
+
+### Additional Libraries
+- `react-toastify` - Toast notifications
+- `html-to-image` - PNG export
+- `xlsx` - Excel export
+
+## Installation
 
 ### Prerequisites
 - Node.js (v24.x or higher)
@@ -58,43 +71,72 @@ npm install
 npm start
 ```
 
-## 🚀 Usage
+## Usage
 
 ### Creating Nodes
 
-1. Click the **"+ Node hinzufügen"** button in the toolbar
+1. Click **"+ Node hinzufugen"** in the toolbar
 2. Select node type:
-   - **📘 Learning Outcome** (blue)
-   - **✅ Assessment** (green)
-3. Enter a label (e.g., "Understand basics" or "Quiz 1")
-4. Click **"Hinzufügen"**
+   - **Learning Outcome (LEO)** - Blue nodes
+   - **Assessment** - Green/Yellow nodes
+3. Enter a label and optional description
+4. Select a complexity level (1-5)
+5. Add tags for organization (optional)
+6. Click **"Hinzufugen"**
 
 ### Editing Nodes
 
-- **Double-click** on a node to edit its label
-- Or click the **✏️ Edit** button on the node
-- Press **Enter** to save changes
+- **Double-click** on a node to edit its label inline
+- Or click the **Edit** button on the node for full editing dialog
+- Modify label, description, level, or tags
+- Click **"Speichern"** to save changes
 
 ### Deleting Nodes
 
-- Click the **🗑️ Delete** button on a node
+- Click the **Delete** button on a node
 - Confirm deletion in the dialog
 - Connected edges are automatically removed
 
 ### Creating Connections
 
-1. **Drag** from a connection point (small circle) on one node
-2. **Drop** on another node
-3. A connection is created automatically
+1. Hover over the source node
+2. Drag from the connection handle (small circle)
+3. Drop on the target node
+4. Select connection type:
+   - **requires** (orange) - Prerequisite relationship
+   - **implies** (blue) - Enables relationship
+   - **tests** (green) - Assessment relationship
+5. Click **"Verbinden"**
 
 ### Navigation
 
-- **Drag nodes** - Click and drag to reposition
-- **Zoom** - Use mouse wheel or +/- controls
-- **Pan** - Click empty space and drag to move canvas
-- **MiniMap** - Use the overview in the bottom-left corner
+| Action | Method |
+|--------|--------|
+| Move nodes | Click and drag |
+| Zoom | Mouse wheel or +/- buttons |
+| Pan canvas | Click empty space and drag |
+| Select node | Click on node |
+| Deselect | Click empty canvas |
 
-## 📁 Project Structure
+### Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| Ctrl/Cmd + Z | Undo |
+| Ctrl/Cmd + Y | Redo |
+| Delete | Delete selected |
+| Escape | Cancel action |
+| Enter | Confirm edit |
+
+### Exporting
+
+- **PNG**: Click "Als PNG exportieren" - saves graph as image
+- **Excel**: Click "Als Excel exportieren" - creates workbook with:
+  - Learning Outcomes sheet
+  - Connections sheet
+  - Statistics sheet
+
+## Project Structure
 
 ```
 CourseGraph/
@@ -102,72 +144,59 @@ CourseGraph/
 │   ├── App.jsx                    # Main application component
 │   ├── App.css                    # Application styles
 │   ├── components/
-│   │   ├── CustomNode.jsx         # Custom node component with edit/delete
-│   │   └── AddNodeDialog.jsx      # Dialog for adding new nodes
+│   │   ├── CustomNode.jsx         # Custom node rendering
+│   │   ├── AddNodeDialog.jsx      # Node creation dialog
+│   │   ├── EditNodeDialog.jsx     # Node editing dialog
+│   │   ├── EditConnectionDialog.jsx # Edge editing dialog
+│   │   ├── EdgeTypeDialog.jsx     # Edge type selection
+│   │   ├── NodeProperties.jsx     # Properties sidebar
+│   │   ├── NewProjectDialog.jsx   # New project confirmation
+│   │   ├── Saveloadmanager.jsx    # Save/load functionality
+│   │   └── edgeUtils.js           # Edge styling utilities
+│   ├── utils/
+│   │   ├── exportUtils.js         # PNG and Excel export
+│   │   └── autoLayout.js          # Graph layout algorithm
 │   ├── renderer.jsx               # React entry point
 │   ├── index.css                  # Global styles
 │   ├── main.js                    # Electron main process
 │   └── preload.js                 # Electron preload script
+├── docs/
+│   ├── USER_HANDBOOK.md           # End-user guide
+│   ├── INSTALLATION_GUIDE.md      # Setup instructions
+│   └── TECHNICAL_DOCUMENTATION.md # Developer documentation
 ├── index.html                     # HTML entry point
 ├── package.json                   # Dependencies and scripts
 ├── forge.config.js                # Electron Forge configuration
-├── vite.*.config.mjs              # Vite build configurations
-└── README.md                      # This file
+└── vite.*.config.mjs              # Vite build configurations
 ```
 
-## 🎓 User Stories (Requirements)
+## Requirements
 
 ### Functional Requirements
 
-**FR1 - Create and Manage Nodes**
-- Create new Learning Outcome or Assessment nodes
-- Edit node labels
-- Delete nodes with proper cleanup of connected edges
-
-**FR2 - Connect Nodes**
-- Create connections between nodes via drag & drop
-- Visualize relationships with arrows and labels
-
-**FR3 - Interactive Graph**
-- Move nodes freely on canvas
-- Zoom and pan for navigation
-- Auto-layout for organization (planned)
-
-**FR4 - Visual Differentiation**
-- Blue nodes for Learning Outcomes
-- Green nodes for Assessments
-- Distinct shapes and badges for node types
-
-**FR5 - Save, Load, and Export** (planned)
-- Save course structures as JSON
-- Load previously saved structures
-- Export as PNG, Excel, or JSON
-
-**FR6 - Reset and New Project** (planned)
-- Start new project with confirmation
-- Reset canvas to empty state
+| ID | Requirement | Status |
+|----|-------------|--------|
+| FR1 | Create and manage LEO and Assessment nodes | Implemented |
+| FR2 | Connect nodes with typed relationships | Implemented |
+| FR3 | Interactive graph with zoom, pan, drag | Implemented |
+| FR4 | Visual differentiation by node type and level | Implemented |
+| FR5 | Save, load, and auto-save functionality | Implemented |
+| FR6 | Export to PNG and Excel | Implemented |
+| FR7 | Undo/Redo functionality | Implemented |
+| FR8 | New project with confirmation | Implemented |
+| FR9 | Auto-layout for graph organization | Implemented |
+| FR10 | Tag management for nodes | Implemented |
 
 ### Non-Functional Requirements
 
-**NFR1 - Usability**
-- Intuitive interface for first-time users
-- Context menus for quick actions
-- Visual feedback for all interactions
+| ID | Requirement | Status |
+|----|-------------|--------|
+| NFR1 | Intuitive interface for first-time users | Implemented |
+| NFR2 | Smooth performance with 100+ nodes | Implemented |
+| NFR3 | Data persistence with auto-save | Implemented |
+| NFR4 | Accessibility improvements | Implemented |
 
-**NFR2 - Performance**
-- Smooth performance with 100+ nodes
-- Minimum 30 FPS for all interactions
-
-**NFR3 - Reliability**
-- Data persistence through save/load
-- No data loss during operations
-
-**NFR4 - Accessibility**
-- Keyboard navigation support
-- High contrast for readability
-- Clear visual hierarchy
-
-## 🧑‍💻 Development
+## Development
 
 ### Run in Development Mode
 
@@ -176,64 +205,60 @@ npm start
 ```
 - Opens Electron window with hot-reload
 - Changes to source files automatically refresh the app
+- DevTools open automatically for debugging
 
 ### Build for Production
 
 ```bash
 npm run make
 ```
-- Creates distributable packages
-- Output in `out/` directory
+- Creates distributable packages in `out/` directory
+- Supports Windows (Squirrel), macOS (ZIP), Linux (DEB, RPM)
 
 ### Available Scripts
 
-- `npm start` - Start development server
-- `npm run package` - Package the app
-- `npm run make` - Create distributable packages
-- `npm run publish` - Publish to distribution platforms
+| Script | Purpose |
+|--------|---------|
+| `npm start` | Start development server |
+| `npm run package` | Package the app |
+| `npm run make` | Create distributable packages |
+| `npm run publish` | Publish to distribution platforms |
 
-## 📚 Learning Resources
+## Documentation
 
-- [Electron Documentation](https://www.electronjs.org/docs)
-- [React Documentation](https://react.dev)
-- [ReactFlow Documentation](https://reactflow.dev)
-- [Vite Documentation](https://vitejs.dev)
+Detailed documentation is available in the `docs/` folder:
 
-## 👥 Team
+- **[User Handbook](docs/USER_HANDBOOK.md)** - Complete guide for end users
+- **[Installation Guide](docs/INSTALLATION_GUIDE.md)** - Setup and installation instructions
+- **[Technical Documentation](docs/TECHNICAL_DOCUMENTATION.md)** - Architecture and developer guide
 
-**Project:** CourseGraph  
-**Organization:** FH Technikum Wien  
-**Department:** Software Engineering & Architecture  
+## Team
+
+**Project:** CourseGraph
+**Organization:** FH Technikum Wien
+**Department:** Software Engineering & Architecture
 **Contact:** Thomas MANDL (thomas.mandl@technikum-wien.at)
 
-## 📝 License
+## License
 
 This project is created as part of academic coursework at FH Technikum Wien.
 
-## 🤝 Contributing
+## Known Issues
 
-This is an educational project. For contributions or questions, please contact the project supervisor.
+- Edge labels may overlap with nodes on very complex graphs
+- Large graphs (200+ nodes) may experience performance degradation
 
-## 🐛 Known Issues
+## Future Enhancements
 
-- Edge labels can overlap with nodes on complex graphs
-- Auto-layout feature not yet implemented
-- Save/Load functionality in development
-
-## 🔮 Future Enhancements
-
-- [ ] Persistent storage with auto-save
-- [ ] Multiple edge types with custom styling
+- [ ] File system save/load (beyond localStorage)
 - [ ] Course templates library
-- [ ] Export to various formats (PDF, SVG, DOCX)
+- [ ] Export to additional formats (PDF, SVG, DOCX)
 - [ ] Collaborative editing mode
-- [ ] Version history and undo/redo
-- [ ] Search and filter nodes
-- [ ] Analytics and insights on course structure
 - [ ] Integration with learning management systems
+- [ ] Advanced analytics on course structure
 
 ---
 
-**Built with ❤️ using Electron, React, and ReactFlow**
+**Built with Electron, React, and ReactFlow**
 
-*Last updated: November 2024*
+*Last updated: January 2025*
