@@ -679,40 +679,92 @@ module.exports = {
 
 ## 10. Testing Strategy
 
-### Recommended Testing Approach
+### Unit Testing
 
-#### Unit Testing
+**Framework:** Vitest with React Testing Library
 
-**Framework:** Jest with React Testing Library
+**Test Files Location:** `src/test/*.test.jsx`
 
-**Test Files Location:** `src/__tests__/`
+**Configuration Files:**
+- `vitest.config.js` - Vitest configuration
+- `src/test/setup.js` - Test setup with jest-dom matchers
 
-**Components to Test:**
-- `CustomNode.jsx` - Node rendering and interactions
-- `edgeUtils.js` - Edge styling functions
-- `exportUtils.js` - Export functionality
-- `autoLayout.js` - Layout algorithm
+**Components Tested:**
+
+| Component | Test File | Tests | Description |
+|-----------|-----------|-------|-------------|
+| AddNodeDialog | `AddNodeDialog.test.jsx` | 5 | Node creation dialog |
+| CustomNode | `CustomNode.test.jsx` | 5 | Custom node rendering |
+| EdgeTypeDialog | `EdgeTypeDialog.test.jsx` | 4 | Edge type selection |
+| EditConnectionDialog | `EditConnectionDialog.test.jsx` | 4 | Connection editing dialog |
+| EditNodeDialog | `EditNodeDialog.test.jsx` | 4 | Node editing dialog |
+| NewProjectDialog | `NewProjectDialog.test.jsx` | 4 | New project confirmation |
+| NodeProperties | `NodeProperties.test.jsx` | 3 | Properties sidebar |
+| SaveLoadDialog | `Saveloadmanager.test.jsx` | 4 | Save/load functionality |
+| **Subtotal Components** | **8 files** | **33** | |
+
+**Utility Functions Tested:**
+
+| Utility | Test File | Tests | Description |
+|---------|-----------|-------|-------------|
+| edgeUtils | `edgeUtils.test.jsx` | 12 | Edge styling functions (getEdgeStyle, getEdgeLabel, getEdgeLabelStyle) |
+| autoLayout | `autoLayout.test.jsx` | 9 | Graph layout algorithm (autoLayoutGraph) |
+| **Subtotal Utilities** | **2 files** | **21** | |
+
+**Total: 10 test files, 54 tests**
+
+**Test Commands:**
+
+| Command | Description |
+|---------|-------------|
+| `npm test` | Run tests in watch mode |
+| `npm run test:run` | Run tests once |
 
 **Example Test:**
 
 ```javascript
-// edgeUtils.test.js
-import { getEdgeStyle, getEdgeLabel } from './edgeUtils';
+// AddNodeDialog.test.jsx
+import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, test, expect, vi } from 'vitest';
+import AddNodeDialog from '../components/AddNodeDialog';
 
-describe('getEdgeStyle', () => {
-  it('returns orange style for requires type', () => {
-    const style = getEdgeStyle('requires');
-    expect(style.stroke).toBe('#f97316');
+describe('AddNodeDialog', () => {
+  test('renders with LEO title when initialType is leo', () => {
+    render(
+      <AddNodeDialog
+        initialType="leo"
+        onAdd={() => {}}
+        onCancel={() => {}}
+        allTags={[]}
+      />
+    );
+    expect(screen.getByText(/Adding Learning Outcome/i)).toBeInTheDocument();
   });
 
-  it('returns blue style for implies type', () => {
-    const style = getEdgeStyle('implies');
-    expect(style.stroke).toBe('#3b82f6');
+  test('calls onCancel when Cancel button is clicked', () => {
+    const mockOnCancel = vi.fn();
+    render(
+      <AddNodeDialog
+        initialType="leo"
+        onAdd={() => {}}
+        onCancel={mockOnCancel}
+        allTags={[]}
+      />
+    );
+    fireEvent.click(screen.getByText('Cancel'));
+    expect(mockOnCancel).toHaveBeenCalled();
   });
 });
 ```
 
-#### Integration Testing
+**Test Results:**
+
+```
+Test Files  10 passed (10)
+     Tests  54 passed (54)
+```
+
+### Integration Testing
 
 **Focus Areas:**
 - Node creation workflow
@@ -720,9 +772,9 @@ describe('getEdgeStyle', () => {
 - Save/Load functionality
 - Export functionality
 
-#### End-to-End Testing
+### End-to-End Testing
 
-**Framework:** Playwright or Spectron
+**Framework:** Playwright or Spectron (recommended for future implementation)
 
 **Scenarios:**
 1. Create a complete course graph
@@ -730,13 +782,15 @@ describe('getEdgeStyle', () => {
 3. Export to PNG and Excel
 4. Undo/Redo operations
 
-### Test Coverage Goals
+### Test Coverage
 
-| Area | Target Coverage |
-|------|-----------------|
-| Utility functions | 90%+ |
-| Components | 70%+ |
-| Integration | Key workflows |
+| Area | Status |
+|------|--------|
+| React Components | 8/8 tested (33 tests) |
+| Utility Functions | 2/3 tested (21 tests) |
+| Integration | Manual testing completed |
+| Utility functions | Pending |
+| Integration | Manual testing completed |
 
 ---
 
