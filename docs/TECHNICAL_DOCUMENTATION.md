@@ -117,11 +117,20 @@ coursegraph/
 │   │   ├── NewProjectDialog.jsx   # New project confirmation
 │   │   ├── Saveloadmanager.jsx    # Save/load functionality
 │   │   └── edgeUtils.js           # Edge styling utilities
-│   └── utils/
-│       ├── exportUtils.js         # PNG and Excel export
-│       └── autoLayout.js          # Graph layout algorithm
+│   ├── utils/
+│   │   ├── exportUtils.js         # PNG and Excel export
+│   │   └── autoLayout.js          # Graph layout algorithm
+│   └── test/
+│       ├── setup.js               # Test setup with jest-dom
+│       ├── *.test.jsx             # Unit tests (10 files)
+│       └── integration/
+│           ├── NodeCreation.test.jsx   # Node creation workflow
+│           ├── EdgeCreation.test.jsx   # Edge creation workflow
+│           ├── NodeEditing.test.jsx    # Node editing workflow
+│           └── NodeDeletion.test.jsx   # Node deletion workflow
 ├── index.html                     # HTML entry point
 ├── package.json                   # Project configuration
+├── vitest.config.js               # Vitest test configuration
 ├── forge.config.js                # Electron Forge config
 ├── vite.main.config.mjs           # Vite config (main process)
 ├── vite.renderer.config.mjs       # Vite config (renderer)
@@ -139,6 +148,8 @@ coursegraph/
 | `src/` | All source code |
 | `src/components/` | Reusable React components |
 | `src/utils/` | Utility functions and helpers |
+| `src/test/` | Unit and integration tests |
+| `src/test/integration/` | Integration tests for workflows |
 | `.vite/` | Vite build output (generated) |
 | `out/` | Packaged application output (generated) |
 | `node_modules/` | npm dependencies (generated) |
@@ -711,7 +722,7 @@ module.exports = {
 | autoLayout | `autoLayout.test.jsx` | 9 | Graph layout algorithm (autoLayoutGraph) |
 | **Subtotal Utilities** | **2 files** | **21** | |
 
-**Total: 10 test files, 54 tests**
+**Subtotal Unit Tests: 10 test files, 54 tests**
 
 **Test Commands:**
 
@@ -757,20 +768,78 @@ describe('AddNodeDialog', () => {
 });
 ```
 
-**Test Results:**
-
-```
-Test Files  10 passed (10)
-     Tests  54 passed (54)
-```
-
 ### Integration Testing
 
-**Focus Areas:**
-- Node creation workflow
-- Edge creation workflow
-- Save/Load functionality
-- Export functionality
+**Framework:** Vitest with React Testing Library
+
+**Test Files Location:** `src/test/integration/*.test.jsx`
+
+**Integration Tests:**
+
+| Test File | Tests | Description |
+|-----------|-------|-------------|
+| `NodeCreation.test.jsx` | 1 | Node creation workflow: AddNodeDialog → NodeProperties |
+| `EdgeCreation.test.jsx` | 3 | Edge creation with different types (requires, implies, tests) |
+| `NodeEditing.test.jsx` | 4 | Node editing workflow: EditNodeDialog → NodeProperties |
+| `NodeDeletion.test.jsx` | 4 | Node deletion and edge cleanup |
+| **Subtotal Integration** | **4 files** | **12 tests** |
+
+**Example Integration Test:**
+
+```javascript
+// NodeCreation.test.jsx
+import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, test, expect } from 'vitest';
+import AddNodeDialog from '../../components/AddNodeDialog';
+import NodeProperties from '../../components/NodeProperties';
+
+describe('Node Creation Integration', () => {
+  test('created node data is correctly passed to NodeProperties', () => {
+    let createdNode = null;
+
+    const handleAdd = (nodeData) => {
+      createdNode = {
+        id: '1',
+        data: {
+          label: nodeData.label,
+          description: nodeData.description,
+          nodeType: nodeData.type,
+          level: nodeData.level,
+          tags: nodeData.tags,
+          nodeId: '01_01'
+        }
+      };
+    };
+
+    // ACT 1: Create node via AddNodeDialog
+    const { unmount } = render(
+      <AddNodeDialog initialType="leo" onAdd={handleAdd} onCancel={() => {}} allTags={[]} />
+    );
+    fireEvent.change(screen.getByPlaceholderText(/Apply Object Orientation/i),
+      { target: { value: 'Test Learning Outcome' } });
+    fireEvent.click(screen.getByText('Create'));
+    unmount();
+
+    // ACT 2: Display in NodeProperties
+    render(
+      <NodeProperties node={createdNode} edge={null} nodes={[createdNode]} edges={[]}
+        onDeleteEdge={() => {}} onEditNode={() => {}} onEditConnection={() => {}} />
+    );
+
+    // ASSERT: NodeProperties shows correct data
+    expect(screen.getByText(/test learning outcome/i)).toBeInTheDocument();
+  });
+});
+```
+
+### Test Summary
+
+**Total: 14 test files, 66 tests**
+
+```
+Test Files  14 passed (14)
+     Tests  66 passed (66)
+```
 
 ### End-to-End Testing
 
@@ -787,10 +856,9 @@ Test Files  10 passed (10)
 | Area | Status |
 |------|--------|
 | React Components | 8/8 tested (33 tests) |
-| Utility Functions | 2/3 tested (21 tests) |
-| Integration | Manual testing completed |
-| Utility functions | Pending |
-| Integration | Manual testing completed |
+| Utility Functions | 2/2 tested (21 tests) |
+| Integration Workflows | 4/4 tested (12 tests) |
+| End-to-End | Recommended for future |
 
 ---
 
