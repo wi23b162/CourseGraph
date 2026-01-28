@@ -1,12 +1,14 @@
 // src/components/NewProjectDialog.jsx
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 /**
  * Simple confirmation dialog to start a new project.
  * It warns the user that all nodes/edges (and auto-save) will be cleared.
+ * Allows user to specify a project name.
  */
 function NewProjectDialog({ onConfirm, onCancel }) {
   const dialogRef = useRef(null);
+  const [projectName, setProjectName] = useState('Untitled Project');
 
   // Handle ESC key to close dialog and ENTER to confirm
   useEffect(() => {
@@ -15,12 +17,12 @@ function NewProjectDialog({ onConfirm, onCancel }) {
         onCancel();
       } else if (e.key === 'Enter') {
         e.preventDefault();
-        onConfirm();
+        onConfirm(projectName);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onCancel, onConfirm]);
+  }, [onCancel, onConfirm, projectName]);
 
   return (
     <div
@@ -87,6 +89,37 @@ function NewProjectDialog({ onConfirm, onCancel }) {
           This action cannot be undone.
         </p>
 
+        <div style={{ marginBottom: "16px" }}>
+          <label
+            htmlFor="project-name-input"
+            style={{
+              display: "block",
+              marginBottom: "6px",
+              fontSize: "14px",
+              fontWeight: 500,
+              color: "#374151",
+            }}
+          >
+            Project Name
+          </label>
+          <input
+            id="project-name-input"
+            type="text"
+            value={projectName}
+            onChange={(e) => setProjectName(e.target.value)}
+            placeholder="Enter project name..."
+            autoFocus
+            style={{
+              width: "100%",
+              padding: "8px 12px",
+              borderRadius: "6px",
+              border: "1px solid #e5e7eb",
+              fontSize: "14px",
+              outline: "none",
+            }}
+          />
+        </div>
+
         <div
           style={{
             display: "flex",
@@ -111,7 +144,7 @@ function NewProjectDialog({ onConfirm, onCancel }) {
           </button>
 
           <button
-            onClick={onConfirm}
+            onClick={() => onConfirm(projectName)}
             style={{
               padding: "8px 14px",
               borderRadius: "6px",

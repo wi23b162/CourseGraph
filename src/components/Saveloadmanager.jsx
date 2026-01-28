@@ -25,9 +25,6 @@ export const useSaveLoad = (nodes, edges, onSave) => {
   // Load from localStorage on mount
   useEffect(() => {
     const saved = loadFromLocalStorage();
-    if (saved) {
-      console.log('📂 Loaded from auto-save:', saved.nodes.length, 'nodes');
-    }
   }, []);
 
   return {
@@ -41,20 +38,21 @@ export const useSaveLoad = (nodes, edges, onSave) => {
 // Save to localStorage (auto-save)
 const saveToLocalStorage = (nodes, edges, onSaveCallback) => {
   try {
+    const projectName = localStorage.getItem('coursegraph_project_name') || 'Untitled Project';
     const data = {
       nodes,
       edges,
+      projectName,
       timestamp: new Date().toISOString(),
       version: '1.0'
     };
     localStorage.setItem('coursegraph_autosave', JSON.stringify(data));
-    console.log('💾 Auto-saved:', nodes.length, 'nodes');
-    
+
     if (onSaveCallback) {
       onSaveCallback(new Date());
     }
   } catch (error) {
-    console.error('❌ Auto-save failed:', error);
+    // Auto-save failed
   }
 };
 
@@ -64,10 +62,14 @@ export const loadFromLocalStorage = () => {
     const saved = localStorage.getItem('coursegraph_autosave');
     if (saved) {
       const data = JSON.parse(saved);
+      // Restore project name if available
+      if (data.projectName) {
+        localStorage.setItem('coursegraph_project_name', data.projectName);
+      }
       return data;
     }
   } catch (error) {
-    console.error('❌ Load from localStorage failed:', error);
+    // Load from localStorage failed
   }
   return null;
 };
@@ -76,24 +78,25 @@ export const loadFromLocalStorage = () => {
 export const clearAutoSave = () => {
   localStorage.removeItem('coursegraph_autosave');
   localStorage.removeItem('coursegraph_manual_save');
-  console.log('🗑️ Auto-save and manual save cleared');
+  localStorage.removeItem('coursegraph_project_name');
 };
 
 // Save to localStorage as manual save (when user clicks "Save")
 export const saveManualToLocalStorage = (nodes, edges) => {
   try {
+    const projectName = localStorage.getItem('coursegraph_project_name') || 'Untitled Project';
     const data = {
       nodes,
       edges,
+      projectName,
       timestamp: new Date().toISOString(),
       version: '1.0',
       isManualSave: true
     };
     localStorage.setItem('coursegraph_manual_save', JSON.stringify(data));
-    console.log('💾 Manual save:', nodes.length, 'nodes');
     return true;
   } catch (error) {
-    console.error('❌ Manual save failed:', error);
+    // Manual save failed
     return false;
   }
 };
@@ -104,11 +107,14 @@ export const loadManualFromLocalStorage = () => {
     const saved = localStorage.getItem('coursegraph_manual_save');
     if (saved) {
       const data = JSON.parse(saved);
-      console.log('📂 Found manual save from:', data.timestamp);
+      // Restore project name if available
+      if (data.projectName) {
+        localStorage.setItem('coursegraph_project_name', data.projectName);
+      }
       return data;
     }
   } catch (error) {
-    console.error('❌ Load manual save failed:', error);
+    // Load manual save failed
   }
   return null;
 };
@@ -116,12 +122,15 @@ export const loadManualFromLocalStorage = () => {
 // Save to file (download) - also saves to localStorage as manual save
 const saveToFile = (nodes, edges, filename = 'course-graph') => {
   try {
+    const projectName = localStorage.getItem('coursegraph_project_name') || 'Untitled Project';
     const data = {
       nodes,
       edges,
+      projectName,
       timestamp: new Date().toISOString(),
       version: '1.0',
       metadata: {
+        projectName,
         totalNodes: nodes.length,
         totalEdges: edges.length,
         leoCount: nodes.filter(n => n.data.nodeType === 'leo').length,
@@ -142,10 +151,9 @@ const saveToFile = (nodes, edges, filename = 'course-graph') => {
     // Also save to localStorage as manual save (will be loaded on app restart)
     saveManualToLocalStorage(nodes, edges);
 
-    console.log('💾 Saved to file:', filename);
     return true;
   } catch (error) {
-    console.error('❌ Save to file failed:', error);
+    // Save to file failed
     return false;
   }
 };
@@ -164,10 +172,8 @@ const loadFromFile = (file) => {
           throw new Error('Invalid file format');
         }
 
-        console.log('📂 Loaded from file:', data.nodes.length, 'nodes');
         resolve(data);
       } catch (error) {
-        console.error('❌ Load from file failed:', error);
         reject(error);
       }
     };
@@ -218,6 +224,10 @@ export const SaveLoadDialog = ({ nodes, edges, onLoad, onClose }) => {
 
     try {
       const data = await loadFromFile(file);
+      // Restore project name if available
+      if (data.projectName) {
+        localStorage.setItem('coursegraph_project_name', data.projectName);
+      }
       onLoad(data.nodes, data.edges);
       setMessage('✅ Course loaded successfully!');
       setTimeout(() => onClose(), 1500);
@@ -229,6 +239,7 @@ export const SaveLoadDialog = ({ nodes, edges, onLoad, onClose }) => {
   const handleLoadAutoSave = () => {
     const saved = loadFromLocalStorage();
     if (saved) {
+      // Project name is already restored by loadFromLocalStorage
       onLoad(saved.nodes, saved.edges);
       setMessage('✅ Auto-save loaded successfully!');
       setTimeout(() => onClose(), 1500);

@@ -14,8 +14,6 @@ export const exportToPNG = async () => {
   }
 
   try {
-    console.log('📸 Starting PNG export...');
-    
     // Hide controls temporarily
     const controls = document.querySelector('.react-flow__controls');
     const attribution = document.querySelector('.react-flow__attribution');
@@ -46,8 +44,7 @@ export const exportToPNG = async () => {
     setTimeout(() => {
       document.body.removeChild(link);
     }, 100);
-    
-    console.log('✅ PNG export successful');
+
     return true;
   } catch (error) {
     console.error('❌ PNG export failed:', error);
@@ -69,8 +66,6 @@ export const exportToPNG = async () => {
  */
 export const exportToExcel = (nodes, edges) => {
   try {
-    console.log('📊 Starting Excel export...');
-    
     // Sheet 1: Learning Outcomes
     const nodesData = nodes.map((node, index) => ({
       'Nr.': index + 1,
@@ -156,8 +151,7 @@ export const exportToExcel = (nodes, edges) => {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
     }, 100);
-    
-    console.log('✅ Excel export successful');
+
     return true;
   } catch (error) {
     console.error('❌ Excel export failed:', error);
