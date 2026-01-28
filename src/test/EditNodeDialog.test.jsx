@@ -15,7 +15,7 @@ describe('EditNodeDialog', () => {
         }
     };
 
-    // Test 1: Rendert nichts wenn node null ist                                                                                                       
+    // Test 1: Renders nothing when node is null                                                                                                       
     test('renders nothing when node is null', () => {
         const { container } = render(
             <EditNodeDialog
@@ -28,7 +28,7 @@ describe('EditNodeDialog', () => {
         expect(container.firstChild).toBeNull();
     });
 
-    // Test 2: Rendert Dialog mit Node Daten                                                                                                           
+    // Test 2: Renders dialog with node data                                                                                                           
     test('renders dialog with node data', () => {
         render(
             <EditNodeDialog
@@ -41,7 +41,7 @@ describe('EditNodeDialog', () => {
         expect(screen.getByText(/Editing Learning Outcome/)).toBeInTheDocument();
     });
 
-    // Test 3: Cancel ruft onCancel auf                                                                                                                
+    // Test 3: Cancel calls onCancel                                                                                                                
     test('calls onCancel when Cancel is clicked', () => {
         const mockOnCancel = vi.fn();
         render(
@@ -56,7 +56,7 @@ describe('EditNodeDialog', () => {
         expect(mockOnCancel).toHaveBeenCalled();
     });
 
-    // Test 4: Save Button ist disabled ohne Titel                                                                                                     
+    // Test 4: Save button is disabled without title                                                                                                     
     test('Save button is disabled when title is empty', () => {
         const nodeWithEmptyLabel = { ...mockNode, data: { ...mockNode.data, label: '' } };
         render(
@@ -67,7 +67,7 @@ describe('EditNodeDialog', () => {
                 allTags={[]}
             />
         );
-        // Titel leeren                                                                                                                                  
+        // Clear title                                                                                                                                  
         const inputs = screen.getAllByRole('textbox');
         const titleInput = inputs[0];
         fireEvent.change(titleInput, { target: { value: '' } });

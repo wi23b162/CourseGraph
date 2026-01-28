@@ -6,11 +6,11 @@ import NodeProperties from '../../components/NodeProperties';
 describe('Node Creation Integration', () => {
 
     test('created node data is correctly passed to NodeProperties', () => {
-        // ARRANGE: Simuliere was passiert wenn ein Node erstellt wird                                                                  
+        // ARRANGE: Simulate what happens when a node is created                                                                  
         let createdNode = null;
 
         const handleAdd = (nodeData) => {
-            // Simuliere was App.jsx macht: Node-Objekt erstellen                                                                         
+            // Simulate what App.jsx does: create node object                                                                         
             createdNode = {
                 id: '1',
                 data: {
@@ -24,7 +24,7 @@ describe('Node Creation Integration', () => {
             };
         };
 
-        // ACT 1: Render AddNodeDialog und erstelle Node                                                                                
+        // ACT 1: Render AddNodeDialog and create node                                                                                
         const { unmount } = render(
             <AddNodeDialog
                 initialType="leo"
@@ -34,17 +34,17 @@ describe('Node Creation Integration', () => {
             />
         );
 
-        // Fülle Formular aus                                                                                                           
+        // Fill out form                                                                                                           
         const titleInput = screen.getByPlaceholderText(/Apply Object Orientation/i);
         fireEvent.change(titleInput, { target: { value: 'Test Learning Outcome' } });
 
-        // Klicke Create                                                                                                                
+        // Click Create                                                                                                                
         fireEvent.click(screen.getByText('Create'));
 
         // Cleanup                                                                                                                      
         unmount();
 
-        // ACT 2: Render NodeProperties mit dem erstellten Node                                                                         
+        // ACT 2: Render NodeProperties with the created node                                                                         
         render(
             <NodeProperties
                 node={createdNode}
@@ -57,7 +57,7 @@ describe('Node Creation Integration', () => {
             />
         );
 
-        // ASSERT: NodeProperties zeigt die korrekten Daten                                                                             
+        // ASSERT: NodeProperties displays the correct data                                                                             
         expect(screen.getByText(/test learning outcome/i)).toBeInTheDocument();
     });
 });                                                                                                                            

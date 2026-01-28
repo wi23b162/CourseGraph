@@ -326,18 +326,18 @@ CourseGraph supports course designers in developing courses following the Constr
 | Task Category | Planned Hours | Actual Hours |
 |---------------|---------------|--------------|
 | Setup & Infrastructure | 13h | 13h |
-| Development | 152h | 152h |
+| Development | 156h | 156h |
 | Design & UI | 28h | 28h |
-| Testing & QA | 47h | 47h |
-| Documentation | 16h | 16h |
-| **Total** | **256h** | **256h** |
+| Testing & QA | 49h | 49h |
+| Documentation | 24h | 24h |
+| **Total** | **270h** | **270h** |
 
 **Team Distribution:**
 | Member | Hours |
 |--------|-------|
-| Ambar Irfan | 90h |
-| Julia Brandstätter | 87h |
-| Enesa Fazlioska | 79h |
+| Ambar Irfan | 96.67h |
+| Julia Brandstätter | 86.17h |
+| Enesa Fazlioska | 87.17h |
 
 ### 6.4 Backlog Management
 
