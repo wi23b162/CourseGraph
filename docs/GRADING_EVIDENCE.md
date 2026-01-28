@@ -322,17 +322,18 @@ CourseGraph supports course designers in developing courses following the Constr
 
 | Role | Member | Responsibilities |
 |------|--------|------------------|
-| Full-Stack Developer | Ambar Irfan | Implementation, Testing, Documentation |
-| Full-Stack Developer | Julia Brandstätter | Implementation, Testing, Documentation |
-| Full-Stack Developer | Enesa Fazlioska | Implementation, Testing, Documentation |
+| Lead Developer / Scrum Master | Ambar Irfan | Setup, Core Functionality, Visual Design, Project Architecture |
+| Developer / Product Owner | Julia Brandstätter | Advanced Features, Testing, User Stories, Azure DevOps |
+| Developer / QA Lead | Enesa Fazlioska | Export Functions, Undo/Redo, Testing, Bug Fixes |
 
 ### 5.2 Communication
 
 | Channel | Purpose | Frequency |
 |---------|---------|-----------|
-| Discord | Daily communication, screen sharing, quick discussions | Daily |
+| Discord | Daily communication, screen sharing, discussions | Daily |
 | WhatsApp | Quick updates, coordination, scheduling | Daily |
-| GitHub | Code collaboration, pull requests, code reviews | Continuous |
+| GitHub | Code reviews, issues, PRs | Continuous |
+| Azure DevOps | Task management, sprint planning | Continuous |
 
 ### 5.3 Collaboration Evidence
 
@@ -362,29 +363,29 @@ CourseGraph supports course designers in developing courses following the Constr
 
 | Sprint | Duration | Goals | Outcome |
 |--------|----------|-------|---------|
-| Sprint 1 | Before 22.10.2025 | Design & Prototyping, Visual Design Implementation | ✅ Completed (100%) |
-| Sprint 2 | 22.10 - 21.11.2025 | Projekt-Setup & Infrastruktur, Core Development Start | ✅ Completed (100%) |
-| Sprint 3 | 21.11 - 04.12.2025 | Core Features Implementation | ✅ Completed (100%) |
-| Sprint 4 | 05.12.2025 - 08.01.2026 | Advanced Features & Testing Start | ✅ Completed |
-| Sprint 5 | 09.01 - 28.01.2026 | Testing & Documentation | ✅ Completed |
+| Sprint 1 | 24.09 - 21.10.2025 | Setup & Infrastructure, Core Node Components | ✅ Completed (100%) |
+| Sprint 2 | 22.10 - 21.11.2025 | Core Functionality (FR1, FR2, FR3), Visual Design | ✅ Completed (100%) |
+| Sprint 3 | 22.11 - 19.12.2025 | Save/Load/Export (FR5), Advanced Features | ✅ Completed (100%) |
+| Sprint 4 | 06.01 - 18.01.2026 | Testing & QA, Bug Fixes | ✅ Completed |
+| Sprint 5 | 19.01 - 25.01.2026 | Documentation, Final Polish | ✅ Completed |
 
 ### 6.3 Time Tracking
 
 | Task Category | Planned Hours | Actual Hours |
 |---------------|---------------|--------------|
-| Planning | 10h | 10h |
-| Design | 28h | 28h |
-| Implementation | 220h | 220h |
-| Testing | 43h | 43h |
-| Documentation | 36h | 36h |
-| **Total** | **337h** | **337h** |
+| Setup & Infrastructure | 13h | 13h |
+| Development | 152h | 152h |
+| Design & UI | 28h | 28h |
+| Testing & QA | 47h | 47h |
+| Documentation | 16h | 16h |
+| **Total** | **256h** | **256h** |
 
 **Team Distribution:**
 | Member | Hours |
 |--------|-------|
-| Ambar Irfan | ~109h |
-| Julia Brandstätter | ~122h |
-| Enesa Fazlioska | ~121h |
+| Ambar Irfan | 90h |
+| Julia Brandstätter | 87h |
+| Enesa Fazlioska | 79h |
 
 ### 6.4 Backlog Management
 

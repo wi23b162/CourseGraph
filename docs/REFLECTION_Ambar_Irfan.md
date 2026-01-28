@@ -45,7 +45,7 @@
 | Node Styling | Color scheme by level, visual differentiation | CustomNode.jsx, styles.css | Medium |
 | Node Badges | ID and Level badges on nodes | CustomNode.jsx | Low |
 | Toolbar & UI | Modern toolbar with action buttons | Toolbar.jsx, components/ | Medium |
-| MiniMap | Styled minimap for navigation | App.jsx, minimap styles | Low |
+| Collapsible Sidebars | Left/Right sidebar toggle | App.jsx, sidebar styles | Low |
 | Auto-Save | LocalStorage with 30s interval | useAutoSave.js, App.jsx | Medium |
 | Open/Close Column | Collapsible sidebar functionality | Sidebar.jsx | Low |
 | Edit Connections | Modify existing edge relationships | EdgeTypeDialog.jsx | Medium |
@@ -57,7 +57,7 @@
 // CustomNode.jsx - Reusable node component with type differentiation
 const CustomNode = ({ data, selected }) => {
   const getNodeStyle = () => ({
-    backgroundColor: data.type === 'leo' ? '#3b82f6' : '#22c55e',
+    backgroundColor: data.type === 'leo' ? '#3b82f6' : '#ec4899',
     borderColor: selected ? '#f59e0b' : 'transparent',
   });
 
@@ -91,7 +91,7 @@ const useAutoSave = (nodes, edges, interval = 30000) => {
 |-----|-------------|----------------|
 | Node drag lag | Performance issues when dragging nodes with many edges | Implemented useCallback for event handlers, reduced re-renders |
 | Edge disconnect on edit | Edges would disconnect when editing node properties | Preserved edge references during node updates |
-| MiniMap sync | MiniMap viewport not syncing correctly | Fixed viewport calculation and added proper event listeners |
+| Auto-save timing | Auto-save causing stale data issues | Used useRef to capture latest state, implemented debouncing |
 | Dialog focus trap | Focus would escape modal dialogs | Implemented proper focus management with useRef |
 
 ### 1.3 Non-Technical Contributions
@@ -324,20 +324,24 @@ Going forward, I will carry the lessons learned about testing early, documenting
 
 ## Appendix: Evidence of Contribution
 
-### GitHub Contributions
+### Evidence Location
 
-**Commits:** 45+ commits
-**Pull Requests:** 20+ PRs created
-**Code Reviews:** 15+ PRs reviewed
+All screenshots and visual evidence can be found in: `docs/screenshots/`
 
-**Key Pull Requests:**
-- #1: Initial project setup with Electron + React + Vite
-- #5: Custom node components with type differentiation
-- #8: Node CRUD operations with EditNodeDialog
-- #12: Edge creation and management system
-- #15: Interactive graph navigation (FR3)
-- #18: Visual design and styling implementation
-- #22: Auto-save functionality with LocalStorage
+**Note:** The Git commit and push history shows who implemented each feature. Each commit is attributed to the developer who did the work.
+
+### Key Links
+
+- **GitHub Repository:** https://github.com/wi23b162/coursegraph
+- **Pull Requests:** https://github.com/wi23b162/coursegraph/pulls?q=is%3Apr+author%3Awi23b162
+- **Commits:** https://github.com/wi23b162/coursegraph/commits?author=wi23b162
+
+### Other Evidence
+
+- Sprint meeting notes documenting facilitation
+- Code review comments on team PRs
+- Architecture decision documentation
+
 
 ---
 

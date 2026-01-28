@@ -1,12 +1,10 @@
 import React, { useState, useCallback } from 'react';
 import ReactFlow, {
-  MiniMap,
   Controls,
   Background,
   useNodesState,
   useEdgesState,
   addEdge,
-  useReactFlow,
 } from "reactflow";
 import "reactflow/dist/style.css";
 import "./App.css";
