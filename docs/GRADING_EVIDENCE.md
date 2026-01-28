@@ -252,12 +252,12 @@ CourseGraph supports course designers in developing courses following the Constr
 
 | Component | Lines of Code | Complexity | Developer |
 |-----------|---------------|------------|-----------|
-| `App.jsx` | ~1400 | High | [Name] |
-| `CustomNode.jsx` | ~150 | Medium | [Name] |
-| `Saveloadmanager.jsx` | ~200 | Medium | [Name] |
-| `exportUtils.js` | ~100 | Medium | [Name] |
-| `autoLayout.js` | ~80 | Medium | [Name] |
-| Dialog components | ~400 total | Low-Medium | [Name] |
+| `App.jsx` | ~1400 | High | [Team] |
+| `CustomNode.jsx` | ~150 | Medium | [Ambar] |
+| `Saveloadmanager.jsx` | ~200 | Medium | [Enesa] |
+| `exportUtils.js` | ~100 | Medium | [Enesa] |
+| `autoLayout.js` | ~80 | Medium | [Julia] |
+| Dialog components | ~400 total | Low-Medium | [Team] |
 
 ### 4.2 Key Implementation Features
 
@@ -322,17 +322,17 @@ CourseGraph supports course designers in developing courses following the Constr
 
 | Role | Member | Responsibilities |
 |------|--------|------------------|
-| [Role] | [Name] | [Responsibilities] |
-| [Role] | [Name] | [Responsibilities] |
-| [Role] | [Name] | [Responsibilities] |
+| Full-Stack Developer | Ambar Irfan | Implementation, Testing, Documentation |
+| Full-Stack Developer | Julia Brandstätter | Implementation, Testing, Documentation |
+| Full-Stack Developer | Enesa Fazlioska | Implementation, Testing, Documentation |
 
 ### 5.2 Communication
 
 | Channel | Purpose | Frequency |
 |---------|---------|-----------|
-| [e.g., Discord] | Daily communication | Daily |
-| [e.g., Weekly Meeting] | Sprint planning/review | Weekly |
-| [e.g., GitHub] | Code collaboration | Continuous |
+| Discord | Daily communication, screen sharing, quick discussions | Daily |
+| WhatsApp | Quick updates, coordination, scheduling | Daily |
+| GitHub | Code collaboration, pull requests, code reviews | Continuous |
 
 ### 5.3 Collaboration Evidence
 
@@ -343,7 +343,12 @@ CourseGraph supports course designers in developing courses following the Constr
 
 ### 5.4 Conflict Resolution
 
-[Document any conflicts and how they were resolved]
+| Conflict | Description | Resolution |
+|----------|-------------|------------|
+| Communication | Team members occasionally not reachable, scheduling conflicts | Used async communication via WhatsApp, flexible meeting times |
+| Task Distribution | Unclear who should work on which feature | Discussed in Discord, divided tasks based on availability |
+| Time Pressure | Tight deadlines due to conflicts with other courses | Prioritized core features, communicated delays early |
+| Merge Conflicts | Multiple team members working on same files simultaneously | Resolved via Git, established practice of pulling before pushing |
 
 ---
 
@@ -357,28 +362,42 @@ CourseGraph supports course designers in developing courses following the Constr
 
 | Sprint | Duration | Goals | Outcome |
 |--------|----------|-------|---------|
-| Sprint 1 | [Dates] | Basic graph canvas, node creation | [Outcome] |
-| Sprint 2 | [Dates] | Node editing, connections | [Outcome] |
-| Sprint 3 | [Dates] | Save/Load, Export | [Outcome] |
-| Sprint 4 | [Dates] | Undo/Redo, Tags, Polish | [Outcome] |
+| Sprint 1 | Before 22.10.2025 | Design & Prototyping, Visual Design Implementation | ✅ Completed (100%) |
+| Sprint 2 | 22.10 - 21.11.2025 | Projekt-Setup & Infrastruktur, Core Development Start | ✅ Completed (100%) |
+| Sprint 3 | 21.11 - 04.12.2025 | Core Features Implementation | ✅ Completed (100%) |
+| Sprint 4 | 05.12.2025 - 08.01.2026 | Advanced Features & Testing Start | ✅ Completed |
+| Sprint 5 | 09.01 - 28.01.2026 | Testing & Documentation | ✅ Completed |
 
 ### 6.3 Time Tracking
 
 | Task Category | Planned Hours | Actual Hours |
 |---------------|---------------|--------------|
-| Planning | [Hours] | [Hours] |
-| Design | [Hours] | [Hours] |
-| Implementation | [Hours] | [Hours] |
-| Testing | [Hours] | [Hours] |
-| Documentation | [Hours] | [Hours] |
-| **Total** | **[Hours]** | **[Hours]** |
+| Planning | 10h | 10h |
+| Design | 28h | 28h |
+| Implementation | 220h | 220h |
+| Testing | 43h | 43h |
+| Documentation | 36h | 36h |
+| **Total** | **337h** | **337h** |
+
+**Team Distribution:**
+| Member | Hours |
+|--------|-------|
+| Ambar Irfan | ~109h |
+| Julia Brandstätter | ~122h |
+| Enesa Fazlioska | ~121h |
 
 ### 6.4 Backlog Management
 
-**Tool Used:** [e.g., GitHub Issues, Jira, Trello]
+**Tool Used:** Azure DevOps
 
-**Backlog Items Completed:** [Number]
-**Backlog Items Remaining:** [Number]
+**Backlog Items Completed:** 43 items
+- Sprint 1: 20 items
+- Sprint 2: 11 items
+- Sprint 3: 12 items
+
+**Backlog Items Remaining:** 0 items (all completed)
+
+**Epic Status:** 16 Epics total, all completed
 
 ### 6.5 Risk Management
 
@@ -468,34 +487,68 @@ Detailed instructions available in: `docs/INSTALLATION_GUIDE.md`
 | Branch | Purpose |
 |--------|---------|
 | `main` | Production-ready code |
-| `improvement_SaveLoadManager` | Save/Load feature development |
-| [Other branches] | [Purpose] |
+| `feature/integration-testing` | Integration tests implementation |
+| `feature/unit-testing` | Unit tests implementation |
+| `feat/add-png-excel-export` | Export functionality |
+| `feat/undo-redo` | Undo/Redo feature |
+| `documentation` | Documentation updates |
 
-**Commit History:** [Number] commits
+**Commit History:** 57 commits
+
+**Commits per Team Member:**
+| Member | Commits | Percentage |
+|--------|---------|------------|
+| Ambar Irfan (wi23b162) | 25 | 43.9% |
+| Julia Brandstätter (wi23b165) | 18 | 31.6% |
+| Enesa Fazlioska (e12823) | 14 | 24.5% |
 
 ---
 
 ## Appendix A: Screenshots
 
-[Add screenshots demonstrating key features]
+All screenshots are located in `docs/screenshots/`.
 
-1. Main application interface
-2. Node creation dialog
-3. Edge type selection
-4. Export output (PNG)
-5. Export output (Excel)
+### Application Screenshots
+
+| Feature | Screenshot |
+|---------|------------|
+| Main Interface | ![Main Interface](screenshots/app-main-interface.png) |
+| Node Creation Dialog | ![Node Creation](screenshots/app-node-creation.png) |
+| Edge Type Selection | ![Edge Selection](screenshots/app-edge-selection.png) |
+| PNG Export | ![PNG Export](screenshots/app-export-png.png) |
+| Excel Export | ![Excel Export](screenshots/app-export-excel.png) |
+
+### Azure DevOps - Sprint Boards
+
+| Sprint | Screenshot |
+|--------|------------|
+| Sprint 1 | ![Sprint 1](screenshots/Sprint1.png) |
+| Sprint 2 | ![Sprint 2](screenshots/Sprint2.png) |
+| Sprint 3 | ![Sprint 3](screenshots/Sprint3.png) |
+| Sprint 4 | ![Sprint 4](screenshots/Sprint4.png) |
+| Sprint 5 | ![Sprint 5](screenshots/Sprint5.png) |
+
+### Azure DevOps - Backlog
+
+| Sprint | Screenshots |
+|--------|-------------|
+| Sprint 1 | [Part 1](screenshots/Sprint1.1_Backlog.png), [Part 2](screenshots/Sprint1.2_Backlog.png) |
+| Sprint 2 | [Part 1](screenshots/Sprint2.1_Backlog.png), [Part 2](screenshots/Sprint2.2_Backlog.png) |
+| Sprint 3 | [Part 1](screenshots/Sprint3.1_Backlog.png), [Part 2](screenshots/Sprint3.2_Backlog.png) |
+| Sprint 4 | [Backlog](screenshots/Sprint4_Backlog.png) |
+| Sprint 5 | [Backlog](screenshots/Sprint5_Backlog.png) |
 
 ## Appendix B: Links to Evidence
 
 | Category | Evidence | Link |
 |----------|----------|------|
-| Planning | Project proposal | [Link] |
-| Requirements | User stories | [Link] |
-| Design | Architecture diagram | [Link] |
+| Planning | Project proposal | See Azure DevOps |
+| Requirements | User stories | See Azure DevOps |
+| Design | Architecture diagram | See Technical Documentation |
 | Implementation | GitHub repository | https://github.com/wi23b162/CourseGraph |
-| Testing | Test reports | [Link] |
-| PM | Sprint protocols | [Link] |
-| Deployment | Build output | [Link] |
+| Testing | Test reports | See `src/test/` |
+| PM | Sprint protocols | See Appendix A (Screenshots) |
+| Deployment | Build output | See Installation Guide |
 
 ---
 
