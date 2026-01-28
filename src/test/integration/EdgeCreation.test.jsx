@@ -6,7 +6,7 @@ import NodeProperties from '../../components/NodeProperties';
 describe('Edge Creation Integration', () => {
 
     test('created edge data is correctly passed to NodeProperties', () => {
-        // ARRANGE: Erstelle zwei Nodes die verbunden werden sollen
+        // ARRANGE: Create two nodes to be connected
         const sourceNode = {
             id: '1',
             data: {
@@ -32,7 +32,7 @@ describe('Edge Creation Integration', () => {
         let createdEdge = null;
 
         const handleConfirm = (edgeType) => {
-            // Simuliere was App.jsx macht: Edge-Objekt erstellen
+            // Simulate what App.jsx does: create edge object
             createdEdge = {
                 id: 'edge-1-2',
                 source: sourceNode.id,
@@ -44,7 +44,7 @@ describe('Edge Creation Integration', () => {
             };
         };
 
-        // ACT 1: Render EdgeTypeDialog und erstelle Edge
+        // ACT 1: Render EdgeTypeDialog and create edge
         const { unmount } = render(
             <EdgeTypeDialog
                 sourceNode={sourceNode}
@@ -54,21 +54,21 @@ describe('Edge Creation Integration', () => {
             />
         );
 
-        // Wähle "requires" Edge-Typ
+        // Select "requires" edge type
         const requiresRadio = screen.getByLabelText(/requires/i);
         fireEvent.click(requiresRadio);
 
-        // Klicke Create Connection
+        // Click Create Connection
         fireEvent.click(screen.getByText('Create Connection'));
 
         // Cleanup
         unmount();
 
-        // ASSERT: Edge wurde korrekt erstellt
+        // ASSERT: Edge was created correctly
         expect(createdEdge).not.toBeNull();
         expect(createdEdge.data.edgeType).toBe('requires');
 
-        // ACT 2: Render NodeProperties mit der erstellten Edge
+        // ACT 2: Render NodeProperties with the created edge
         render(
             <NodeProperties
                 node={null}
@@ -81,7 +81,7 @@ describe('Edge Creation Integration', () => {
             />
         );
 
-        // ASSERT: NodeProperties zeigt die korrekten Edge-Daten
+        // ASSERT: NodeProperties displays the correct edge data
         expect(screen.getAllByText(/requires/i).length).toBeGreaterThan(0);
         expect(screen.getByText(/source node label/i)).toBeInTheDocument();
         expect(screen.getByText(/target node label/i)).toBeInTheDocument();
@@ -117,7 +117,7 @@ describe('Edge Creation Integration', () => {
             };
         };
 
-        // ACT 1: Render EdgeTypeDialog - "implies" ist bereits standardmäßig ausgewählt
+        // ACT 1: Render EdgeTypeDialog - "implies" is already selected by default
         const { unmount } = render(
             <EdgeTypeDialog
                 sourceNode={sourceNode}
@@ -127,14 +127,14 @@ describe('Edge Creation Integration', () => {
             />
         );
 
-        // Klicke direkt Create Connection (implies ist default)
+        // Click Create Connection directly (implies is default)
         fireEvent.click(screen.getByText('Create Connection'));
         unmount();
 
-        // ASSERT: Edge wurde mit implies erstellt
+        // ASSERT: Edge was created with implies
         expect(createdEdge.data.edgeType).toBe('implies');
 
-        // ACT 2: Zeige in NodeProperties
+        // ACT 2: Display in NodeProperties
         render(
             <NodeProperties
                 node={null}
@@ -147,12 +147,12 @@ describe('Edge Creation Integration', () => {
             />
         );
 
-        // ASSERT: "enables" wird angezeigt (implies zeigt "enables" im UI)
+        // ASSERT: "enables" is displayed (implies shows "enables" in UI)
         expect(screen.getByText(/enables/i)).toBeInTheDocument();
     });
 
     test('edge with "tests" type connects LEO to Assessment correctly', () => {
-        // ARRANGE: LEO Node und Assessment Node
+        // ARRANGE: LEO node and Assessment node
         const leoNode = {
             id: '1',
             data: {
@@ -192,7 +192,7 @@ describe('Edge Creation Integration', () => {
             />
         );
 
-        // Wähle "tests" Edge-Typ
+        // Select "tests" edge type
         const testsRadio = screen.getByLabelText(/tested by/i);
         fireEvent.click(testsRadio);
 
@@ -202,7 +202,7 @@ describe('Edge Creation Integration', () => {
         // ASSERT
         expect(createdEdge.data.edgeType).toBe('tests');
 
-        // ACT 2: Zeige in NodeProperties
+        // ACT 2: Display in NodeProperties
         render(
             <NodeProperties
                 node={null}
@@ -215,7 +215,7 @@ describe('Edge Creation Integration', () => {
             />
         );
 
-        // ASSERT: "tested by" wird angezeigt
+        // ASSERT: "tested by" is displayed
         expect(screen.getByText(/tested by/i)).toBeInTheDocument();
     });
 });

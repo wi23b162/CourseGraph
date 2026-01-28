@@ -8,7 +8,7 @@ describe('SaveLoadDialog', () => {
     ];
     const mockEdges = [];
 
-    // Test 1: Rendert Dialog Titel                                                                                                                    
+    // Test 1: Renders dialog title                                                                                                                    
     test('renders dialog title', () => {
         render(
             <SaveLoadDialog
@@ -21,7 +21,7 @@ describe('SaveLoadDialog', () => {
         expect(screen.getByText('Save / Load Course')).toBeInTheDocument();
     });
 
-    // Test 2: Zeigt Save und Load Tabs                                                                                                                
+    // Test 2: Displays Save and Load tabs                                                                                                                
     test('displays Save and Load tabs', () => {
         render(
             <SaveLoadDialog
@@ -35,7 +35,7 @@ describe('SaveLoadDialog', () => {
         expect(screen.getByText('📂 Load')).toBeInTheDocument();
     });
 
-    // Test 3: Close Button ruft onClose auf                                                                                                           
+    // Test 3: Close button calls onClose                                                                                                           
     test('calls onClose when close button is clicked', () => {
         const mockOnClose = vi.fn();
         render(
@@ -50,7 +50,7 @@ describe('SaveLoadDialog', () => {
         expect(mockOnClose).toHaveBeenCalled();
     });
 
-    // Test 4: Zeigt Course Summary                                                                                                                    
+    // Test 4: Displays course summary                                                                                                                    
     test('displays course summary', () => {
         render(
             <SaveLoadDialog

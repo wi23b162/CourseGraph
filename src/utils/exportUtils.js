@@ -4,8 +4,9 @@ import * as XLSX from 'xlsx';
 
 /**
  * Export graph as PNG image (Mac & Windows compatible)
+ * @param {string} projectName - Optional project name for the filename
  */
-export const exportToPNG = async () => {
+export const exportToPNG = async (projectName = null) => {
   const element = document.querySelector('.react-flow__viewport');
   
   if (!element) {
@@ -35,7 +36,11 @@ export const exportToPNG = async () => {
     if (minimap) minimap.style.display = '';
     
     const link = document.createElement('a');
-    link.download = `coursegraph-${new Date().toISOString().slice(0, 10)}.png`;
+    // Use project name if provided, otherwise fall back to generic name
+    const filename = projectName
+      ? `${projectName.replace(/[^a-zA-Z0-9-_]/g, '-').toLowerCase()}-${new Date().toISOString().slice(0, 10)}.png`
+      : `coursegraph-${new Date().toISOString().slice(0, 10)}.png`;
+    link.download = filename;
     link.href = dataUrl;
     
     document.body.appendChild(link);
@@ -63,8 +68,11 @@ export const exportToPNG = async () => {
 };
 /**
  * Export graph data as Excel file (Mac & Windows compatible)
+ * @param {Array} nodes - The nodes to export
+ * @param {Array} edges - The edges to export
+ * @param {string} projectName - Optional project name for the filename
  */
-export const exportToExcel = (nodes, edges) => {
+export const exportToExcel = (nodes, edges, projectName = null) => {
   try {
     // Sheet 1: Learning Outcomes
     const nodesData = nodes.map((node, index) => ({
@@ -140,7 +148,11 @@ export const exportToExcel = (nodes, edges) => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `coursegraph-${new Date().toISOString().slice(0, 10)}.xlsx`;
+    // Use project name if provided, otherwise fall back to generic name
+    const filename = projectName
+      ? `${projectName.replace(/[^a-zA-Z0-9-_]/g, '-').toLowerCase()}-${new Date().toISOString().slice(0, 10)}.xlsx`
+      : `coursegraph-${new Date().toISOString().slice(0, 10)}.xlsx`;
+    link.download = filename;
     
     // Important for Mac compatibility
     document.body.appendChild(link);

@@ -7,7 +7,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
     const mockSourceNode = { data: { label: 'SOURCE_LABEL' } };                                                                                        
     const mockTargetNode = { data: { label: 'TARGET_LABEL' } };                                                                                        
                                                                                                                                                        
-    // Test 1: Rendert Dialog Titel                                                                                                                    
+    // Test 1: Renders dialog title                                                                                                                    
     test('renders dialog title', () => {                                                                                                               
       render(                                                                                                                                          
         <EditConnectionDialog                                                                                                                          
@@ -22,7 +22,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
       expect(screen.getByText('Edit Connection')).toBeInTheDocument();                                                                                 
     });                                                                                                                                                
                                                                                                                                                        
-    // Test 2: Zeigt Source und Target                                                                                                                 
+    // Test 2: Displays source and target                                                                                                                 
     test('displays source and target labels', () => {                                                                                                  
       render(                                                                                                                                          
         <EditConnectionDialog                                                                                                                          
@@ -38,7 +38,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
       expect(screen.getByText('target label')).toBeInTheDocument();                                                                                    
     });                                                                                                                                                
                                                                                                                                                        
-    // Test 3: Save Changes ruft onSave auf                                                                                                            
+    // Test 3: Save Changes calls onSave                                                                                                            
     test('calls onSave when Save Changes is clicked', () => {                                                                                          
       const mockOnSave = vi.fn();                                                                                                                      
       render(                                                                                                                                          
@@ -55,7 +55,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
       expect(mockOnSave).toHaveBeenCalled();                                                                                                           
     });                                                                                                                                                
                                                                                                                                                        
-    // Test 4: Cancel ruft onCancel auf                                                                                                                
+    // Test 4: Cancel calls onCancel                                                                                                                
     test('calls onCancel when Cancel is clicked', () => {                                                                                              
       const mockOnCancel = vi.fn();                                                                                                                    
       render(                                                                                                                                          

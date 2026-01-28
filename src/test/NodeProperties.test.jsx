@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
   import NodeProperties from '../components/NodeProperties';                                                                                                       
                                                                                                                                                        
   describe('NodeProperties', () => {                                                                                                                   
-    // Test 1: Zeigt Platzhalter wenn nichts ausgewählt                                                                                                
+    // Test 1: Shows placeholder when nothing is selected                                                                                                
     test('shows placeholder when nothing selected', () => {                                                                                            
       render(                                                                                                                                          
         <NodeProperties                                                                                                                                
@@ -19,7 +19,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
       expect(screen.getByText(/Select a node or connection/i)).toBeInTheDocument();                                                                    
     });                                                                                                                                                
                                                                                                                                                        
-    // Test 2: Zeigt Node Properties wenn Node ausgewählt                                                                                              
+    // Test 2: Shows node properties when node is selected                                                                                              
     test('shows node properties when node is selected', () => {                                                                                        
       const mockNode = {                                                                                                                               
         id: '1',                                                                                                                                       
@@ -46,7 +46,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
       expect(screen.getByText('test label')).toBeInTheDocument();                                                                                      
     });                                                                                                                                                
                                                                                                                                                        
-    // Test 3: Edit Button ruft onEditNode auf                                                                                                         
+    // Test 3: Edit button calls onEditNode                                                                                                         
     test('calls onEditNode when Edit button is clicked', () => {                                                                                       
       const mockOnEditNode = vi.fn();                                                                                                                  
       const mockNode = {                                                                                                                               

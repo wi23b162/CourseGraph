@@ -6,14 +6,14 @@ import { autoLayoutGraph } from '../utils/autoLayout';
  * Custom hook for managing export functionality
  * Handles PNG, Excel export, and auto-layout
  */
-export const useExport = ({ nodes, edges, setNodes }) => {
+export const useExport = ({ nodes, edges, setNodes, projectName }) => {
   const [isExportingPNG, setIsExportingPNG] = useState(false);
   const [isExportingExcel, setIsExportingExcel] = useState(false);
 
   const handleExportPNG = async () => {
     setIsExportingPNG(true);
     try {
-      await exportToPNG();
+      await exportToPNG(projectName);
     } finally {
       setIsExportingPNG(false);
     }
@@ -22,7 +22,7 @@ export const useExport = ({ nodes, edges, setNodes }) => {
   const handleExportExcel = () => {
     setIsExportingExcel(true);
     try {
-      exportToExcel(nodes, edges);
+      exportToExcel(nodes, edges, projectName);
     } finally {
       setIsExportingExcel(false);
     }

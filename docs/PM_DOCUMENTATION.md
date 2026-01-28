@@ -73,8 +73,8 @@
 | Sprint 2 | 78h | 78h | 100% |
 | Sprint 3 | 70h | 70h | 100% |
 | Sprint 4 | 35h | 35h | 100% |
-| Sprint 5 | 23h | 23h | 100% |
-| **Total** | **256h** | **256h** | **100%** |
+| Sprint 5 | 37h | 37h | 100% |
+| **Total** | **270h** | **270h** | **100%** |
 
 ---
 
@@ -356,10 +356,10 @@
 
 | Team Member | Setup | Development | Design | Testing | Documentation | Fixing | Total |
 |-------------|-------|-------------|--------|---------|---------------|--------|-------|
-| Ambar Irfan | 13h | 50h | 15h | 4h | 5.33h | 3h | **90.33h** |
-| Julia Brandstätter | 0h | 33h | 13h | 23h | 5.33h | 12.5h | **86.83h** |
-| Enesa Fazlioska | 0h | 47h | 0h | 20h | 5.33h | 6.5h | **78.83h** |
-| **Total** | **13h** | **130h** | **28h** | **47h** | **16h** | **22h** | **256h** |
+| Ambar Irfan | 13h | 50h | 15h | 6h | 8h | 4.67h | **96.67h** |
+| Julia Brandstätter | 0h | 33h | 13h | 23h | 8h | 9.17h | **86.17h** |
+| Enesa Fazlioska | 0h | 47h | 0h | 20h | 8h | 12.17h | **87.17h** |
+| **Total** | **13h** | **130h** | **28h** | **49h** | **24h** | **26h** | **270h** |
 
 ### 5.2 Time per Sprint
 
@@ -369,19 +369,19 @@
 | Sprint 2 | 78h | 78h | 0h |
 | Sprint 3 | 70h | 70h | 0h |
 | Sprint 4 | 35h | 35h | 0h |
-| Sprint 5 | 23h | 23h | 0h |
-| **Total** | **256h** | **256h** | **0h** |
+| Sprint 5 | 37h | 37h | 0h |
+| **Total** | **270h** | **270h** | **0h** |
 
 ### 5.3 Time per Activity
 
 | Activity | Hours | Percentage |
 |----------|-------|------------|
-| Setup & Infrastructure | 13h | 5.1% |
-| Development (Core + Advanced + Fixing) | 152h | 59.4% |
-| Design & UI | 28h | 10.9% |
-| Testing & QA | 47h | 18.4% |
-| Documentation | 16h | 6.3% |
-| **Total** | **256h** | **100%** |
+| Setup & Infrastructure | 13h | 4.8% |
+| Development (Core + Advanced + Fixing) | 156h | 57.8% |
+| Design & UI | 28h | 10.4% |
+| Testing & QA | 49h | 18.1% |
+| Documentation | 24h | 8.9% |
+| **Total** | **270h** | **100%** |
 
 ### 5.4 Detailed Time Log by Phase
 
@@ -730,7 +730,7 @@
 - **Blockers Resolved**: Test environment configuration
 
 ### Sprint 5 Progress
-- **Velocity**: 23h / 23h (100%)
+- **Velocity**: 37h / 37h (100%)
 - **Key Achievement**: Complete documentation, presentation ready
 - **Blockers Resolved**: None
 

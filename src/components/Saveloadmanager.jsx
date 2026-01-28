@@ -192,9 +192,11 @@ const exportAsJSON = (nodes, edges, filename = 'course-graph-export') => {
 };
 
 // Export Dialog Component
-export const SaveLoadDialog = ({ nodes, edges, onLoad, onClose }) => {
+export const SaveLoadDialog = ({ nodes, edges, onLoad, onClose, projectName, onProjectNameChange }) => {
   const [activeTab, setActiveTab] = React.useState('save');
-  const [filename, setFilename] = React.useState('my-course');
+  // Use project name as default filename (sanitized for file system)
+  const sanitizedProjectName = (projectName || 'my-course').replace(/[^a-zA-Z0-9-_]/g, '-').toLowerCase();
+  const [filename, setFilename] = React.useState(sanitizedProjectName);
   const [message, setMessage] = React.useState('');
   const dialogRef = React.useRef(null);
 
@@ -227,6 +229,10 @@ export const SaveLoadDialog = ({ nodes, edges, onLoad, onClose }) => {
       // Restore project name if available
       if (data.projectName) {
         localStorage.setItem('coursegraph_project_name', data.projectName);
+        // Update React state so UI reflects the loaded project name
+        if (onProjectNameChange) {
+          onProjectNameChange(data.projectName);
+        }
       }
       onLoad(data.nodes, data.edges);
       setMessage('✅ Course loaded successfully!');
@@ -239,7 +245,10 @@ export const SaveLoadDialog = ({ nodes, edges, onLoad, onClose }) => {
   const handleLoadAutoSave = () => {
     const saved = loadFromLocalStorage();
     if (saved) {
-      // Project name is already restored by loadFromLocalStorage
+      // Update React state so UI reflects the loaded project name
+      if (saved.projectName && onProjectNameChange) {
+        onProjectNameChange(saved.projectName);
+      }
       onLoad(saved.nodes, saved.edges);
       setMessage('✅ Auto-save loaded successfully!');
       setTimeout(() => onClose(), 1500);

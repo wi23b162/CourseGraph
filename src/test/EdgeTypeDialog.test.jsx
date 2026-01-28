@@ -10,7 +10,7 @@ describe('EdgeTypeDialog', () => {
         data: { label: 'TARGET_NODE_LABEL', nodeType: 'leo' }
     };
 
-    // Test 1: Rendert Dialog Titel                                                                                                                    
+    // Test 1: Renders dialog title                                                                                                                    
     test('renders dialog title', () => {
         render(
             <EdgeTypeDialog
@@ -23,7 +23,7 @@ describe('EdgeTypeDialog', () => {
         expect(screen.getByText('Connection Type')).toBeInTheDocument();
     });
 
-    // Test 2: Zeigt alle drei Edge-Typen                                                                                                              
+    // Test 2: Displays all three edge types                                                                                                              
     test('displays all three edge types', () => {
         render(
             <EdgeTypeDialog
@@ -38,7 +38,7 @@ describe('EdgeTypeDialog', () => {
         expect(screen.getByText('✓ tested by')).toBeInTheDocument();
     });
 
-    // Test 3: Cancel ruft onCancel auf                                                                                                                
+    // Test 3: Cancel calls onCancel                                                                                                                
     test('calls onCancel when Cancel is clicked', () => {
         const mockOnCancel = vi.fn();
         render(
@@ -53,7 +53,7 @@ describe('EdgeTypeDialog', () => {
         expect(mockOnCancel).toHaveBeenCalled();
     });
 
-    // Test 4: onConfirm wird mit ausgewähltem Typ aufgerufen                                                                                          
+    // Test 4: onConfirm is called with selected type                                                                                          
     test('calls onConfirm with selected edge type', () => {
         const mockOnConfirm = vi.fn();
         render(

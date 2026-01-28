@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
   import AddNodeDialog from '../components/AddNodeDialog';                                                                                                         
                                                                                                                                                        
   describe('AddNodeDialog', () => {                                                                                                                    
-    // Test 1: Dialog rendert mit korrektem Titel                                                                                                      
+    // Test 1: Dialog renders with correct title                                                                                                      
     test('renders with LEO title when initialType is leo', () => {                                                                                     
       render(                                                                                                                                          
         <AddNodeDialog                                                                                                                                 
@@ -16,7 +16,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
       expect(screen.getByText(/Adding Learning Outcome/i)).toBeInTheDocument();                                                                        
     });                                                                                                                                                
                                                                                                                                                        
-    // Test 2: Dialog rendert mit Assessment Titel                                                                                                     
+    // Test 2: Dialog renders with Assessment title                                                                                                     
     test('renders with Assessment title when initialType is assessment', () => {                                                                       
       render(                                                                                                                                          
         <AddNodeDialog                                                                                                                                 
@@ -29,7 +29,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
       expect(screen.getByText(/Adding Assessment/i)).toBeInTheDocument();                                                                              
     });                                                                                                                                                
                                                                                                                                                        
-    // Test 3: Cancel Button ruft onCancel auf                                                                                                         
+    // Test 3: Cancel button calls onCancel                                                                                                         
     test('calls onCancel when Cancel button is clicked', () => {                                                                                       
       const mockOnCancel = vi.fn();                                                                                                                    
       render(                                                                                                                                          
@@ -44,7 +44,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
       expect(mockOnCancel).toHaveBeenCalled();                                                                                                         
     });                                                                                                                                                
                                                                                                                                                        
-    // Test 4: Create Button ist disabled ohne Titel                                                                                                   
+    // Test 4: Create button is disabled without title                                                                                                   
     test('Create button is disabled when title is empty', () => {                                                                                      
       render(                                                                                                                                          
         <AddNodeDialog                                                                                                                                 
@@ -58,7 +58,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
       expect(createButton).toBeDisabled();                                                                                                             
     });                                                                                                                                                
                                                                                                                                                        
-    // Test 5: onAdd wird mit korrekten Daten aufgerufen                                                                                               
+    // Test 5: onAdd is called with correct data                                                                                               
     test('calls onAdd with correct data when form is submitted', () => {                                                                               
       const mockOnAdd = vi.fn();                                                                                                                       
       render(                                                                                                                                          
@@ -70,7 +70,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
         />                                                                                                                                             
       );                                                                                                                                               
                                                                                                                                                        
-      // Titel eingeben                                                                                                                                
+      // Enter title                                                                                                                                
       const titleInput = screen.getByPlaceholderText(/Apply Object Orientation/i);                                                                     
       fireEvent.change(titleInput, { target: { value: 'Test Title' } });                                                                               
                                                                                                                                                        

@@ -55,10 +55,23 @@ test('created node data is correctly passed to NodeProperties', () => {
 });
 ```
 
-**Example 2: [Feature Name]**
+**Example 2: Auto Layout Algorithm**
 ```javascript
-// Brief code snippet or description of what I implemented
-[Code or description]
+// autoLayout.js - Hierarchical graph layout algorithm
+const autoLayout = (nodes, edges) => {
+  const levels = groupNodesByLevel(nodes);
+  const positioned = [];
+
+  Object.entries(levels).forEach(([level, levelNodes], index) => {
+    levelNodes.forEach((node, nodeIndex) => {
+      positioned.push({
+        ...node,
+        position: { x: nodeIndex * 200, y: index * 150 }
+      });
+    });
+  });
+  return positioned;
+};
 ```
 
 #### Bug Fixes

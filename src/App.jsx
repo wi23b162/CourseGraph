@@ -138,8 +138,8 @@ function AppContent() {
     initialNodes: initialState.nodes,
     initialEdges: initialState.edges,
   });
-  const exportFns = useExport({ nodes, edges, setNodes });
-  const projectName = useProjectName();
+  const projectNameHook = useProjectName();
+  const exportFns = useExport({ nodes, edges, setNodes, projectName: projectNameHook.projectName });
   const navigation = useGraphNavigation();
 
   // Auto-save
@@ -166,7 +166,7 @@ function AppContent() {
     setSelectedNode(null);
     setSelectedEdge(null);
     clearAutoSave();
-    projectName.setProjectName(newProjectName);
+    projectNameHook.setProjectName(newProjectName);
     setShowNewProjectDialog(false);
   };
 
@@ -204,7 +204,7 @@ function AppContent() {
       <ProjectHeader
         onAutoLayout={exportFns.handleAutoLayout}
         onNewProject={() => setShowNewProjectDialog(true)}
-        projectName={projectName}
+        projectName={projectNameHook}
       />
 
       {/* Main Content */}
@@ -260,6 +260,8 @@ function AppContent() {
           edges={edges}
           onLoad={handleLoadCourse}
           onClose={() => setShowSaveLoadDialog(false)}
+          projectName={projectNameHook.projectName}
+          onProjectNameChange={projectNameHook.setProjectName}
         />
       )}
 

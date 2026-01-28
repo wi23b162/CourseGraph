@@ -5,7 +5,7 @@ import NodeProperties from '../../components/NodeProperties';
 describe('Node Deletion Integration', () => {
 
     test('deleting a node removes connected edges from display', () => {
-        // ARRANGE: Node mit Connections
+        // ARRANGE: Node with connections
         const node1 = {
             id: '1',
             data: {
@@ -39,7 +39,7 @@ describe('Node Deletion Integration', () => {
             data: { edgeType: 'implies' }
         };
 
-        // ACT 1: Render NodeProperties für node1 mit Connections
+        // ACT 1: Render NodeProperties for node1 with connections
         const { unmount } = render(
             <NodeProperties
                 node={node1}
@@ -52,15 +52,15 @@ describe('Node Deletion Integration', () => {
             />
         );
 
-        // ASSERT: Node wird angezeigt mit Outgoing Connection
+        // ASSERT: Node is displayed with outgoing connection
         expect(screen.getByText(/node to delete/i)).toBeInTheDocument();
         expect(screen.getByText(/Outgoing \(1\)/i)).toBeInTheDocument();
 
         unmount();
 
-        // ACT 2: Simuliere Node-Löschung - nur node2 bleibt
+        // ACT 2: Simulate node deletion - only node2 remains
         const remainingNodes = [node2];
-        const remainingEdges = []; // Edge wird auch entfernt
+        const remainingEdges = []; // Edge is also removed
 
         render(
             <NodeProperties
@@ -74,14 +74,14 @@ describe('Node Deletion Integration', () => {
             />
         );
 
-        // ASSERT: Verbleibender Node hat keine Connections mehr
+        // ASSERT: Remaining node has no connections anymore
         expect(screen.getByText(/connected node/i)).toBeInTheDocument();
         expect(screen.getByText(/Incoming \(0\)/i)).toBeInTheDocument();
         expect(screen.getByText(/Outgoing \(0\)/i)).toBeInTheDocument();
     });
 
     test('node with multiple connections - all edges removed on deletion', () => {
-        // ARRANGE: Node mit mehreren Connections
+        // ARRANGE: Node with multiple connections
         const centralNode = {
             id: '1',
             data: {
@@ -120,7 +120,7 @@ describe('Node Deletion Integration', () => {
             { id: 'edge-3-1', source: '3', target: '1', label: 'requires', data: { edgeType: 'requires' } }
         ];
 
-        // ACT 1: Zeige centralNode mit 2 Connections
+        // ACT 1: Display centralNode with 2 connections
         const { unmount } = render(
             <NodeProperties
                 node={centralNode}
@@ -133,20 +133,20 @@ describe('Node Deletion Integration', () => {
             />
         );
 
-        // ASSERT: Central Node hat 1 Incoming und 1 Outgoing
+        // ASSERT: Central node has 1 incoming and 1 outgoing
         expect(screen.getByText(/central node/i)).toBeInTheDocument();
         expect(screen.getByText(/Incoming \(1\)/i)).toBeInTheDocument();
         expect(screen.getByText(/Outgoing \(1\)/i)).toBeInTheDocument();
 
         unmount();
 
-        // ACT 2: Nach Löschung von centralNode - nodeA hat keine Connections mehr
+        // ACT 2: After deletion of centralNode - nodeA has no connections anymore
         render(
             <NodeProperties
                 node={nodeA}
                 edge={null}
                 nodes={[nodeA, nodeB]}
-                edges={[]} // Alle Edges zu centralNode entfernt
+                edges={[]} // All edges to centralNode removed
                 onDeleteEdge={() => { }}
                 onEditNode={() => { }}
                 onEditConnection={() => { }}
@@ -159,7 +159,7 @@ describe('Node Deletion Integration', () => {
     });
 
     test('deleting assessment node removes test connections', () => {
-        // ARRANGE: LEO Node verbunden mit Assessment
+        // ARRANGE: LEO node connected to Assessment
         const leoNode = {
             id: '1',
             data: {
@@ -189,7 +189,7 @@ describe('Node Deletion Integration', () => {
             data: { edgeType: 'tests' }
         };
 
-        // ACT 1: LEO Node zeigt Outgoing Connection zu Assessment
+        // ACT 1: LEO node shows outgoing connection to Assessment
         const { unmount } = render(
             <NodeProperties
                 node={leoNode}
@@ -205,7 +205,7 @@ describe('Node Deletion Integration', () => {
         expect(screen.getByText(/Outgoing \(1\)/i)).toBeInTheDocument();
         unmount();
 
-        // ACT 2: Nach Löschung des Assessments
+        // ACT 2: After deletion of the Assessment
         render(
             <NodeProperties
                 node={leoNode}
@@ -218,13 +218,13 @@ describe('Node Deletion Integration', () => {
             />
         );
 
-        // ASSERT: LEO Node hat keine Connections mehr
+        // ASSERT: LEO node has no connections anymore
         expect(screen.getByText(/learn programming/i)).toBeInTheDocument();
         expect(screen.getByText(/Outgoing \(0\)/i)).toBeInTheDocument();
     });
 
     test('NodeProperties shows empty state when no node selected after deletion', () => {
-        // ACT: Render NodeProperties ohne Node (nach Löschung)
+        // ACT: Render NodeProperties without node (after deletion)
         render(
             <NodeProperties
                 node={null}
@@ -237,7 +237,7 @@ describe('Node Deletion Integration', () => {
             />
         );
 
-        // ASSERT: Empty State wird angezeigt
+        // ASSERT: Empty state is displayed
         expect(screen.getByText(/Select a node or connection/i)).toBeInTheDocument();
     });
 });
