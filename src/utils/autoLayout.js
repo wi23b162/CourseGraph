@@ -1,91 +1,118 @@
 // ------------------------------------------------------------
 // Auto Layout Algorithm for CourseGraph
 // ------------------------------------------------------------
-// This algorithm arranges nodes based on their "depth" in the graph.
-// It assigns each node to a column (layer) depending on incoming edges.
-// Nodes with no incoming edges → layer 0
-// A node's layer is always: max(layer of predecessors) + 1
-//
-// Then nodes inside each layer are stacked vertically with spacing.
-// This produces a clean left→right flow layout.
+// Vertical layout: LEOs flow top-to-bottom, Assessments on the right
 // ------------------------------------------------------------
 
 export function autoLayoutGraph(nodes, edges) {
   if (!nodes || nodes.length === 0) return nodes;
 
-  // Map: nodeId → list of incoming edges
+  // Separate LEOs and Assessments
+  const leoNodes = nodes.filter(n => n.data.nodeType === 'leo');
+  const assessmentNodes = nodes.filter(n => n.data.nodeType === 'assessment');
+
+  // Build dependency graph for LEOs (requires/implies edges)
+  const leoEdges = edges.filter(e => {
+    const edgeType = e.data?.edgeType;
+    return edgeType === 'requires' || edgeType === 'implies';
+  });
+
+  // Map: nodeId → incoming edges
   const incomingMap = new Map();
-  nodes.forEach((node) => {
+  const outgoingMap = new Map();
+
+  leoNodes.forEach((node) => {
     incomingMap.set(node.id, []);
+    outgoingMap.set(node.id, []);
   });
 
-  edges.forEach((edge) => {
+  leoEdges.forEach((edge) => {
     if (incomingMap.has(edge.target)) {
-      incomingMap.get(edge.target).push(edge);
+      incomingMap.get(edge.target).push(edge.source);
+    }
+    if (outgoingMap.has(edge.source)) {
+      outgoingMap.get(edge.source).push(edge.target);
     }
   });
 
-  // Layer map: nodeId → layer index
-  const layerMap = new Map();
+  // Topological sort for LEOs
+  const sortedLeos = [];
+  const visited = new Set();
 
-  // Step 1: initialize root nodes (no incoming edges → layer 0)
-  nodes.forEach((node) => {
-    const incomingEdges = incomingMap.get(node.id) || [];
-    if (incomingEdges.length === 0) {
-      layerMap.set(node.id, 0);
-    }
-  });
+  const visit = (nodeId) => {
+    if (visited.has(nodeId)) return;
+    visited.add(nodeId);
 
-  // Step 2: propagate layers through the graph
-  // We iterate several passes to ensure all nodes are assigned correctly.
-  let updated = true;
-  let iterations = 0;
+    // Visit all nodes this one depends on first
+    const incoming = incomingMap.get(nodeId) || [];
+    incoming.forEach(sourceId => visit(sourceId));
 
-  while (updated && iterations < 15) {
-    updated = false;
-    iterations++;
+    sortedLeos.push(nodeId);
+  };
 
-    edges.forEach((edge) => {
-      const sourceLayer = layerMap.get(edge.source) ?? 0;
-      const targetLayer = layerMap.get(edge.target) ?? 0;
+  // Start with nodes that have outgoing edges but try to maintain order
+  leoNodes.forEach(node => visit(node.id));
 
-      // Ensure target is at least one layer to the right
-      if (targetLayer < sourceLayer + 1) {
-        layerMap.set(edge.target, sourceLayer + 1);
-        updated = true;
-      }
-    });
-  }
+  // Layout settings - VERTICAL layout
+  const ROW_HEIGHT = 160;
+  const LEO_X = 350;           // LEOs in center-left
+  const ASSESSMENT_X = 750;    // Assessments on the right
+  const START_Y = 80;
 
-  // Step 3: group nodes by layer
-  const layerGroups = new Map();
-  nodes.forEach((node) => {
-    const layer = layerMap.get(node.id) ?? 0;
-    if (!layerGroups.has(layer)) {
-      layerGroups.set(layer, []);
-    }
-    layerGroups.get(layer).push(node);
-  });
+  const positionedNodes = [];
+  const leoPositions = new Map();
 
-  // Step 4: assign final positions
-  const COLUMN_WIDTH = 400;   // horizontal spacing
-  const ROW_HEIGHT = 200;     // vertical spacing
-  const X_OFFSET = 200;       // initial X
-  const Y_OFFSET = 120;        // initial Y
+  // Position LEOs vertically
+  sortedLeos.forEach((nodeId, index) => {
+    const node = leoNodes.find(n => n.id === nodeId);
+    if (!node) return;
 
-  const updatedNodes = nodes.map((node) => {
-    const layer = layerMap.get(node.id) ?? 0;
-    const nodesInLayer = layerGroups.get(layer) || [];
-    const index = nodesInLayer.findIndex((n) => n.id === node.id);
+    const y = START_Y + index * ROW_HEIGHT;
 
-    const x = X_OFFSET + layer * COLUMN_WIDTH;
-    const y = Y_OFFSET + index * ROW_HEIGHT;
+    leoPositions.set(nodeId, { x: LEO_X, y });
 
-    return {
+    positionedNodes.push({
       ...node,
-      position: { x, y },
-    };
+      position: { x: LEO_X, y },
+    });
   });
 
-  return updatedNodes;
+  // Find which LEOs each assessment tests
+  const testEdges = edges.filter(e => e.data?.edgeType === 'tests');
+
+  // Position Assessments on the right, aligned with tested LEOs
+  const usedYPositions = [];
+
+  assessmentNodes.forEach((assessment) => {
+    // Find all LEOs this assessment tests
+    const testedLeoIds = testEdges
+      .filter(e => e.source === assessment.id)
+      .map(e => e.target);
+
+    let y = START_Y;
+
+    if (testedLeoIds.length > 0) {
+      // Position at average Y of tested LEOs
+      const testedPositions = testedLeoIds
+        .map(id => leoPositions.get(id))
+        .filter(Boolean);
+
+      if (testedPositions.length > 0) {
+        y = testedPositions.reduce((sum, pos) => sum + pos.y, 0) / testedPositions.length;
+      }
+    }
+
+    // Avoid overlapping assessments - offset if position is taken
+    while (usedYPositions.some(usedY => Math.abs(usedY - y) < ROW_HEIGHT - 20)) {
+      y += ROW_HEIGHT;
+    }
+    usedYPositions.push(y);
+
+    positionedNodes.push({
+      ...assessment,
+      position: { x: ASSESSMENT_X, y },
+    });
+  });
+
+  return positionedNodes;
 }
