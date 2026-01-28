@@ -247,15 +247,6 @@ This project is created as part of academic coursework at FH Technikum Wien.
 - Edge labels may overlap with nodes on very complex graphs
 - Large graphs (200+ nodes) may experience performance degradation
 
-## Future Enhancements
-
-- [ ] File system save/load (beyond localStorage)
-- [ ] Course templates library
-- [ ] Export to additional formats (PDF, SVG, DOCX)
-- [ ] Collaborative editing mode
-- [ ] Integration with learning management systems
-- [ ] Advanced analytics on course structure
-
 ---
 
 **Built with Electron, React, and ReactFlow**
