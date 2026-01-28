@@ -339,22 +339,6 @@ Going forward, I will carry the lessons learned about testing early, documenting
 - #18: Visual design and styling implementation
 - #22: Auto-save functionality with LocalStorage
 
-### Screenshots of My Work
-
-*See attached screenshots in project submission:*
-- Custom node components with different types
-- EditNodeDialog implementation
-- Toolbar and UI components
-- MiniMap integration
-- Auto-save indicator
-
-### Other Evidence
-
-- Sprint meeting notes documenting facilitation
-- Code review comments on team PRs
-- Architecture decision documentation
-- Team WhatsApp conversations showing collaboration
-
 ---
 
 *Personal Reflection for FH Technikum Wien - Software Engineering Project*
