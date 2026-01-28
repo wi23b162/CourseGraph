@@ -26,8 +26,8 @@
 | Name | Role | Responsibilities | Contact |
 |------|------|------------------|---------|
 | Ambar Irfan | Lead Developer / Scrum Master | Setup, Core Functionality, Visual Design, Project Architecture | wi23b162@technikum-wien.at |
-| Julia Brandstätter | Developer / Product Owner | Advanced Features, Testing, User Stories, Azure DevOps | wi23bXXX@technikum-wien.at |
-| Enesa Fazlioska | Developer / QA Lead | Export Functions, Undo/Redo, Testing, Bug Fixes | wi23bXXX@technikum-wien.at |
+| Julia Brandstätter | Developer / Product Owner | Advanced Features, Testing, User Stories, Azure DevOps | wi23b165@technikum-wien.at |
+| Enesa Fazlioska | Developer / QA Lead | Export Functions, Undo/Redo, Testing, Bug Fixes | wi23b128@technikum-wien.at |
 
 ### 1.2 Communication Channels
 
@@ -100,7 +100,7 @@
 | Create README with setup steps | Yes | Yes | Documentation complete |
 | Create base project architecture | Yes | Yes | Architecture documented |
 
-#### Demo Summary
+#### Summary
 - Demonstrated working Electron application with React
 - Showed ReactFlow canvas integration
 - Presented project structure and architecture decisions
@@ -148,7 +148,7 @@
 | Node Badges (LEO/Assessment) | Yes | Yes | 3h - ID and Level badges |
 | Toolbar & UI Components | Yes | Yes | 6h - Modern design |
 
-#### Demo Summary
+#### Summary
 - Demonstrated node creation with type selection (Learning Outcome, Assessment)
 - Showed node editing and deletion functionality
 - Presented connection creation with relationship types
@@ -199,7 +199,7 @@
 | Search & Filter Nodes | Yes | Yes | 7h - By name, type, level |
 | Collapsible Sidebars | Yes | Yes | 2h - Left/Right sidebars |
 
-#### Demo Summary
+#### Summary
 - Demonstrated save/load functionality with JSON files
 - Showed PNG and Excel export features
 - Presented auto-save with LocalStorage
@@ -249,7 +249,7 @@
 | Accessibility Testing (NFR4) | Yes | Yes | 4h - WCAG compliance check |
 | Bug Fixes & Polish | Yes | Yes | 12h - All critical bugs fixed |
 
-#### Demo Summary
+#### Summary
 - Demonstrated unit and integration test suite
 - Showed test coverage report (66 tests)
 - Presented bug fixes and optimizations
@@ -284,7 +284,7 @@
 | README.md | Yes | Yes | 2h - GitHub docs |
 | Final Presentation | Yes | Yes | 8h - Preparation |
 
-#### Demo Summary
+#### Summary
 - Presented complete documentation
 - Demonstrated final application with all features
 - Prepared presentation materials
@@ -485,7 +485,7 @@
 **Participants:** Ambar Irfan, Julia Brandstätter, Enesa Fazlioska
 
 **Agenda:**
-1. Demo of Sprint 1 deliverables
+1. Sprint 1 deliverables
 2. Review of completed tasks
 3. Sprint 1 retrospective
 4. Sprint 2 planning

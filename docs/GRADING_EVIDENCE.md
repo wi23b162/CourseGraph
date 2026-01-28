@@ -1,7 +1,7 @@
 # CourseGraph - Grading Evidence Documentation
 
 **Project:** CourseGraph
-**Team:** wi23b162
+**Team:** wi23b162, wi23b165, wi23b128
 **Date:** January 2025
 
 ---
@@ -60,26 +60,15 @@ CourseGraph supports course designers in developing courses following the Constr
 | Graph Library | ReactFlow | Purpose-built for node-based editors, good documentation |
 | Build Tool | Vite | Fast HMR, modern bundling, Electron integration |
 
-### 1.4 Planning Artifacts
-
-- [ ] Initial project proposal document
-- [ ] Technology comparison matrix
-- [ ] Risk assessment
-- [ ] Timeline/Gantt chart
-
-**Evidence Location:** [Link to planning documents]
-
 ---
 
 ## 2. Requirements Engineering (10%)
 
 ### 2.1 Requirements Elicitation Methods
 
-| Method | Description | Evidence |
-|--------|-------------|----------|
-| Stakeholder Interviews | Discussions with course supervisor | Meeting notes |
-| User Research | Analysis of Constructive Alignment methodology | Research summary |
-| Competitive Analysis | Review of existing course design tools | Comparison document |
+| Method | Description | 
+|--------|-------------|
+| Stakeholder Interviews | Discussions with course supervisor | 
 
 ### 2.2 Functional Requirements
 
@@ -284,36 +273,6 @@ CourseGraph supports course designers in developing courses following the Constr
 | Consistent Style | Manual | Code conventions |
 | Documentation | Inline comments | Source files |
 
-### 4.4 Testing Strategy
-
-**Testing Approach:**
-| Type | Scope | Tools | Status |
-|------|-------|-------|--------|
-| Unit Testing | Utility functions | Jest | [Status] |
-| Component Testing | React components | React Testing Library | [Status] |
-| Integration Testing | User workflows | Manual | Completed |
-| E2E Testing | Full application | Manual | Completed |
-
-### 4.5 Test Cases
-
-| ID | Test Case | Steps | Expected Result | Status |
-|----|-----------|-------|-----------------|--------|
-| TC1 | Create LEO node | 1. Click Add Node 2. Select LEO 3. Enter label 4. Click Add | Node appears on canvas | Pass |
-| TC2 | Create Assessment node | 1. Click Add Node 2. Select Assessment 3. Enter label 4. Click Add | Node appears with different color | Pass |
-| TC3 | Connect nodes | 1. Drag from handle 2. Drop on target 3. Select type | Edge appears with correct styling | Pass |
-| TC4 | Delete node | 1. Click delete 2. Confirm | Node and connected edges removed | Pass |
-| TC5 | Auto-save | 1. Make changes 2. Close app 3. Reopen | Changes preserved | Pass |
-| TC6 | Undo/Redo | 1. Make change 2. Click Undo 3. Click Redo | State restored correctly | Pass |
-| TC7 | Export PNG | 1. Click Export PNG | Image file downloaded | Pass |
-| TC8 | Export Excel | 1. Click Export Excel | Excel file with 3 sheets | Pass |
-
-### 4.6 Bug Tracking
-
-| ID | Description | Severity | Status | Resolution |
-|----|-------------|----------|--------|------------|
-| BUG-001 | Edge labels overlap on complex graphs | Low | Known | Future enhancement |
-| BUG-002 | [Description] | [Severity] | [Status] | [Resolution] |
-
 ---
 
 ## 5. Teamwork (5%)
@@ -335,14 +294,7 @@ CourseGraph supports course designers in developing courses following the Constr
 | GitHub | Code reviews, issues, PRs | Continuous |
 | Azure DevOps | Task management, sprint planning | Continuous |
 
-### 5.3 Collaboration Evidence
-
-- [ ] Meeting notes/protocols
-- [ ] Communication logs
-- [ ] Code review participation (GitHub PRs)
-- [ ] Pair programming sessions
-
-### 5.4 Conflict Resolution
+### 5.3 Conflict Resolution
 
 | Conflict | Description | Resolution |
 |----------|-------------|------------|
@@ -410,12 +362,8 @@ CourseGraph supports course designers in developing courses following the Constr
 
 ### 6.6 PM Artifacts
 
-- [ ] Sprint backlogs
-- [ ] Sprint review protocols
-- [ ] Time tracking records
-- [ ] Risk register
-
-**Evidence Location:** [Link to PM documents]
+- Time Tracking Records: The Course_Effort_Plan located in the docs folder represents the time tracking. 
+- Sprint Backlogs & Sprint Review Protocols: Covered within the sprint documentation. Screenshots are provided as proof.
 
 ---
 
@@ -459,12 +407,6 @@ module.exports = {
 ### 7.4 Installation Instructions
 
 Detailed instructions available in: `docs/INSTALLATION_GUIDE.md`
-
-### 7.5 Deployment Evidence
-
-- [ ] Build output screenshots
-- [ ] Installer files
-- [ ] Installation test on each platform
 
 ---
 
@@ -547,7 +489,6 @@ All screenshots are located in `docs/screenshots/`.
 | Requirements | User stories | See Azure DevOps |
 | Design | Architecture diagram | See Technical Documentation |
 | Implementation | GitHub repository | https://github.com/wi23b162/CourseGraph |
-| Testing | Test reports | See `src/test/` |
 | PM | Sprint protocols | See Appendix A (Screenshots) |
 | Deployment | Build output | See Installation Guide |
 
