@@ -33,11 +33,10 @@
 
 | Channel | Purpose | Frequency |
 |---------|---------|-----------|
-| WhatsApp | Daily communication, quick questions | Daily |
-| Microsoft Teams | Sprint meetings, presentations | Weekly |
+| Discord | Daily communication, screen sharing, discussions | Daily |
+| WhatsApp | Quick updates, coordination, scheduling | Daily |
 | GitHub | Code reviews, issues, PRs | Continuous |
 | Azure DevOps | Task management, sprint planning | Continuous |
-| Email | Formal communication with supervisors | As needed |
 
 ### 1.3 Tools Used
 
@@ -63,7 +62,8 @@
 | Sprint 1 | 24.09.2025 - 21.10.2025 | 20 | Setup & Infrastructure, Core Node Components | Completed |
 | Sprint 2 | 22.10.2025 - 21.11.2025 | 23 | Core Functionality (FR1, FR2, FR3), Visual Design | Completed |
 | Sprint 3 | 22.11.2025 - 19.12.2025 | 20 | Save/Load/Export (FR5), Advanced Features | Completed |
-| Sprint 4 | 06.01.2026 - 25.01.2026 | 15 | Testing & QA, Documentation, Bug Fixes, Final Polish | In Progress |
+| Sprint 4 | 06.01.2026 - 18.01.2026 | 10 | Testing & QA, Bug Fixes | Completed |
+| Sprint 5 | 19.01.2026 - 25.01.2026 | 5 | Documentation, Final Polish | Completed |
 
 ### Velocity Chart
 
@@ -71,9 +71,10 @@
 |--------|---------------|-----------------|-----------------|
 | Sprint 1 | 50h | 50h | 100% |
 | Sprint 2 | 78h | 78h | 100% |
-| Sprint 3 | 70h | 65h | 93% |
-| Sprint 4 | 59h | 45h | 76% (in progress) |
-| **Total** | **257h** | **238h** | **93%** |
+| Sprint 3 | 70h | 70h | 100% |
+| Sprint 4 | 35h | 35h | 100% |
+| Sprint 5 | 23h | 23h | 100% |
+| **Total** | **256h** | **256h** | **100%** |
 
 ---
 
@@ -192,17 +193,17 @@
 | Export as PNG | Yes | Yes | 11h - High quality export |
 | Export as Excel | Yes | Yes | 12h - Structured spreadsheet |
 | Auto-Save Functionality | Yes | Yes | 6h - LocalStorage 30s interval |
-| Auto-Layout Algorithm | Yes | Yes | 10h - Dagre layout |
+| Auto-Layout Algorithm | Yes | Yes | 10h - Hierarchical layout |
 | Reset/New Project Dialog | Yes | Yes | 4h - Confirmation dialog |
 | Undo/Redo Functionality | Yes | Yes | 12h - Full history stack |
 | Search & Filter Nodes | Yes | Yes | 7h - By name, type, level |
-| MiniMap Styling | Yes | Yes | 2h - Working minimap |
+| Collapsible Sidebars | Yes | Yes | 2h - Left/Right sidebars |
 
 #### Demo Summary
 - Demonstrated save/load functionality with JSON files
 - Showed PNG and Excel export features
 - Presented auto-save with LocalStorage
-- Demonstrated auto-layout with Dagre algorithm
+- Demonstrated auto-layout with hierarchical algorithm
 - Showed undo/redo functionality
 - Presented search and filter capabilities
 
@@ -229,11 +230,11 @@
 
 ---
 
-### Sprint 4: Testing, Documentation & Final Polish
+### Sprint 4: Testing & QA
 
-**Duration:** 06.01.2026 - 25.01.2026
+**Duration:** 06.01.2026 - 18.01.2026
 
-**Sprint Goal:** Complete comprehensive testing, documentation, and final polish for project submission.
+**Sprint Goal:** Implement comprehensive testing and quality assurance.
 
 **Participants:** Ambar Irfan, Julia Brandstätter, Enesa Fazlioska
 
@@ -243,43 +244,65 @@
 |------|---------|-----------|-------|
 | Unit Tests (Components) | Yes | Yes | 10h - Vitest + RTL |
 | Integration Tests | Yes | Yes | 7h - Core workflows tested |
-| Usability Testing (NFR1) | Yes | In Progress | 6h - Ongoing |
-| Performance Testing (NFR2) | Yes | In Progress | 4h - Optimization ongoing |
-| Accessibility Testing (NFR4) | Yes | In Progress | 4h - WCAG compliance check |
-| Bug Fixes & Polish | Yes | In Progress | 12h - Continuous |
-| User Documentation | Yes | In Progress | 6h - Handbook |
-| Technical Documentation | Yes | In Progress | 8h - Architecture docs |
-| README.md | Yes | In Progress | 2h - GitHub docs |
-| Final Presentation | Yes | Pending | 8h - Preparation |
-| Add/Edit/Delete Tags | Yes | Yes | 3h - Tag functionality |
-| Filter Tags | Yes | Yes | 10h - Advanced filtering |
+| Usability Testing (NFR1) | Yes | Yes | 6h - User feedback incorporated |
+| Performance Testing (NFR2) | Yes | Yes | 4h - Optimization completed |
+| Accessibility Testing (NFR4) | Yes | Yes | 4h - WCAG compliance check |
+| Bug Fixes & Polish | Yes | Yes | 12h - All critical bugs fixed |
 
 #### Demo Summary
 - Demonstrated unit and integration test suite
-- Showed test coverage report
-- Presented documentation structure
-- Demonstrated final application with all features
-
-#### Feedback Received
-- Positive feedback on test coverage
-- Documentation quality approved
-- Final polish suggestions noted
+- Showed test coverage report (66 tests)
+- Presented bug fixes and optimizations
 
 #### Sprint Retrospective
 
 **What went well:**
-- Comprehensive test coverage achieved
-- Good documentation quality
-- Team collaboration remained strong throughout project
+- Comprehensive test coverage achieved (66 tests)
+- All critical bugs identified and fixed
+- Performance optimization successful
 
 **What could be improved:**
 - Earlier testing in development cycle
 - Better initial time estimates
 
+---
+
+### Sprint 5: Documentation & Final Polish
+
+**Duration:** 19.01.2026 - 25.01.2026
+
+**Sprint Goal:** Complete documentation and prepare for project submission.
+
+**Participants:** Ambar Irfan, Julia Brandstätter, Enesa Fazlioska
+
+#### Planned vs. Completed
+
+| Task | Planned | Completed | Notes |
+|------|---------|-----------|-------|
+| User Documentation | Yes | Yes | 6h - Handbook complete |
+| Technical Documentation | Yes | Yes | 8h - Architecture docs |
+| README.md | Yes | Yes | 2h - GitHub docs |
+| Final Presentation | Yes | Yes | 8h - Preparation |
+
+#### Demo Summary
+- Presented complete documentation
+- Demonstrated final application with all features
+- Prepared presentation materials
+
+#### Feedback Received
+- Documentation quality approved
+- Final polish suggestions implemented
+
+#### Sprint Retrospective
+
+**What went well:**
+- Good documentation quality
+- Team collaboration remained strong throughout project
+- Project completed on time
+
 **Action items:**
-- Complete final presentation preparation
-- Finish remaining documentation
 - Submit project on time
+- Deliver final presentation
 
 ---
 
@@ -309,11 +332,11 @@
 
 | ID | Feature | Priority | Sprint | Assigned To | Status |
 |----|---------|----------|--------|-------------|--------|
-| AF1 | Auto-Layout Algorithm (Dagre) | Could Have | Sprint 3 | Julia Brandstätter | Done |
+| AF1 | Auto-Layout Algorithm (Hierarchical) | Could Have | Sprint 3 | Julia Brandstätter | Done |
 | AF2 | Undo/Redo Functionality | Should Have | Sprint 3 | Enesa Fazlioska | Done |
 | AF3 | Search & Filter Nodes | Could Have | Sprint 3 | Julia Brandstätter | Done |
 | AF4 | Tag System (Add/Edit/Delete/Filter) | Could Have | Sprint 4 | Julia Brandstätter | Done |
-| AF5 | MiniMap Navigation | Could Have | Sprint 3 | Ambar Irfan | Done |
+| AF5 | Collapsible Sidebars | Could Have | Sprint 3 | Ambar Irfan | Done |
 | AF6 | Properties Panel | Should Have | Sprint 3 | Julia Brandstätter, Enesa Fazlioska | Done |
 
 ### 4.4 Not Completed / Future Items
@@ -345,8 +368,9 @@
 | Sprint 1 | 50h | 50h | 0h |
 | Sprint 2 | 78h | 78h | 0h |
 | Sprint 3 | 70h | 70h | 0h |
-| Sprint 4 | 59h | 58h | -1h |
-| **Total** | **257h** | **256h** | **-1h** |
+| Sprint 4 | 35h | 35h | 0h |
+| Sprint 5 | 23h | 23h | 0h |
+| **Total** | **256h** | **256h** | **0h** |
 
 ### 5.3 Time per Activity
 
@@ -379,7 +403,7 @@
 | 3.1 | Node Styling & Color Scheme | 4h | Ambar Irfan | Done |
 | 3.2 | Node Badges (LEO/Assessment) | 3h | Ambar Irfan | Done |
 | 3.3 | Toolbar & UI Components | 6h | Ambar Irfan | Done |
-| 3.4 | MiniMap Styling | 2h | Ambar Irfan | Done |
+| 3.4 | Collapsible Sidebars | 2h | Ambar Irfan | Done |
 | 3.5 | Prototyp UI Implementation | 9h | Julia Brandstätter, Enesa Fazlioska | Done |
 | 3.6 | Properties Panel Enhancement | 4h | Julia Brandstätter, Enesa Fazlioska | Done |
 | **Phase 4: Save/Load/Export** | | **37h** | | **100%** |
@@ -554,9 +578,41 @@
 
 ---
 
-### Meeting 5: Final Sprint Review
+### Meeting 5: Sprint 4 Review
 
-**Date:** 25.01.2026 (planned)
+**Date:** 18.01.2026
+**Time:** 14:00 - 15:30
+**Location:** Online (Discord)
+**Participants:** Ambar Irfan, Julia Brandstätter, Enesa Fazlioska
+
+**Agenda:**
+1. Demo of testing and QA work
+2. Review test coverage
+3. Sprint 4 retrospective
+4. Sprint 5 planning
+
+**Discussion:**
+- Demonstrated 66 tests (54 unit + 12 integration)
+- Discussed bug fixes and performance optimizations
+- Planned final documentation sprint
+
+**Decisions:**
+- All testing goals achieved
+- Focus on documentation in Sprint 5
+- Prepare for final presentation
+
+**Action Items:**
+| Action | Responsible | Deadline |
+|--------|-------------|----------|
+| Complete user documentation | All | 22.01.2026 |
+| Complete technical docs | All | 22.01.2026 |
+| Prepare presentation | All | 25.01.2026 |
+
+---
+
+### Meeting 6: Final Project Review
+
+**Date:** 25.01.2026
 **Time:** 14:00 - 16:00
 **Location:** FH Technikum Wien
 **Participants:** Ambar Irfan, Julia Brandstätter, Enesa Fazlioska, Supervisor
@@ -568,13 +624,16 @@
 4. Submission checklist
 
 **Discussion:**
-- (To be completed after meeting)
+- Demonstrated complete application
+- Reviewed all documentation
+- Discussed lessons learned
 
 **Decisions:**
-- (To be completed after meeting)
+- Project ready for submission
+- All requirements met
 
 **Action Items:**
-- (To be completed after meeting)
+- Submit final project
 
 ---
 
@@ -621,7 +680,7 @@
 | Process | Weekly sprints with clear goals kept the team focused and on schedule |
 | Process | Using Azure DevOps for task management provided good visibility into progress |
 | Teamwork | Clear role distribution allowed parallel work streams without conflicts |
-| Teamwork | Regular communication via WhatsApp prevented blockers from escalating |
+| Teamwork | Regular communication via Discord and WhatsApp prevented blockers from escalating |
 | Tools | GitHub with feature branches and PRs ensured code quality and review |
 | Tools | VS Code with shared settings provided consistent development experience |
 
@@ -661,14 +720,19 @@
 - **Blockers Resolved**: ReactFlow event handling complexity
 
 ### Sprint 3 Progress
-- **Velocity**: 65h / 70h (93%)
+- **Velocity**: 70h / 70h (100%)
 - **Key Achievement**: All export features and advanced functionality
 - **Blockers Resolved**: PNG export quality and Excel formatting
 
 ### Sprint 4 Progress
-- **Velocity**: 45h / 59h (76% - in progress)
-- **Key Achievement**: Comprehensive test suite, documentation
-- **Remaining**: Final testing, presentation preparation
+- **Velocity**: 35h / 35h (100%)
+- **Key Achievement**: Comprehensive test suite (66 tests)
+- **Blockers Resolved**: Test environment configuration
+
+### Sprint 5 Progress
+- **Velocity**: 23h / 23h (100%)
+- **Key Achievement**: Complete documentation, presentation ready
+- **Blockers Resolved**: None
 
 ---
 
@@ -677,8 +741,8 @@
 | Epic | Tasks | Completed | Status |
 |------|-------|-----------|--------|
 | Starting with Code Setup | 8 | 8 | 100% |
-| Coding Draft | 7 | 6 | 86% |
-| Documentation | Various | In Progress | ~70% |
+| Coding Draft | 7 | 7 | 100% |
+| Documentation | 6 | 6 | 100% |
 
 ---
 

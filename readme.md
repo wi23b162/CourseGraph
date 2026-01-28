@@ -27,7 +27,6 @@ CourseGraph supports course designers in developing courses following the **Cons
 - **Excel Export** - Multi-sheet workbook with Learning Outcomes, Connections, and Statistics
 
 ### Navigation & UI
-- **MiniMap** - Overview widget for large graphs
 - **Zoom Controls** - Easy navigation with +/- buttons
 - **Collapsible Sidebars** - Left sidebar for node list, right sidebar for properties
 - **Search & Filter** - Find nodes by name, type, level, or tags
@@ -42,7 +41,7 @@ CourseGraph supports course designers in developing courses following the **Cons
 | **React** | 19.2.0 | UI component library |
 | **ReactFlow** | 11.11.4 | Graph visualization |
 | **Vite** | 7.2.6 | Build tool with HMR |
-| **Node.js** | 24.x | Runtime environment |
+| **Node.js** | 20.x | Runtime environment |
 
 ### Additional Libraries
 - `react-toastify` - Toast notifications
@@ -52,7 +51,7 @@ CourseGraph supports course designers in developing courses following the **Cons
 ## Installation
 
 ### Prerequisites
-- Node.js (v24.x or higher)
+- Node.js (v20.x or higher)
 - npm (v11.x or higher)
 
 ### Setup

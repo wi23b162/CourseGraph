@@ -96,7 +96,7 @@ Congratulations! You've created your first course graph!
 |        |                                          |               |
 |        |                                          |               |
 +--------+------------------------------------------+---------------+
-|        [MiniMap]                      [Zoom Controls]            |
+|                                       [Zoom Controls]            |
 +------------------------------------------------------------------+
 ```
 
@@ -135,10 +135,6 @@ The main area where your course graph is displayed. You can:
 - Drag nodes to reposition them
 - Create connections between nodes
 - Zoom and pan to navigate
-
-### MiniMap
-
-Located in the bottom-left corner, the minimap shows an overview of your entire graph and your current viewport position.
 
 ### Zoom Controls
 
@@ -330,13 +326,6 @@ Your most recent work is automatically loaded when you start CourseGraph.
 - **Zoom In**: Click + button or scroll up
 - **Zoom Out**: Click - button or scroll down
 - **Fit View**: Click the fit button to show all nodes
-
-### Using the MiniMap
-
-The minimap in the bottom-left corner shows:
-- Overview of all nodes
-- Current viewport (highlighted rectangle)
-- Click and drag on the minimap to quickly navigate
 
 ---
 

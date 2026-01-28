@@ -50,7 +50,7 @@ Before installing CourseGraph for development, ensure you have the following sof
 
 #### Node.js
 
-**Required Version:** v24.x or higher
+**Required Version:** v20.x or higher
 
 **Check if installed:**
 ```bash
@@ -62,12 +62,12 @@ node --version
 - **Windows/macOS:** Download from [nodejs.org](https://nodejs.org/)
 - **Linux (Ubuntu/Debian):**
   ```bash
-  curl -fsSL https://deb.nodesource.com/setup_24.x | sudo -E bash -
+  curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
   sudo apt-get install -y nodejs
   ```
 - **macOS (Homebrew):**
   ```bash
-  brew install node@24
+  brew install node@20
   ```
 
 #### npm (Node Package Manager)
@@ -247,7 +247,7 @@ npm run make
    ```
 2. Install Node.js (via Homebrew recommended):
    ```bash
-   brew install node@24
+   brew install node@20
    ```
 3. Follow the standard installation steps
 
@@ -285,7 +285,7 @@ If macOS blocks the app:
    ```
 2. Install Node.js:
    ```bash
-   curl -fsSL https://deb.nodesource.com/setup_24.x | sudo -E bash -
+   curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
    sudo apt-get install -y nodejs
    ```
 3. Follow the standard installation steps
@@ -450,7 +450,7 @@ Run these commands to verify everything is working:
 
 ```bash
 # Check Node.js
-node --version  # Should show v24.x.x
+node --version  # Should show v20.x.x
 
 # Check npm
 npm --version   # Should show v11.x.x
