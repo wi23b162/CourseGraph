@@ -20,7 +20,7 @@ const EditConnectionDialog = ({ edge, sourceNode, targetNode, onSave, onDelete, 
 
   const edgeTypes = [
     { value: 'requires', label: '↑ requires', color: '#f97316', description: 'Source requires target' },
-    { value: 'implies', label: '→ enables', color: '#3b82f6', description: 'Source enables target' },
+    { value: 'implies', label: '→ enables/implies', color: '#3b82f6', description: 'Source enables target' },
     { value: 'tests', label: '✓ tested by', color: '#10b981', description: 'Source tested by target' }
   ];
 

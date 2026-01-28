@@ -130,7 +130,6 @@ const NodeProperties = ({ node, edge, nodes, edges, onDeleteEdge, onEditNode, on
         }}>
           <button
             onClick={() => {
-              console.log("✏️ Edit connection button clicked");
               if (onEditConnection) {
                 onEditConnection(edge, sourceNode, targetNode);
               }
@@ -376,7 +375,6 @@ const NodeProperties = ({ node, edge, nodes, edges, onDeleteEdge, onEditNode, on
       }}>
         <button
           onClick={() => {
-            console.log("✏️ Edit button clicked for node:", node.id);
             if (onEditNode) {
               onEditNode(node);
             }

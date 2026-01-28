@@ -2,8 +2,6 @@ import React, { memo } from 'react';
 import { Handle, Position } from 'reactflow';
 
 const CustomNode = ({ id, data, isConnectable }) => {
-  console.log("CustomNode render:", id, "isConnectable:", isConnectable);
-
   // Node colors based on type and level
   const getNodeColor = () => {
     if (data.nodeType === 'assessment') {
@@ -30,10 +28,10 @@ const CustomNode = ({ id, data, isConnectable }) => {
 
   const nodeStyle = {
     padding: '16px',
-    borderRadius: isAssessment ? '4px' : '16px', // Assessment: eckig, LEO: abgerundet
+    borderRadius: isAssessment ? '4px' : '16px', // Assessment: square, LEO: rounded
     border: isAssessment
-      ? `4px dashed ${colors.border}` // Assessment: gestrichelte Linie
-      : `3px solid ${colors.border}`, // LEO: durchgehende Linie
+      ? `4px dashed ${colors.border}` // Assessment: dashed line
+      : `3px solid ${colors.border}`, // LEO: solid line
     background: colors.background,
     color: colors.text,
     minWidth: '200px',

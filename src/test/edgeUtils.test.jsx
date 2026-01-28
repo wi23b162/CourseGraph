@@ -38,7 +38,7 @@ describe('edgeUtils', () => {
     });
 
     test('returns correct label for implies', () => {
-      expect(getEdgeLabel('implies')).toBe('→ enables');
+      expect(getEdgeLabel('implies')).toBe('→ enables / implies');
     });
 
     test('returns correct label for tests', () => {

@@ -25,7 +25,7 @@ export const getEdgeStyle = (edgeType) => {
 export const getEdgeLabel = (edgeType) => {
   const labels = {
     requires: '↑ requires',
-    implies: '→ enables',
+    implies: '→ enables / implies',
     tests: '✓ tested by'
   };
 
